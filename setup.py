@@ -13,7 +13,7 @@ setuptools.setup(
     description="yyxx game custom module",
     long_description_content_type='text/markdown',
     long_description=open(filepath, encoding='utf-8').read(),
-    url="https://github.com/",
+    url="https://github.com/yyxxgame/yyxxgame-pkg",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
