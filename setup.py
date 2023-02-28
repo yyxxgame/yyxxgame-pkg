@@ -3,12 +3,14 @@
 # @Time     : 2023/2/28
 
 import setuptools
+import os
 
-filepath = 'README.md'
+root_path = os.path.dirname(os.path.abspath(__file__))
+filepath = os.path.join(root_path, 'README.MD')
 
 setuptools.setup(
     name="yyxx-game-pkg",
-    version="0.0.3b",
+    version="0.0.7b",
     author="yyxxgame",
     description="yyxx game custom module",
     long_description_content_type='text/markdown',
