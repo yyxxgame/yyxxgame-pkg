@@ -3,6 +3,7 @@
 # @Time     : 2023/2/28
 
 import setuptools
+from setuptools_scm import get_version
 import os
 
 root_path = os.path.dirname(os.path.abspath(__file__))
@@ -10,7 +11,8 @@ filepath = os.path.join(root_path, 'README.MD')
 
 setuptools.setup(
     name="yyxx-game-pkg",
-    version="0.0.7b",
+    # version="0.0.7b",
+    use_scm_version=True,
     author="yyxxgame",
     description="yyxx game custom module",
     long_description_content_type='text/markdown',
