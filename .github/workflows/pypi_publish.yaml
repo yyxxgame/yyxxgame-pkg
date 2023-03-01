@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: pip install --upgrade pip setuptools wheel twine setuptools_scm
 
+      - name: Build dist
+        run: python setup.py sdist
+
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
