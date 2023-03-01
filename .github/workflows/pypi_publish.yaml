@@ -20,6 +20,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install --upgrade pip setuptools wheel twine setuptools_scm
+        
+      - name: Show Version
+        run: python setup.py --version
 
       - name: Build dist
         run: python setup.py sdist
