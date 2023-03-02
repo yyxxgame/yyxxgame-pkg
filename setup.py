@@ -3,7 +3,6 @@
 # @Time     : 2023/2/28
 
 import setuptools
-from setuptools_scm import get_version
 import os
 
 root_path = os.path.dirname(os.path.abspath(__file__))
@@ -11,7 +10,11 @@ filepath = os.path.join(root_path, 'README.MD')
 
 setuptools.setup(
     name="yyxx-game-pkg",
-    version=get_version(local_scheme=lambda ver: ''),
+    use_scm_version={
+        #"root": "..",
+        "relative_to": __file__,
+        "local_scheme": lambda ver: ''
+    },
     setup_requires=['setuptools_scm'],
     author="yyxxgame",
     description="yyxx game custom module",
