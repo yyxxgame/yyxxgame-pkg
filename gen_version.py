@@ -17,7 +17,11 @@ command2 = ['sed', 's/-g.*$//']
 result1 = subprocess.run(command1, stdout=subprocess.PIPE, check=True, encoding='utf-8')
 result2 = subprocess.run(command2, input=result1.stdout, stdout=subprocess.PIPE, check=True, encoding='utf-8')
 git_version = result2.stdout.strip()
-print(git_version)
+print(f'git_version：{git_version}')
+
+import os
+git_ref = os.getenv("github.ref")
+print(f'git_ref: {git_ref}')
 
 
 # 修改属性值

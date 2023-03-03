@@ -38,6 +38,26 @@ def func_business():
     pass
 ```
 
-## 安装
+## 生产环境配置
 要安装yyxx_pkg,请使用：
 `pip install yyxx-game-pkg`
+
+## 开发环境配置
+
+### checkout 代码
+`git checkout https://github.com/yyxxgame/yyxxgame-pkg`
+
+### poetry
+##### 安装poetry
+`curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python`
+
+##### 配置虚拟环境并显式激活
+- `poetry env use python3`
+- `poetry env list`
+- `poetry shell`
+
+##### 安装相关开发包环境
+- `poetry install`
+
+##### 官方文档
+[peotry](https://python-poetry.org/docs/)
