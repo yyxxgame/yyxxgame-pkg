@@ -4,6 +4,7 @@
 
 import toml
 import subprocess
+import os
 
 conf_name = "./pyproject.toml"
 
@@ -17,11 +18,18 @@ command2 = ['sed', 's/-g.*$//']
 result1 = subprocess.run(command1, stdout=subprocess.PIPE, check=True, encoding='utf-8')
 result2 = subprocess.run(command2, input=result1.stdout, stdout=subprocess.PIPE, check=True, encoding='utf-8')
 git_version = result2.stdout.strip()
-print(f'git_version：{git_version}')
+print(f'git_version1：{git_version}')
 
-import os
-git_ref = os.getenv("github.ref")
+# 获取push type
+git_ref = os.getenv("GITHUB_REF")
 print(f'git_ref: {git_ref}')
+
+# modify
+flag = 'dev'
+if git_ref.startswith("refs/tags"):
+    flag = 'post'
+git_version = git_version.replace('-', flag)
+print(f'git_version:{git_version}')
 
 
 # 修改属性值
