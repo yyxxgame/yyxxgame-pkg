@@ -39,13 +39,13 @@ def func_business():
 ```
 
 ## 生产环境配置
-要安装yyxx_pkg,请使用：
+python3环境中执行：
 `pip install yyxx-game-pkg`
 
 ## 开发环境配置
 
-### checkout 代码
-`git checkout https://github.com/yyxxgame/yyxxgame-pkg`
+### clone 代码
+`git clone https://github.com/yyxxgame/yyxxgame-pkg`
 
 ### poetry
 ##### 安装poetry
@@ -56,8 +56,16 @@ def func_business():
 - `poetry env list`
 - `poetry shell`
 
-##### 安装相关开发包环境
+##### 安装更新开发包
 - `poetry install`
+- `proetry update`
 
-##### 官方文档
+## 版本发布
+### develop
+提交注释中添加`[BUILD]`关键字并推送会触发github actions的dev版本构建并发布到[test.pypi](https://test.pypi.org/project/yyxx-game-pkg/)
+
+### release
+新建`tag`并推送会触发github actions的正式版本构建并发布到[pypi](https://pypi.org/project/yyxx-game-pkg/)
+
+## 参考文档
 [peotry](https://python-poetry.org/docs/)
