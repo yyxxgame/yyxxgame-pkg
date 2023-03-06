@@ -40,25 +40,36 @@ def func_business():
 
 ## 生产环境配置
 python3环境中执行：
-`pip install yyxx-game-pkg`
+```
+pip install yyxx-game-pkg
+```
+
 
 ## 开发环境配置
 
 ### clone 代码
-`git clone https://github.com/yyxxgame/yyxxgame-pkg`
+```
+git clone https://github.com/yyxxgame/yyxxgame-pkg
+```
 
-### poetry
-##### 安装poetry
-`curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python`
+### 安装poetry
+```
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+```
 
-##### 配置虚拟环境并显式激活
-- `poetry env use python3`
-- `poetry env list`
-- `poetry shell`
+### 配置虚拟环境并显式激活
+```
+- poetry env use python3
+- poetry env list
+- poetry shell
+```
 
-##### 安装更新开发包
-- `poetry install`
-- `proetry update`
+### 安装更新开发包
+```
+- poetry install
+- proetry update
+```
+
 
 ## 版本发布
 ### develop
@@ -68,4 +79,5 @@ python3环境中执行：
 新建`tag`并推送会触发github actions的正式版本构建并发布到[pypi](https://pypi.org/project/yyxx-game-pkg/)
 
 ## 参考文档
-[peotry](https://python-poetry.org/docs/)
+- [peotry](https://python-poetry.org/docs/)
+- [CodeGeeX插件](https://models.aminer.cn/codegeex/)
