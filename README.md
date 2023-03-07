@@ -53,6 +53,7 @@ git clone https://github.com/yyxxgame/yyxxgame-pkg
 ```
 
 ### 安装poetry
+
 ```
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 ```
@@ -67,7 +68,7 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 ### 安装更新开发包
 ```
 - poetry install
-- proetry update
+- poetry update
 ```
 
 
@@ -79,5 +80,5 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 新建`tag`并推送会触发github actions的正式版本构建并发布到[pypi](https://pypi.org/project/yyxx-game-pkg/)
 
 ## 参考文档
-- [peotry](https://python-poetry.org/docs/)
+- [poetry](https://python-poetry.org/docs/)
 - [CodeGeeX插件](https://models.aminer.cn/codegeex/)
