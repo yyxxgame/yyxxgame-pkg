@@ -82,10 +82,10 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 
 ## 版本发布
 ### develop
-提交注释中添加`[BUILD]`关键字并推送会触发github actions的dev版本构建并发布到[test.pypi](https://test.pypi.org/project/yyxx-game-pkg/)
+提交注释中添加`[BUILD]`关键字并推送会触发github actions的dev版本构建并发布到[yyxx-game-pkg-dev](https://pypi.org/project/yyxx-game-pkg-dev/)
 
 ### release
-新建`tag`并推送会触发github actions的正式版本构建并发布到[pypi](https://pypi.org/project/yyxx-game-pkg/)
+新建`tag`并推送会触发github actions的正式版本构建并发布到[yyxx-game-pkg](https://pypi.org/project/yyxx-game-pkg/)
 
 ## 参考文档
 - [poetry](https://python-poetry.org/docs/)
