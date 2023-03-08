@@ -13,7 +13,7 @@ homepage = "https://github.com/yyxxgame/yyxxgame-pkg"
 repository = "https://github.com/yyxxgame/yyxxgame-pkg"
 readme = "README.md"
 packages = [
-  { include = "yyxx_game_pkg" }
+  { include = "yyxx_game_pkg", include = "tests" }
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
