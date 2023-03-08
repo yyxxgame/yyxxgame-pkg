@@ -36,6 +36,14 @@ from yyxx_pkg.xtrace.helper import trace_span
 def func_business():
     # your business function
     pass
+
+@trace_span(ret_trace_id=True)
+def func_business_with_trace_id():
+    # your business function
+    ret_val = "success"
+    
+    # real return: ret_val, trace_id
+    return ret_val
 ```
 
 ## 生产环境配置

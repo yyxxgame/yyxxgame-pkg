@@ -49,7 +49,7 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
     trace.get_tracer_provider().add_span_processor(span_processor)
 
 
-def trace_span():
+def trace_span(ret_trace_id: bool = False):
     """:cvar
     函数的span装饰器
     """
@@ -61,6 +61,8 @@ def trace_span():
             with _tracer.start_as_current_span(operation_name) as span:
                 try:
                     result = func(*args, **kwargs)
+                    if ret_trace_id:
+                        return result, hex(span.get_span_context().trace_id)
                     return result
                 except Exception as e:
                     span.set_status(Status(StatusCode.ERROR, str(e)))
