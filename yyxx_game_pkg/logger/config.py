@@ -57,7 +57,7 @@ class LogConfig:
                 "rotate_file_handler": {
                     "level": "INFO",
                     "formatter": "def_fmt",
-                    "class": "public.logger.handlers.MultiProcessTimeRotatingFileHandler",
+                    "class": "yyxx_game_pkg.logger.handlers.MultiProcessTimedRotatingFileHandler",
                     "filename": LogConfig.local_log_file(),
                     "when": "MIDNIGHT",
                     "backupCount": 7,
