@@ -21,15 +21,22 @@ git_version = result2.stdout.strip()
 print(f'git_version1：{git_version}')
 
 # 获取push type
-git_ref = os.getenv("GITHUB_REF")
+git_ref = os.getenv("GITHUB_REF", "refs/heads")
 print(f'git_ref: {git_ref}')
 
 # modify
-flag = 'dev'
+proj_name = config['tool']['poetry']['name']
 if git_ref.startswith("refs/tags"):
+    # 发行版
     flag = 'post'
+else:
+    # 开发版
+    flag = 'dev'
+    config['tool']['poetry']['name'] = f'{proj_name}-{flag}'
+
 git_version = git_version.replace('-', flag)
-print(f'git_version:{git_version}')
+print(f'build_version:{git_version}')
+print(f"project_name:{config['tool']['poetry']['name']}")
 
 
 # 修改属性值
