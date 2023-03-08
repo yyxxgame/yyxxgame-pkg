@@ -3,7 +3,7 @@
 # @Time     : 2023/3/8
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-
+# test
 # init request
 from yyxx_game_pkg.xtrace.helper import register_to_jaeger, trace_span
 
