@@ -35,6 +35,7 @@ class Log:
     def __init__(self, log_config=LogConfig):
         if self._init:
             return
+        self._init = True
         # 日志配置初始化
         self.config = log_config
         logging.config.dictConfig(self.config.dict_config())
