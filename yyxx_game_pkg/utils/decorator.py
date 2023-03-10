@@ -102,14 +102,19 @@ def except_return(default=None):
 
 def singleton(cls):
     from functools import wraps
-
-    instances = {}
+    import threading
+    _instances = {}
+    _lock = threading.Lock()
 
     @wraps(cls)
     def get_instance(*args, **kw):
-        if cls not in instances:
-            instances[cls] = cls(*args, **kw)
-        return instances[cls]
+        _lock.acquire()
+        try:
+            if cls not in _instances:
+                _instances[cls] = cls(*args, **kw)
+            return _instances[cls]
+        finally:
+            _lock.release()
 
     return get_instance
 
