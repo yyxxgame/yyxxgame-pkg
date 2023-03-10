@@ -10,36 +10,14 @@ class LogConfig:
     不同项目配置调整继承该类
     """
 
-    @staticmethod
-    def debug_logger_name():
-        """
-        debug logger name
-        """
-        return "py_debug"
+    DEBUG_LOGGER_NAME = "py_debug"
+    LOCAL_LOGGER_NAME = "py_local"
 
-    @staticmethod
-    def local_logger_name():
-        """
-        local logger name
-        """
-        return "py_local"
+    LOCAL_LOG_FILE = "/data/logs/local.log"
+    DEBUG_LOG_FILE = "/data/logs/debug.log"
 
-    @staticmethod
-    def local_log_file():
-        """
-        local log file path
-        """
-        return "/data/logs/local.log"
-
-    @staticmethod
-    def debug_log_file():
-        """
-        debug log file path
-        """
-        return "/data/logs/debug.log"
-
-    @staticmethod
-    def config():
+    @classmethod
+    def dict_config(cls):
         """
         LOG_CONFIG DICT
         """
@@ -58,7 +36,7 @@ class LogConfig:
                     "level": "INFO",
                     "formatter": "def_fmt",
                     "class": "yyxx_game_pkg.logger.handlers.MultiProcessTimedRotatingFileHandler",
-                    "filename": LogConfig.local_log_file(),
+                    "filename": cls.LOCAL_LOG_FILE,
                     "when": "MIDNIGHT",
                     "backupCount": 7,
                 },
@@ -66,7 +44,7 @@ class LogConfig:
                     "level": "DEBUG",
                     "formatter": "def_fmt",
                     "class": "logging.FileHandler",
-                    "filename": LogConfig.debug_log_file(),
+                    "filename": cls.DEBUG_LOG_FILE,
                 },
                 "console_handler": {
                     "level": "INFO",
@@ -75,14 +53,19 @@ class LogConfig:
                 },
             },
             "loggers": {
-                LogConfig.debug_logger_name(): {
-                    "handlers": ["debug_file_handler", "console_handler"],
-                    "level": "DEBUG",
+                "": {  # root logger
+                    "handlers": ["rotate_file_handler", "console_handler"],
+                    "level": "WARNING",
                     "propagate": False,
                 },
-                LogConfig.local_logger_name(): {
+                cls.LOCAL_LOGGER_NAME: {
                     "handlers": ["rotate_file_handler", "console_handler"],
                     "level": "INFO",
+                    "propagate": False,
+                },
+                cls.DEBUG_LOGGER_NAME: {
+                    "handlers": ["debug_file_handler", "console_handler"],
+                    "level": "DEBUG",
                     "propagate": False,
                 },
             },

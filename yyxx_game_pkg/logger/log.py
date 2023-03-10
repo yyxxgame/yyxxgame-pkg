@@ -3,21 +3,27 @@
 @File: log
 @Author: ltw
 @Time: 2023/2/6
+
+logger 默认设置
 """
 import logging.config
 from datetime import datetime
 from .config import LogConfig
 
 
-def local_log(msg):
-    Log().local_log(msg)
-
-
-def debug_log(msg):
-    Log().debug_log(msg)
+def root_log(msg):
+    """
+    root logger
+    """
+    logger = logging.getLogger()
+    logger.warning(msg)
 
 
 class Log:
+    """
+    singleton Log
+    """
+
     _instance = None
     _init = False
 
@@ -29,9 +35,10 @@ class Log:
     def __init__(self, log_config=LogConfig):
         if self._init:
             return
+        self._init = True
         # 日志配置初始化
         self.config = log_config
-        logging.config.dictConfig(self.config.config())
+        logging.config.dictConfig(self.config.dict_config())
         self.local_log("logger init")
 
     def local_logger(self):
@@ -39,14 +46,14 @@ class Log:
         local_logger
         :return:
         """
-        return logging.getLogger(self.config.local_logger_name())
+        return logging.getLogger(self.config.LOCAL_LOGGER_NAME)
 
     def debug_logger(self):
         """
         debug_logger
         :return:
         """
-        return logging.getLogger(self.config.debug_logger_name())
+        return logging.getLogger(self.config.DEBUG_LOGGER_NAME)
 
     def local_log(self, msg):
         """
