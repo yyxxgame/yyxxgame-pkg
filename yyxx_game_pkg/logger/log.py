@@ -58,6 +58,7 @@ class Log:
         for path in file_paths:
             path_obj = Path(path)
             path_obj.parent.mkdir(parents=True, exist_ok=True)
+            path_obj.touch(exist_ok=True)
 
     def local_logger(self):
         """
