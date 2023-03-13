@@ -50,7 +50,7 @@ class Log:
         if not handlers_config:
             return
         file_paths = []
-        for _, configs in handlers_config:
+        for _, configs in handlers_config.items():
             for cfg_key, val in configs:
                 if cfg_key != "file_name":
                     continue
