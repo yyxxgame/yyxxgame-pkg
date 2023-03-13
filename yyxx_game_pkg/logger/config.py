@@ -27,7 +27,7 @@ class LogConfig:
             "formatters": {
                 "def_fmt": {
                     "datefmt": "%Y-%m-%d %H:%M:%S",
-                    "format": "%(asctime)s %(levelname)-8s: %(message)s",
+                    "format": "[%(asctime)s,%(msecs)d: %(levelname)s/%(process)d] %(message)s",
                     "class": "logging.Formatter",
                 },
             },
