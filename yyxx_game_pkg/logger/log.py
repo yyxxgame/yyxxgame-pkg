@@ -51,7 +51,7 @@ class Log:
             return
         file_paths = []
         for _, configs in handlers_config.items():
-            for cfg_key, val in configs:
+            for cfg_key, val in configs.items():
                 if cfg_key != "file_name":
                     continue
                 file_paths.append(val)
