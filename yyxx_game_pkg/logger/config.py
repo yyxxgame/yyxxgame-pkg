@@ -13,8 +13,8 @@ class LogConfig:
     DEBUG_LOGGER_NAME = "py_debug"
     LOCAL_LOGGER_NAME = "py_local"
 
-    LOCAL_LOG_FILE = "/data/logs/local.log"
-    DEBUG_LOG_FILE = "/data/logs/debug.log"
+    LOCAL_LOG_FILE = "/tmp/local.log"
+    DEBUG_LOG_FILE = "/tmp/debug.log"
 
     @classmethod
     def dict_config(cls):

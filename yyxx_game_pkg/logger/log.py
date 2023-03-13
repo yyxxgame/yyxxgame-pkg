@@ -7,7 +7,7 @@
 logger 默认设置
 """
 import logging.config
-from datetime import datetime
+from pathlib import Path
 from .config import LogConfig
 
 
@@ -38,8 +38,26 @@ class Log:
         self._init = True
         # 日志配置初始化
         self.config = log_config
+        self.make_path()
         logging.config.dictConfig(self.config.dict_config())
-        self.local_log("logger init")
+        root_log("logger init")
+
+    def make_path(self):
+        """
+        检查日志输出文件路径, 不存在则创建
+        """
+        handlers_config = self.config.dict_config().get("handlers", {})
+        if not handlers_config:
+            return
+        file_paths = []
+        for _, configs in handlers_config:
+            for cfg_key, val in configs:
+                if cfg_key != "file_name":
+                    continue
+                file_paths.append(val)
+        for path in file_paths:
+            path_obj = Path(path)
+            path_obj.parent.mkdir(parents=True, exist_ok=True)
 
     def local_logger(self):
         """
