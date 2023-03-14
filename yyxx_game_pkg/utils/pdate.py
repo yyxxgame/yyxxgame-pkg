@@ -157,7 +157,7 @@ class DateType(Enum):
     MONTH = 3
 
 
-def date_type_trans(date, date_type, fmt="%Y%m%d"):
+def date_type_trans(date, date_type=DateType.DAY, fmt="%Y%m%d"):
     """
     周期时间格式化
     :param date: 时间字符串
