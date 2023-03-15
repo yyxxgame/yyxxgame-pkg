@@ -13,8 +13,8 @@ class LogConfig:
     DEBUG_LOGGER_NAME = "py_debug"
     LOCAL_LOGGER_NAME = "py_local"
 
-    LOCAL_LOG_FILE = "/data/logs/local.log"
-    DEBUG_LOG_FILE = "/data/logs/debug.log"
+    LOCAL_LOG_FILE = "/tmp/local.log"
+    DEBUG_LOG_FILE = "/tmp/debug.log"
 
     @classmethod
     def dict_config(cls):
@@ -27,7 +27,7 @@ class LogConfig:
             "formatters": {
                 "def_fmt": {
                     "datefmt": "%Y-%m-%d %H:%M:%S",
-                    "format": "%(asctime)s %(levelname)-8s: %(message)s",
+                    "format": "[%(asctime)s,%(msecs)d: %(levelname)s/%(process)d] %(message)s",
                     "class": "logging.Formatter",
                 },
             },

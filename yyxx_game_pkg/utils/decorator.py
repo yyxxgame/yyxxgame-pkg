@@ -6,12 +6,12 @@
 """
 import time
 import functools
-from yyxx_game_pkg.logger.log import local_log
+from yyxx_game_pkg.logger.log import root_log
 
 
 def trans_str(obj, max_len=5000):
     msg = str(obj)
-    return msg[0: min(len(msg), max_len)]
+    return msg[0 : min(len(msg), max_len)]
 
 
 def log_execute_time_monitor(exec_lmt_time=20):
@@ -37,7 +37,7 @@ def log_execute_time_monitor(exec_lmt_time=20):
                     _args.append(trans_str(_arg, 100))
                 for k, v in kwargs.items():
                     kwargs[k] = trans_str(v, 100)
-                local_log(
+                root_log(
                     f"<log_execute_time_monitor>func <<{func.__name__}>> deal over time "
                     f"begin_at: {begin_dt} end_at: {end_dt}, sec: {offset}"
                     f"ex_info{ex_info}, params: {str(args)}, {str(kwargs)}"
@@ -55,6 +55,7 @@ def except_monitor(func):
     打印全部参数
     :return:
     """
+
     @functools.wraps(func)
     def inner(*args, **kwargs):
         res = None
@@ -84,6 +85,7 @@ def except_return(default=None):
     :param default: 返回值
     :return:
     """
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kw):
@@ -103,6 +105,7 @@ def except_return(default=None):
 def singleton(cls):
     from functools import wraps
     import threading
+
     _instances = {}
     _lock = threading.Lock()
 
@@ -146,7 +149,9 @@ def timeout_run(timeout=2, default=None):
                 future = executor.submit(func, *args, **kw)
                 return future.result(timeout=timeout)
             except Exception as e:
-                local_log("timeout_run {} error {} args:{} kw:{}".format(func, e, args, kw))
+                local_log(
+                    "timeout_run {} error {} args:{} kw:{}".format(func, e, args, kw)
+                )
                 return default
 
         return wrapper

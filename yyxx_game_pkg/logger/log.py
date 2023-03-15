@@ -61,13 +61,6 @@ class Log:
         :return:
         """
         logger = self.local_logger()
-        now = datetime.now()
-        # info = {
-        #     "@timestamp": str(now),
-        #     "msg": msg
-        # }
-        # logger.info(info)
-        msg = f"[{now}] {msg}"
         logger.info(msg)
 
     def debug_log(self, msg):

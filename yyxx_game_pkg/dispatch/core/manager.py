@@ -38,3 +38,12 @@ class RuleManager(object):
         return self.__rules
 
     # endregion
+
+    # region 外部方法
+    def init(self, path: str):
+        self.__task_register_path = path
+
+    def add_rule(self, key, val):
+        self.__rules[key] = val
+
+    # endregion

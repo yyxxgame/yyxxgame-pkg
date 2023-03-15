@@ -121,7 +121,7 @@ class WorkFlowMethods(object):
 
     @staticmethod
     def make_signature_batch(
-        task_path, business_inst_name, kwargs_list=None, queue_name=None, to_group=True
+        task_path, business_inst_name, kwargs_list=None, queue_name=None
     ):
         sig = None
         s_container = []
@@ -139,13 +139,10 @@ class WorkFlowMethods(object):
             return sig
 
         if len(s_container) > 1:
-            if to_group:
-                from celery import group
+            from celery import group
 
-                sig = group(tuple(s_container))
-                WorkFlowMethods._fill_sig_queue_name(sig, queue_name)
-            else:
-                return s_container
+            sig = group(tuple(s_container))
+            WorkFlowMethods._fill_sig_queue_name(sig, queue_name)
         else:
             sig = s_container[0]
 
@@ -161,16 +158,9 @@ class WorkFlowMethods(object):
         from celery import group
 
         if queue_name is None:
-            from public.logger.log import local_log
-
-            local_log(
-                "<WorkFlowMethods> _fill_sig_queue_name, queue name empty, sig:{}".format(
-                    sig_list
-                )
-            )
             assert False
 
-        from public.common import get_queue_name
+        from yyxx_game_pkg.dispatch.common.common import get_queue_name
 
         real_queue_name = get_queue_name(queue_name)
         if isinstance(sig_list, list):
