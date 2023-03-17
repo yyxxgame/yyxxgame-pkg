@@ -10,6 +10,7 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace.status import Status, StatusCode
+from opentelemetry.trace import get_current_span
 
 
 _tracer = trace.get_tracer(__name__)
@@ -49,7 +50,7 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
     trace.get_tracer_provider().add_span_processor(span_processor)
 
 
-def trace_span(ret_trace_id: bool = False):
+def trace_span(ret_trace_id: bool = False, set_attributes: bool = False):
     """:cvar
     函数的span装饰器
     """
@@ -63,6 +64,8 @@ def trace_span(ret_trace_id: bool = False):
                     result = func(*args, **kwargs)
                     if ret_trace_id:
                         return result, hex(span.get_span_context().trace_id)
+                    if set_attributes:
+                        span.set_attributes({"kwargs": str(kwargs), "args": str(args)})
                     return result
                 except Exception as e:
                     span.set_status(Status(StatusCode.ERROR, str(e)))
@@ -71,3 +74,32 @@ def trace_span(ret_trace_id: bool = False):
         return wrapper
 
     return decorator
+
+
+def get_current_trace_id():
+    """:cvar
+    获取当前trace id
+    """
+    # 获取当前请求的span和trace id
+    span = get_current_span()
+
+    # 获取 trace_id
+    trace_id = span.get_span_context().trace_id
+
+    return hex(trace_id)
+
+
+def add_span_tags(attributes: dict):
+    """:cvar
+    当前span添加tags
+    """
+    span = get_current_span()
+    span.set_attributes(attributes)
+
+
+def add_span_events(event_name: str, events: dict):
+    """:cvar
+    当前span添加tags
+    """
+    span = get_current_span()
+    span.add_event(event_name, events)
