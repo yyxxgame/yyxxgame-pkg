@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
-# @Time     : 2023/3/13
+# @Time     : 2023/3/14
+
 import os
 import importlib
 from os.path import dirname
-from yyxx_game_pkg.dispatch.common.log import local_log
 
 
 def rules_auto_import():
@@ -16,6 +16,5 @@ def rules_auto_import():
         if not filepath.endswith(".py"):
             continue
         module_name = filepath[:-3]
-        import_path = "yyxx_game_pkg.dispatch.rules.{}".format(module_name)
+        import_path = "tests.dispatch.rules.{}".format(module_name)
         module = importlib.import_module(import_path)
-        local_log("******** auto import {}".format(module))

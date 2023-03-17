@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2023/3/13
-from yyxx_game_pkg.dispatch.core.structs import ProtoSchedule
+from yyxx_game_pkg.stat.dispatch.core.structs import ProtoSchedule
 
 
 class RuleBase(object):

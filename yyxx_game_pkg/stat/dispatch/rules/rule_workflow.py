@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2023/3/14
-from yyxx_game_pkg.dispatch.common.log import local_log
-from yyxx_game_pkg.dispatch.core.manager import rule_register
-from yyxx_game_pkg.dispatch.core.workflows import WorkFlowMethods
-from yyxx_game_pkg.dispatch.logic.task_logic import parse_tasks
-from yyxx_game_pkg.dispatch.rules.rule_base import RuleBase
+from yyxx_game_pkg.stat.dispatch.common.log import local_log
+from yyxx_game_pkg.stat.dispatch.core.manager import rule_register
+from yyxx_game_pkg.stat.dispatch.core.workflows import WorkFlowMethods
+from yyxx_game_pkg.stat.dispatch.logic.task_logic import parse_task
+from yyxx_game_pkg.stat.dispatch.rules.rule_base import RuleBase
 
 
 @rule_register(inst_name_list=["work_flow_instance"])
@@ -56,7 +56,7 @@ class DispatchRuleWorkFlow(RuleBase):
                     )
                     return None, -1, -1
 
-                sub_sig_list = parse_tasks(schedule_str)
+                sub_sig_list = parse_task(schedule_str)
                 if not sub_sig_list:
                     # 不能跳过sig
                     local_log(

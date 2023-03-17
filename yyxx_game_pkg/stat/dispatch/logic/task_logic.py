@@ -3,11 +3,11 @@
 # @Time     : 2023/3/9
 import traceback
 
-from yyxx_game_pkg.dispatch.common.common import fastapi_except_monitor
-from yyxx_game_pkg.dispatch.common.log import local_log
-from yyxx_game_pkg.dispatch.core.manager import RuleManager
-from yyxx_game_pkg.dispatch.core.structs import ProtoSchedule
-from yyxx_game_pkg.dispatch.core.workflows import WorkFlowMethods
+from yyxx_game_pkg.stat.dispatch.common.common import fastapi_except_monitor
+from yyxx_game_pkg.stat.dispatch.common.log import local_log
+from yyxx_game_pkg.stat.dispatch.core.manager import RuleManager
+from yyxx_game_pkg.stat.dispatch.core.structs import ProtoSchedule
+from yyxx_game_pkg.stat.dispatch.core.workflows import WorkFlowMethods
 
 
 # region logic入口
@@ -17,7 +17,7 @@ from yyxx_game_pkg.xtrace.helper import get_current_trace_id
 @fastapi_except_monitor
 def task_logic(msg):
     # 解析命令,构建任务标签列表
-    task_sig_list = parse_tasks(msg)
+    task_sig_list = parse_task(msg)
     if not task_sig_list:
         err_msg = f"<task_logic> main_dispatch_logic, parse task failed: {traceback.format_exc()}"
         local_log(err_msg)
@@ -31,41 +31,41 @@ def task_logic(msg):
 
 
 # region 任务解析
-def parse_tasks(schedule_list):
+def parse_task(schedule):
     """
     解析命令
-    :param schedule_list:
+    :param schedule:
     :return:
     """
     task_sig_list = []
-    for dict_schedule in schedule_list:
-        # 反序列化
-        schedule = ProtoSchedule().to_schedule(dict_schedule)
-        instance_name = schedule.SCHEDULE_DISPATCH_RULE_INSTANCE_NAME
 
-        # 校验队列名
-        if schedule.SCHEDULE_QUEUE_NAME is None:
-            local_log(
-                f"<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule:{schedule}"
-            )
-            continue
+    # 反序列化
+    schedule = ProtoSchedule().to_schedule(schedule)
+    instance_name = schedule.SCHEDULE_DISPATCH_RULE_INSTANCE_NAME
 
-        # 获取对应计划解析规则
-        rule = RuleManager().rules.get(instance_name)
-        if not rule:
-            local_log(f"<parse_command_data> rule is None, inst_name:{instance_name}")
-            continue
+    # 校验队列名
+    if schedule.SCHEDULE_QUEUE_NAME is None:
+        local_log(
+            f"<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule:{schedule}"
+        )
+        return task_sig_list
 
-        # 构建signature列表
-        schedule_sig = rule.build(schedule)
-        if not schedule_sig:
-            continue
+    # 获取对应计划解析规则
+    rule = RuleManager().rules.get(instance_name)
+    if not rule:
+        local_log(f"<parse_command_data> rule is None, instance_name:{instance_name}")
+        return task_sig_list
 
-        # link
-        if isinstance(schedule_sig, list):
-            task_sig_list.extend(schedule_sig)
-        else:
-            task_sig_list.append(schedule_sig)
+    # 构建signature列表
+    schedule_sig = rule.build(schedule)
+    if not schedule_sig:
+        return task_sig_list
+
+    # link
+    if isinstance(schedule_sig, list):
+        task_sig_list.extend(schedule_sig)
+    else:
+        task_sig_list.append(schedule_sig)
 
     return task_sig_list
 
@@ -129,9 +129,6 @@ def dispatch_tasks(task_sig_list):
         f"task_cnt:{task_cnt}, max_sig_cnt:{max_sig_cnt}"
     )
     return task_id_list
-
-
-# endregion
 
 
 def _parse_queue_flag(queue_flag):

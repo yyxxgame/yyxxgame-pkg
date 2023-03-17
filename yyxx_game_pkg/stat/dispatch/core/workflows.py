@@ -160,7 +160,7 @@ class WorkFlowMethods(object):
         if queue_name is None:
             assert False
 
-        from yyxx_game_pkg.dispatch.common.common import get_queue_name
+        from yyxx_game_pkg.stat.dispatch.common.common import get_queue_name
 
         real_queue_name = get_queue_name(queue_name)
         if isinstance(sig_list, list):

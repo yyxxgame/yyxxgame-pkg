@@ -1,0 +1,10 @@
+{
+        "schedule_name": "schedule_work_flow_test",
+        "register_path": "tests.submit.schedule_rule",
+        "dispatch_host": "http://localhost:8080",
+        "jaeger": {
+            "service_name": "submit",
+            "jaeger_host": "192.168.113.61",
+            "jaeger_port": 6831
+        }
+}

@@ -9,7 +9,6 @@ class ProtoSchedule(object):
         self.SCHEDULE_DISPATCH_RULE_INSTANCE_NAME = None
         self.SCHEDULE_CONTENT = None
         self.SCHEDULE_QUEUE_NAME = None
-        self.AUTH = None
 
     def dict_str(self):
         res_dict = dict()
@@ -19,7 +18,6 @@ class ProtoSchedule(object):
         ] = self.SCHEDULE_DISPATCH_RULE_INSTANCE_NAME
         res_dict["SCHEDULE_CONTENT"] = self.SCHEDULE_CONTENT
         res_dict["SCHEDULE_QUEUE_NAME"] = self.SCHEDULE_QUEUE_NAME
-        res_dict["AUTH"] = self.AUTH
         return res_dict
 
     def to_schedule(self, protocol):
@@ -29,5 +27,4 @@ class ProtoSchedule(object):
         ]
         self.SCHEDULE_CONTENT = protocol["SCHEDULE_CONTENT"]
         self.SCHEDULE_QUEUE_NAME = protocol.get("SCHEDULE_QUEUE_NAME")
-        self.AUTH = protocol.get("AUTH")
         return self

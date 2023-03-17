@@ -5,11 +5,14 @@
 import fastapi
 import uvicorn
 
-from yyxx_game_pkg.dispatch.route import router
-from yyxx_game_pkg.xtrace.helper import register_to_jaeger
+from yyxx_game_pkg.stat.dispatch.route import router
+from yyxx_game_pkg.stat.dispatch.rules import rules_auto_import
 
 
-def setup(port: int = 8080, conf_jaeger: dict = None):
+def startup(port: int = 8080, conf_jaeger: dict = None):
+    # auto import
+    rules_auto_import()
+
     # fast api
     app = fastapi.FastAPI()
     app.include_router(router)
@@ -17,9 +20,6 @@ def setup(port: int = 8080, conf_jaeger: dict = None):
     if conf_jaeger:
         from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
-        register_to_jaeger(
-            conf_jaeger["name"], conf_jaeger["host"], conf_jaeger["port"]
-        )
         FastAPIInstrumentor.instrument_app(app)
 
     uvicorn.run(app, port=port)
