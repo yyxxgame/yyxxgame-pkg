@@ -1,3 +1,4 @@
+[TOC]
 # yyxx-game-pkg
 
 `yyxx-game-pkg` 是一个专门为 yyxx 公司开发的 Python 内部接口集合。
@@ -44,7 +45,24 @@ def func_business_with_trace_id():
     
     # real return: ret_val, trace_id
     return ret_val
+
+@trace_span(set_attributes=True)
+def func_business_on_set_attributes(**kwargs):
+    # your business function
+    ret_val = "success"
+    
+    # record **kwargs as jaeger tags
+    return ret_val
 ```
+
+### stat
+`stat`模块包含yyxxgame内部统计业务的底层框架，目前包含`dispatch`、`submit`、`xcelery几个模块`
+#### dispatch
+业务分发基础模块
+#### submit
+任务提交基础模块
+#### xcelery
+celery封装层
 
 ## 生产环境配置
 python3环境中执行：

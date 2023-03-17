@@ -26,13 +26,8 @@ def rule_register(*args, **kwargs):
 class RuleManager(object):
     def __init__(self):
         self.__rules = dict()
-        self.__task_register_path = None
 
     # region property
-    @property
-    def task_register_path(self):
-        return self.__task_register_path
-
     @property
     def rules(self):
         return self.__rules
@@ -40,9 +35,6 @@ class RuleManager(object):
     # endregion
 
     # region 外部方法
-    def init(self, path: str):
-        self.__task_register_path = path
-
     def add_rule(self, key, val):
         self.__rules[key] = val
 

@@ -17,6 +17,7 @@ def startup(port: int = 8080, conf_jaeger: dict = None):
     app = fastapi.FastAPI()
     app.include_router(router)
 
+    # jaeger
     if conf_jaeger:
         from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 

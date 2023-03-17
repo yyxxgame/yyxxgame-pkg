@@ -77,53 +77,40 @@ class DispatchRuleWorkFlow(RuleBase):
         return dict_step_sig_list, min_step, max_step
 
     def __make_sig_by_content(self, schedule, flow_content):
-        try:
-            dict_step_sig_list, min_step, max_step = self.__parse_flow_content(
-                flow_content
-            )
-            if dict_step_sig_list is None:
-                local_log(
-                    "[ERROR] <DispatchRuleWorkFlow>dict_step_sig_list is None, content:{}".format(
-                        flow_content
-                    )
-                )
-                return None
-            queue_name = dict_step_sig_list[min_step][0].options.get("queue")
-
-            # step合并
-            step_sig_list = []
-            for step in range(min_step, max_step + 1):
-                # 按照step先后顺序构建sig列表
-                sig_list = dict_step_sig_list.get(step)
-                if not sig_list:
-                    continue
-                res_sig = WorkFlowMethods.merge_sig_list(sig_list)  # 多个相同同step的sig合并
-                step_sig_list.append(res_sig)
-
-            # 构建chord
-            ch = WorkFlowMethods.link_signatures(step_sig_list)
-            if ch is None:
-                local_log(
-                    "[ERROR] <DispatchRuleWorkFlow>__make_sig_by_content, make chord error, content:{}".format(
-                        flow_content
-                    )
-                )
-            else:
-                local_log(
-                    "<DispatchRuleWorkFlow>__make_sig_by_content, queue:{} steps:{}".format(
-                        queue_name, max_step
-                    )
-                )
-            return ch
-
-        except Exception as e:
-            import traceback
-
+        dict_step_sig_list, min_step, max_step = self.__parse_flow_content(flow_content)
+        if dict_step_sig_list is None:
             local_log(
-                "[ERROR] <DispatchRuleWorkFlow>__make_sig_by_content, e:{}, Traceback: {}, content:{}".format(
-                    e, traceback.format_exc(), flow_content
+                "[ERROR] <DispatchRuleWorkFlow>dict_step_sig_list is None, content:{}".format(
+                    flow_content
                 )
             )
             return None
+        queue_name = dict_step_sig_list[min_step][0].options.get("queue")
+
+        # step合并
+        step_sig_list = []
+        for step in range(min_step, max_step + 1):
+            # 按照step先后顺序构建sig列表
+            sig_list = dict_step_sig_list.get(step)
+            if not sig_list:
+                continue
+            res_sig = WorkFlowMethods.merge_sig_list(sig_list)  # 多个相同同step的sig合并
+            step_sig_list.append(res_sig)
+
+        # 构建chord
+        ch = WorkFlowMethods.link_signatures(step_sig_list)
+        if ch is None:
+            local_log(
+                "[ERROR] <DispatchRuleWorkFlow>__make_sig_by_content, make chord error, content:{}".format(
+                    flow_content
+                )
+            )
+        else:
+            local_log(
+                "<DispatchRuleWorkFlow>__make_sig_by_content, queue:{} steps:{}".format(
+                    queue_name, max_step
+                )
+            )
+        return ch
 
     # endregion

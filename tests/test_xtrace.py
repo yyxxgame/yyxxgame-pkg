@@ -9,7 +9,7 @@ from yyxx_game_pkg.xtrace.helper import register_to_jaeger, trace_span
 
 RequestsInstrumentor().instrument()
 
-# fumo jaeger
+# jaeger
 register_to_jaeger("test-xtrace", "jaeger-host")
 
 
@@ -27,7 +27,14 @@ def process_with_trace_id():
     return ret_value
 
 
-if __name__ == '__main__':
+@trace_span(set_attributes=True)
+def func_business_on_set_attributes(**kwargs):
+    ret_value = "success"
+    print("this is a process on set jaeger tags")
+    return ret_value
+
+
+if __name__ == "__main__":
     res = process()
     print(res)
 

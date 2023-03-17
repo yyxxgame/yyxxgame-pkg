@@ -5,6 +5,7 @@ from yyxx_game_pkg.stat.dispatch.core.manager import rule_register, RuleManager
 from yyxx_game_pkg.stat.dispatch.core.structs import ProtoSchedule
 from yyxx_game_pkg.stat.dispatch.core.workflows import WorkFlowMethods
 from yyxx_game_pkg.stat.dispatch.rules.rule_base import RuleBase
+from yyxx_game_pkg.stat.xcelery.instance import app
 
 
 @rule_register(
@@ -28,7 +29,7 @@ class RuleTemp(RuleBase):
                     kwargs_list.append(k)
 
             sig = WorkFlowMethods.make_signature_batch(
-                RuleManager().task_register_path,
+                app.conf.get("CUSTOM_TASK_REGISTER_PATH"),
                 self.inst_name,
                 kwargs_list,
                 queue_name=queue,

@@ -5,6 +5,7 @@
 import os
 import importlib
 from os.path import dirname
+from yyxx_game_pkg.stat.dispatch.common.log import local_log
 
 
 def rules_auto_import():
@@ -18,3 +19,4 @@ def rules_auto_import():
         module_name = filepath[:-3]
         import_path = "tests.dispatch.rules.{}".format(module_name)
         module = importlib.import_module(import_path)
+        local_log("********[dispatch] auto import {}".format(module))
