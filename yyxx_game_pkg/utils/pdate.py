@@ -9,6 +9,10 @@ import time
 import datetime
 from enum import Enum
 
+DAY = 1
+WEEK = 2
+MONTH = 3
+
 
 # 时间转换
 def str2date(date_str):
@@ -152,12 +156,8 @@ class DateType(Enum):
     date_type_trans type
     """
 
-    DAY = 1
-    WEEK = 2
-    MONTH = 3
 
-
-def date_type_trans(date, date_type=DateType.DAY, fmt="%Y%m%d"):
+def date_type_trans(date, date_type=DAY, fmt="%Y%m%d"):
     """
     周期时间格式化
     :param date: 时间字符串
@@ -165,11 +165,11 @@ def date_type_trans(date, date_type=DateType.DAY, fmt="%Y%m%d"):
     :param fmt: 时间字符串格式 默认 "%Y%m%d"
     :return: 周期字符串
     """
-    if date_type == DateType.DAY:
+    if date_type == DAY:
         return datetime.datetime.strptime(str(date), fmt).strftime("%Y-%m-%d")
-    if date_type == DateType.WEEK:
+    if date_type == WEEK:
         return get_week_str(date, fmt)
-    if date_type == DateType.MONTH:
+    if date_type == MONTH:
         return datetime.datetime.strptime(str(date), fmt).strftime("%Y年%m月")
     return date
 
