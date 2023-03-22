@@ -81,7 +81,7 @@ class MysqlDbPool(object):
 
 class MysqlOperation(object):
     """
-    中央服数据库操作
+    Mysql数据库操作
     """
 
     @staticmethod
@@ -107,28 +107,3 @@ class MysqlOperation(object):
         else:
             cursor.execute(sql, params)
         return cursor.fetchall()
-
-    def _mysql_get_all_server_ids(self, conn, status=""):
-        # 根据status筛选服务器
-        status_cond = "2, -1" if status == "all" else "2"
-        sql = """
-            SELECT id 
-            FROM svr_server 
-            WHERE is_pull = 1 
-            AND status IN ({status_cond}) 
-            ORDER BY game_addr
-        """.format(
-            status_cond=status_cond
-        )
-        result = self.get_mysql_all(sql, conn)
-        server_ids = []
-        for v in result:
-            server_ids.append(v[0])
-        return server_ids
-
-    def _mysql_get_ids(self, sql, conn):
-        result = self.get_mysql_all(sql, conn)
-        ids = []
-        for v in result:
-            ids.append(v[0])
-        return ids
