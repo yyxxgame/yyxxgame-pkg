@@ -7,21 +7,46 @@
 import pika
 
 
+def get_pika(config: dict):
+    """
+    获取pika_conn
+    :param config:
+    :return:
+    """
+
+    class Config(PikaConfig):
+        """
+        pika config
+        """
+
+        USER = config["user"]
+        PASSWORD = config["password"]
+        HOST = config["host"]
+        PORT = config["port"]
+        M_PORT = config["m_port"]
+        V_HOST = config["v_host"]
+        HEARTBEAT = config["heartbeat"]
+        TIMEOUT = config["timeout"]
+
+    return pika_conn(Config())
+
+
 class PikaConfig:
     """
     pika config
     """
+
     USER = None
     PASSWORD = None
     HOST = None
-    PORT = 5672
-    M_PORT = 15672
-    V_HOST = "/"
-    HEARTBEAT = 600
-    TIMEOUT = 3600
+    PORT = None
+    M_PORT = None
+    V_HOST = None
+    HEARTBEAT = None
+    TIMEOUT = None
 
 
-def connection(config):
+def pika_conn(config: PikaConfig):
     """
     获取rabbitmq 连接
     params: config: PikaConfig obj

@@ -8,10 +8,31 @@ import redis
 from yyxx_game_pkg.utils.decorator import singleton_unique
 
 
+def get_redis(config: dict):
+    """
+    缓存redis
+    :return:
+    """
+
+    class Config(RedisConfig):
+        """
+        redis config
+        """
+
+        HOST = config["host"]
+        PORT = config["port"]
+        DB = config["db"]
+        PASSWORD = config["password"]
+        OVERDUE_SECOND = config.get("overdue_second", 86400)
+
+    return RedisHelper(Config())
+
+
 class RedisConfig:
     """
     redis config
     """
+
     HOST = None
     PORT = None
     DB = None
@@ -21,8 +42,7 @@ class RedisConfig:
 
 @singleton_unique
 class RedisHelper:
-    def __init__(self, config):
-
+    def __init__(self, config: RedisConfig):
         connection_pool = redis.ConnectionPool(
             host=config.HOST, port=config.PORT, db=config.DB, password=config.PASSWORD
         )
