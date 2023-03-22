@@ -58,11 +58,90 @@ def func_business_on_set_attributes(**kwargs):
 ### stat
 `stat`模块包含yyxxgame内部统计业务的底层框架，目前包含`dispatch`、`submit`、`xcelery几个模块`
 #### dispatch
-业务分发基础模块
+> 业务分发基础模块
+- 配置文件
+`celery_config.py`
+
+- 代码入口`dispatch.py`
+```python
+from yyxx_game_pkg.stat.dispatch.dispatch import startup
+from yyxx_game_pkg.stat.xcelery.instance import app
+from tests.dispatch.rules import rules_auto_import
+
+if __name__ == "__main__":
+    # params
+    # --config /your/path/celery_config.py
+
+    # auto load rules
+    rules_auto_import()
+
+    # http server by fastapi
+    startup(port=8081, conf_jaeger=app.conf.get("JAEGER"))
+```
+
+- http调用示例
+```shell
+curl --request POST \
+  --url http://localhost:8081/submit \
+  --header 'content-type: application/json' \
+  --data '{
+    "content": 
+        {
+            "SCHEDULE_NAME": "schedule_test",
+            "SCHEDULE_DISPATCH_RULE_INSTANCE_NAME": "add",
+            "SCHEDULE_CONTENT": [
+                {
+                    "kwargs_list": [
+                        {
+                            "x": 1,
+                            "y": 2
+                        }
+                    ]
+                }
+            ],
+            "SCHEDULE_QUEUE_NAME": "queue_test"
+        }
+}
+```
+
 #### submit
-任务提交基础模块
+> 任务提交基础模块
+- 配置文件
+参考`submit.json`
+- 代码入口`submit.py`
+```python
+import json
+import sys
+from yyxx_game_pkg.stat.submit.submit import submit_schedule
+
+if __name__ == "__main__":
+    import os
+    conf_json = os.path.join(os.path.dirname(os.path.abspath(__file__)), "submit.json")
+
+    with open(conf_json, "r") as f:
+        conf = json.load(f)
+
+    # 参数配置获取
+    if len(sys.argv) > 1:
+        conf["schedule_name"] = sys.argv[1]
+
+    # 任务提交
+    res_list = submit_schedule(
+        conf["schedule_name"],
+        conf["register_path"],
+        conf["dispatch_host"],
+        conf["jaeger"],
+    )
+
+    for res in res_list:
+        print(f"{res.status_code}, {res.content}")
+```
+- 调用示例
+```shell
+python submit.py schedule_test
+```
 #### xcelery
-celery封装层
+celery基础封装层
 
 ## 生产环境配置
 python3环境中执行：
