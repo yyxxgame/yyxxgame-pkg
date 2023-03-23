@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2023/3/14
-from yyxx_game_pkg.stat.xcelery.instance import app
+from celery import current_app as app
 from yyxx_game_pkg.stat.xcelery.task_base import TaskCustomBase
 from yyxx_game_pkg.xtrace.helper import trace_span
 

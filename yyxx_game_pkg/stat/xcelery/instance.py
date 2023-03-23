@@ -52,8 +52,9 @@ class CeleryInstance:
         当前task id [如果有]
         :return:
         """
+        from celery import current_task
         try:
-            return app.current_task.request.id
+            return current_task.request.id
         finally:
             return -1
 

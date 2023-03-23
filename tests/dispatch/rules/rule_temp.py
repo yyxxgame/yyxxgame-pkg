@@ -5,7 +5,7 @@ from yyxx_game_pkg.stat.dispatch.core.manager import rule_register, RuleManager
 from yyxx_game_pkg.stat.dispatch.core.structs import ProtoSchedule
 from yyxx_game_pkg.stat.dispatch.core.workflows import WorkFlowMethods
 from yyxx_game_pkg.stat.dispatch.rules.rule_base import RuleBase
-from yyxx_game_pkg.stat.xcelery.instance import app
+from celery import current_app as app
 
 
 @rule_register(
