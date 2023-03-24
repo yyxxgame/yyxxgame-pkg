@@ -55,7 +55,8 @@ git clone https://github.com/yyxxgame/yyxxgame-pkg.git
 
 2.安装poetry
 ```shell
-curl -sSL https://install.python-poetry.org | python3
+- curl -sSL https://install.python-poetry.org | python3
+- export PATH="/root/.local/bin:$PATH"
 ```
 
 3.配置虚拟环境并激活
