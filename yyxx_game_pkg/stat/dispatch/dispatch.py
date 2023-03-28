@@ -23,4 +23,4 @@ def startup(port: int = 8080, conf_jaeger: dict = None):
 
         FastAPIInstrumentor.instrument_app(app)
 
-    uvicorn.run(app, port=port)
+    uvicorn.run(app, port=port, host="0.0.0.0")
