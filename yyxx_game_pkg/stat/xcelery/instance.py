@@ -33,10 +33,12 @@ class CeleryInstance:
         conf_jaeger = _app.conf.get("JAEGER")
         if conf_jaeger:
             from opentelemetry.instrumentation.celery import CeleryInstrumentor
+            from opentelemetry.instrumentation.requests import RequestsInstrumentor
             from yyxx_game_pkg.xtrace.helper import register_to_jaeger
 
             register_to_jaeger(**conf_jaeger)
             CeleryInstrumentor().instrument()
+            RequestsInstrumentor().instrument()
             root_log(f"<CeleryInstance> tracer on, jaeger:{conf_jaeger}")
 
         log_str = (
@@ -55,7 +57,7 @@ class CeleryInstance:
         from celery import current_task
         try:
             return current_task.request.id
-        finally:
+        except:
             return -1
 
     # endregion
