@@ -99,25 +99,29 @@ def split_list(pending_lst, split_size=50000) -> list:
     return data_list
 
 
-def trans_unsupported_types(val):
+def split_list_ex(target_list, res_len):
     """
-    转化json.dumps不支持的数据类型 : int64, bytes, ...
-    :param val:
-    :return:
+    把target_list分割成若干个小list（间隔切割）
+    :param target_list: [1, 2, 3, 4, 5, 6]
+    :param res_len: 3
+    :return: [[1,4], [2,5], [3,6]]
     """
-    if isinstance(val, dict):
-        new_dict = {}
-        for k, _v in val.items():
-            k = trans_unsupported_types(k)
-            _v = trans_unsupported_types(_v)
-            new_dict[k] = _v
-        return new_dict
-    if isinstance(val, list):
-        for idx, _v in enumerate(val):
-            _v = trans_unsupported_types(_v)
-            val[idx] = _v
-    elif isinstance(val, np.int64):
-        val = int(val)
-    elif isinstance(val, bytes):
-        val = val.decode(encoding="utf8")
-    return val
+    if not isinstance(target_list, list):
+        return []
+
+    if res_len <= 0:
+        return [[]]
+
+    target_list_len = len(target_list)
+    if res_len >= target_list_len:
+        return [target_list]
+    split_parts_len = target_list_len / res_len + (1 if target_list_len % res_len > 0 else 0)
+
+    res_list = []
+    for x in range(split_parts_len):
+        res_list.append([])
+
+    for idx, val in enumerate(target_list):
+        res_list[(idx % split_parts_len)].append(val)
+
+    return res_list
