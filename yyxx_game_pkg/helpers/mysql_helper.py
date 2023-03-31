@@ -6,7 +6,7 @@
 """
 import pymysql
 from dbutils.pooled_db import PooledDB
-from yyxx_game_pkg.utils.decorator import except_monitor, log_execute_time_monitor
+from yyxx_game_pkg.utils.decorator import except_monitor, log_execute_time_monitor, singleton_unique
 from yyxx_game_pkg.logger.log import root_log
 
 
@@ -40,18 +40,10 @@ class MysqlConfig:
         )
 
 
+@singleton_unique
 class MysqlDbPool(object):
-    DB_POOL = None
-    _instance = None
-
-    def __new__(cls, *args, **kw):
-        if not cls._instance:
-            cls._instance = object.__new__(MysqlDbPool)
-        return cls._instance
 
     def __init__(self, config: MysqlConfig):
-        if self.DB_POOL:
-            return
         self.DB_POOL = PooledDB(
             creator=pymysql,
             maxcached=10,
