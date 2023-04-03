@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2023/3/15
+from yyxx_game_pkg.utils.xdate import split_date_str_by_day
 from yyxx_game_pkg.logger.log import root_log
 
 
@@ -107,7 +108,7 @@ def _parse_proto_dict(proto_dict):
         date_interval = step_schedule_content.get("day_interval")
         if date_interval and date_interval == "SPLIT_DATE_BY_DAY":
             date_appoint = step_schedule_content["date_appoint"]
-            date_list = _split_date_str_by_day(date_appoint[0], date_appoint[1])
+            date_list = split_date_str_by_day(date_appoint[0], date_appoint[1])
             for date_offset in date_list:
                 content_k_v = dict()
                 content_k_v["date_appoint"] = ""
@@ -141,32 +142,6 @@ def _modify_proto_content(schedule_content, content_key_value):
                             c[con_key] = con_value
                 temp_list.append(content)
             content_dict[key] = temp_list
-
-
-def _split_date_str_by_day(sdate_str, edate_str, day_slice=1):
-    res_list = []
-    if not sdate_str or not edate_str:
-        return res_list
-
-    # 按时间分配(天数)
-    import datetime
-
-    interval = datetime.timedelta(days=day_slice)
-    start_dt = datetime.datetime.strptime(sdate_str, "%Y-%m-%d %H:%M:%S")
-    edate_str = edate_str.replace("00:00:00", "23:59:59")
-    end_dt = datetime.datetime.strptime(edate_str, "%Y-%m-%d %H:%M:%S")
-    offset = datetime.timedelta(seconds=1)
-    while start_dt < end_dt:
-        next_dt = min((start_dt + interval - offset), end_dt)
-        res_list.append(
-            {
-                "sdate": start_dt.strftime("%Y-%m-%d %H:%M:%S"),
-                "edate": next_dt.strftime("%Y-%m-%d %H:%M:%S"),
-            }
-        )
-        start_dt = next_dt + offset
-
-    return res_list
 
 
 # endregion

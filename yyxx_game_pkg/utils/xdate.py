@@ -32,7 +32,9 @@ def str2date(date_str):
     if len(date_str) == 19:
         # 常用时间格式 2023-01-01 00:00:00
         return datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-    iso_regex = r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d{1,6})?([+-]\d{2}:\d{2})?$"
+    iso_regex = (
+        r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d{1,6})?([+-]\d{2}:\d{2})?$"
+    )
     if re.match(iso_regex, date_str.replace("Z", "+00:00")):
         # 符合iso格式的时间字符串 2022-03-08T16:30:00.000Z or 2023-03-08T20:45:17+08:00
         return datetime.datetime.fromisoformat(date_str)
@@ -151,12 +153,6 @@ def get_week_str(date, fmt="%Y%m%d"):
     return f"{sday}~{eday}"
 
 
-class DateType(Enum):
-    """
-    date_type_trans type
-    """
-
-
 def date_type_trans(date, date_type=DAY, fmt="%Y%m%d"):
     """
     周期时间格式化
@@ -186,3 +182,30 @@ def to_start_of_interval(_t: datetime.datetime, unit="minute", interval=5):
         fix = _t.hour - _t.hour % interval
         _t = _t.replace(hour=fix, minute=0, second=0, microsecond=0)
     return _t
+
+
+def split_date_str_by_day(sdate_str, edate_str, day_slice=1):
+    """
+    split_date_str_by_day
+    """
+    res_list = []
+    if not sdate_str or not edate_str:
+        return res_list
+
+    # 按时间分配(天数)
+    interval = datetime.timedelta(days=day_slice)
+    start_dt = datetime.datetime.strptime(sdate_str, "%Y-%m-%d %H:%M:%S")
+    edate_str = edate_str.replace("00:00:00", "23:59:59")
+    end_dt = datetime.datetime.strptime(edate_str, "%Y-%m-%d %H:%M:%S")
+    offset = datetime.timedelta(seconds=1)
+    while start_dt < end_dt:
+        next_dt = min((start_dt + interval - offset), end_dt)
+        res_list.append(
+            {
+                "sdate": start_dt.strftime("%Y-%m-%d %H:%M:%S"),
+                "edate": next_dt.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
+        start_dt = next_dt + offset
+
+    return res_list
