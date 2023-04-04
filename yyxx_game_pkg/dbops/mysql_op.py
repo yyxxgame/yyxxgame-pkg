@@ -11,7 +11,7 @@ from yyxx_game_pkg.utils import xListStr
 
 class MysqlOperation(DatabaseOperation):
     """
-    Mysql数据库操作
+    Mysql数据库操作 
     """
 
     def execute(self, sql, conn, params=None):
