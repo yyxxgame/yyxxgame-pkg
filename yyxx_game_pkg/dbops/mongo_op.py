@@ -17,8 +17,7 @@ class MongoOperation(DatabaseOperation):
 
     @except_monitor
     @log_execute_time_monitor()
-    def get_one(self, sql, mongo_url, game_db):
-        sql = sql.replace("[game_db]", game_db)
+    def get_one(self, sql, mongo_url):
         res_df = DasApi.mongo_query(self.das_url, {"sql": sql, "server": mongo_url})
         if res_df is None:
             return pd.DataFrame()
@@ -26,9 +25,7 @@ class MongoOperation(DatabaseOperation):
 
     @except_monitor
     @log_execute_time_monitor()
-    def get_all(self, sql, mongo_url, game_db, cross_a_db):
-        sql = sql.replace("[crossA_db]", cross_a_db)
-        sql = sql.replace("[game_db]", game_db)
+    def get_all(self, sql, mongo_url):
         res_df = DasApi.mongo_query(self.das_url, {"sql": sql, "server": mongo_url})
         if res_df is None:
             return pd.DataFrame()
