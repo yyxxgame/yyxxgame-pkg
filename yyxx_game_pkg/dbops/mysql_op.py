@@ -76,7 +76,7 @@ class MysqlOperation(DatabaseOperation):
         :param connection:
         :return:
         """
-        pd.read_sql(sql, connection)
+        return pd.read_sql(sql, connection)
 
     def insert(self, conn, save_table, results):
         """
