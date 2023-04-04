@@ -17,7 +17,7 @@ class MongoOperation(DatabaseOperation):
 
     @except_monitor
     @log_execute_time_monitor()
-    def get_one(self, sql, mongo_url):
+    def get_one_df(self, sql, mongo_url):
         res_df = DasApi.mongo_query(self.das_url, {"sql": sql, "server": mongo_url})
         if res_df is None:
             return pd.DataFrame()
@@ -25,7 +25,7 @@ class MongoOperation(DatabaseOperation):
 
     @except_monitor
     @log_execute_time_monitor()
-    def get_all(self, sql, mongo_url):
+    def get_all_df(self, sql, mongo_url):
         res_df = DasApi.mongo_query(self.das_url, {"sql": sql, "server": mongo_url})
         if res_df is None:
             return pd.DataFrame()
