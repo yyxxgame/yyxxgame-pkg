@@ -14,6 +14,21 @@ class MysqlOperation(DatabaseOperation):
     Mysql数据库操作
     """
 
+    def execute(self, sql, conn, params=None):
+        """
+        执行sql返回处理结果
+        :param sql:
+        :param conn:
+        :param params:
+        :return:
+        """
+        cursor = conn.cursor()
+        if params is None:
+            cursor.execute(sql)
+        else:
+            cursor.execute(sql, params)
+        return cursor.submit()
+
     def get_one(self, sql, conn, params=None):
         """
         查询一条数据, 返回元组结构

@@ -69,33 +69,3 @@ class MysqlDbPool(object):
         :return:
         """
         self.DB_POOL.close()
-
-
-class MysqlOperation(object):
-    """
-    Mysql数据库操作
-    """
-
-    @staticmethod
-    def get_mysql_one(sql, conn, params=None):
-        """
-        查询一条数据, 返回元组结构
-        """
-        cursor = conn.cursor()
-        if params is None:
-            cursor.execute(sql)
-        else:
-            cursor.execute(sql, params)
-        return cursor.fetchone()
-
-    @staticmethod
-    def get_mysql_all(sql, conn, params=None):
-        """
-        查询多条数据，返回list(元组) 结构
-        """
-        cursor = conn.cursor()
-        if params is None:
-            cursor.execute(sql)
-        else:
-            cursor.execute(sql, params)
-        return cursor.fetchall()
