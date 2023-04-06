@@ -35,7 +35,7 @@ class MysqlConfig:
     CHARSET = None
 
     def __str__(self):
-        return "host:{},port:{}, db:{},use_unicode:{},charset:{}".format(
+        return "host:{},port:{},db:{},use_unicode:{},charset:{}".format(
             self.HOST, self.PORT, self.DB, self.USE_UNICODE, self.CHARSET
         )
 

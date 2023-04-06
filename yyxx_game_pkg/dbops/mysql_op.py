@@ -40,7 +40,7 @@ class MysqlOperation(DatabaseOperation):
             cursor.execute(sql)
         else:
             cursor.execute(sql, params)
-        return cursor.submit()
+        return conn.submit()
 
     def get_one(self, sql, conn, params=None):
         """
