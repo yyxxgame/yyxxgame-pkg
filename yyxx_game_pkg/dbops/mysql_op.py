@@ -22,6 +22,19 @@ class MysqlOperation(DatabaseOperation):
         :param params:
         :return:
         """
+        # todo with statement ltw
+        # with connection:
+        #     with connection.cursor() as cursor:
+        #         # Read a single record
+        #         sql = f"""
+        #             SELECT id, create_time, name
+        #             FROM svr_server
+        #             WHERE is_pull = 1
+        #             AND id = {sid}
+        #             ORDER BY game_addr
+        #         """
+        #         cursor.execute(sql)
+        #         cursor.fetchall()
         cursor = conn.cursor()
         if params is None:
             cursor.execute(sql)
