@@ -4,6 +4,7 @@
 @Author: ltw
 @Time: 2022/8/4
 """
+import functools
 import json
 from bisect import bisect_left
 import pandas as pd
@@ -83,22 +84,29 @@ def df_cut_bins(_df, key, bins, insert_zero=True):
     return _df[key].apply(cut_bins, bins=bins)
 
 
-def cal_round_rate(data, precision=2, suffix="%"):
+def cal_round_rate(data, precision=2, suffix="%", invalid_value="-"):
     """
     :param data:
     :param precision:
     :param suffix:
+    :param invalid_value:
     :return:
     """
     if isinstance(data, pd.DataFrame):
         return data.apply(cal_round_rate, args=(precision, suffix), axis=0)
     if isinstance(data, pd.Series):
-        return data.round(precision).apply(
-            lambda d: "-" if (d == np.inf or np.isnan(d)) else f"{d}{suffix}"
-        )
+        if precision == 0:
+            data = data.astype(int)
+        else:
+            data = data.astype(float).round(precision)
+        return data.apply(lambda d: invalid_value if (d == np.inf or np.isnan(d)) else f"{d}{suffix}")
     if isinstance(data, (int, float)):
-        return str(round(data, 2)) + suffix
-    return "-"
+        if np.isnan(data) or data == np.inf:
+            return invalid_value
+        if precision == 0:
+            return str(int(data)) + suffix
+        return str(round(data, precision)) + suffix
+    return invalid_value
 
 
 def func_cal_round_rate(func, **kw):
@@ -109,6 +117,7 @@ def func_cal_round_rate(func, **kw):
     :return:
     """
 
+    @functools.wraps(func)
     def wrapper(data, *args, **kwargs):
         if isinstance(func, str):
             data = getattr(data, func)()
