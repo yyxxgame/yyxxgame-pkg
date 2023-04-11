@@ -18,7 +18,7 @@ def get_dbpool(config: dict):
         USER = config["user"]
         PASSWD = config["password"]
         DB = config["db"]
-        USE_UNICODE = config.get("use_unicode", False)
+        USE_UNICODE = config.get("use_unicode", True)
         CHARSET = config.get("charset", "utf8")
 
     return MysqlDbPool(Config())
