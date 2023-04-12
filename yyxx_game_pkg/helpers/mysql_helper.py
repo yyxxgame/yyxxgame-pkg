@@ -20,6 +20,8 @@ def get_dbpool(config: dict):
         DB = config["db"]
         USE_UNICODE = config.get("use_unicode", True)
         CHARSET = config.get("charset", "utf8")
+        MAX_CACHED = config.get("maxcached", 0)
+        MAX_CONNECTIONS = config.get("maxconnections", 0)
 
     return MysqlDbPool(Config())
 
@@ -33,10 +35,12 @@ class MysqlConfig:
     DB = None
     USE_UNICODE = None
     CHARSET = None
+    MAX_CACHED = None
+    MAX_CONNECTIONS = None
 
     def __str__(self):
-        return "host:{},port:{},db:{},use_unicode:{},charset:{}".format(
-            self.HOST, self.PORT, self.DB, self.USE_UNICODE, self.CHARSET
+        return "host:{},port:{},db:{},use_unicode:{},charset:{},max_cache:{},max_connections:{}".format(
+            self.HOST, self.PORT, self.DB, self.USE_UNICODE, self.CHARSET, self.MAX_CACHED, self.MAX_CONNECTIONS
         )
 
 
@@ -46,7 +50,8 @@ class MysqlDbPool(object):
     def __init__(self, config: MysqlConfig):
         self.DB_POOL = PooledDB(
             creator=pymysql,
-            maxcached=10,
+            maxcached=config.MAX_CACHED,
+            maxconnections=config.MAX_CONNECTIONS,
             host=config.HOST,
             port=config.PORT,
             user=config.USER,
