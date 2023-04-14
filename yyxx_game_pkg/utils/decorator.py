@@ -131,6 +131,21 @@ def singleton_unique(cls):
     return get_instance
 
 
+def singleton_unique_obj_args(cls):
+    # object 需重写 __str__
+    instances = {}
+
+    @functools.wraps(cls)
+    def get_instance(*args, **kw):
+
+        unique_key = f"{cls}_{list(map(str, args))}_{kw}"
+        if unique_key not in instances:
+            instances[unique_key] = cls(*args, **kw)
+        return instances[unique_key]
+
+    return get_instance
+
+
 def timeout_run(timeout=2, default=None):
     def decorator(func):
         @functools.wraps(func)

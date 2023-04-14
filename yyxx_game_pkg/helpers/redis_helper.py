@@ -5,7 +5,7 @@
 @Time: 2023/3/9
 """
 import redis
-from yyxx_game_pkg.utils.decorator import singleton_unique
+from yyxx_game_pkg.utils.decorator import singleton_unique_obj_args
 
 
 def get_redis(config: dict):
@@ -39,8 +39,13 @@ class RedisConfig:
     PASSWORD = None
     OVERDUE_SECOND = 86400
 
+    def __str__(self):
+        return "host:{}, port:{}, db:{}, OVERDUE_SECOND:{}".format(
+            self.HOST, self.PORT, self.DB, self.OVERDUE_SECOND
+        )
 
-@singleton_unique
+
+@singleton_unique_obj_args
 class RedisHelper:
     def __init__(self, config: RedisConfig):
         connection_pool = redis.ConnectionPool(
