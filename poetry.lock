@@ -718,6 +718,30 @@ instruments = ["celery (>=4.0,<6.0)"]
 test = ["importlib-metadata (==4.13.0)", "opentelemetry-instrumentation-celery[instruments]", "opentelemetry-test-utils (==0.37b0)", "pytest"]
 
 [[package]]
+name = "opentelemetry-instrumentation-django"
+version = "0.37b0"
+description = "OpenTelemetry Instrumentation for Django"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "opentelemetry_instrumentation_django-0.37b0-py3-none-any.whl", hash = "sha256:3a15b9baec1d595497d79eae01bacc515da4a67ae7e9d369eec50359f5194195"},
+    {file = "opentelemetry_instrumentation_django-0.37b0.tar.gz", hash = "sha256:84c151661ecf74996c0d7d237e2d37db45acbc4c0b28b634e946889cf5a533f7"},
+]
+
+[package.dependencies]
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.37b0"
+opentelemetry-instrumentation-wsgi = "0.37b0"
+opentelemetry-semantic-conventions = "0.37b0"
+opentelemetry-util-http = "0.37b0"
+
+[package.extras]
+asgi = ["opentelemetry-instrumentation-asgi (==0.37b0)"]
+instruments = ["django (>=1.10)"]
+test = ["opentelemetry-instrumentation-django[instruments]", "opentelemetry-test-utils (==0.37b0)"]
+
+[[package]]
 name = "opentelemetry-instrumentation-fastapi"
 version = "0.37b0"
 description = "OpenTelemetry FastAPI Instrumentation"
@@ -761,6 +785,27 @@ opentelemetry-util-http = "0.37b0"
 [package.extras]
 instruments = ["requests (>=2.0,<3.0)"]
 test = ["httpretty (>=1.0,<2.0)", "opentelemetry-instrumentation-requests[instruments]", "opentelemetry-test-utils (==0.37b0)"]
+
+[[package]]
+name = "opentelemetry-instrumentation-wsgi"
+version = "0.37b0"
+description = "WSGI Middleware for OpenTelemetry"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "opentelemetry_instrumentation_wsgi-0.37b0-py3-none-any.whl", hash = "sha256:998d295ea4d55d66c557e057209e7b3e97a3dfb3b4b5764347f434875f9692ff"},
+    {file = "opentelemetry_instrumentation_wsgi-0.37b0.tar.gz", hash = "sha256:88b93d198110f4d70a70f3cd4ec8354c1373745dc3b7eac10b69041a443673fe"},
+]
+
+[package.dependencies]
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.37b0"
+opentelemetry-semantic-conventions = "0.37b0"
+opentelemetry-util-http = "0.37b0"
+
+[package.extras]
+test = ["opentelemetry-test-utils (==0.37b0)"]
 
 [[package]]
 name = "opentelemetry-sdk"
@@ -1380,4 +1425,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8, <4"
-content-hash = "1c2acdca874129a4c66ec9150b7757fded3ae0bdebcc42544c8e8fa79f60ea60"
+content-hash = "c4efd7ff7d69baa529b21a12272e06bd584e3cf9222b43f761923dec39b5b68c"
