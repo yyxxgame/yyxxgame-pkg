@@ -88,6 +88,8 @@ def split_list(pending_lst, split_size=50000) -> list:
         return pending_lst
     if not isinstance(pending_lst[0], (list, tuple)):
         pending_lst = [pending_lst]
+    if split_size == -1:
+        return pending_lst
     base_num = split_size
     result = pending_lst[0]
     size = len(result) / base_num
