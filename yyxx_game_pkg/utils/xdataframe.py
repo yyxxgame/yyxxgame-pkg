@@ -131,6 +131,8 @@ def func_cal_round_rate(func, **kw):
 def dict_to_json(data):
     """用于es对象转json,并且正常显示中文"""
     if not data:
+        if not isinstance(data, (str, bytes)):
+            data = str(data)
         return data
     if isinstance(data, float) and pd.isna(data):
         return ""
