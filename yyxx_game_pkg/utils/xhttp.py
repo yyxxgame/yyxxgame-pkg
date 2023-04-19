@@ -75,14 +75,14 @@ def set_params(params=None):
     return urllib.parse.urlencode(params_list)
 
 
-def http_push_server(url, data):
+def http_push_server(url, data, server_api_key):
     """
     单服推送
     :param url:
     :param data:
+    :param server_api_key:
     :return:
     """
-    server_api_key = current_app.conf.SERVER_API_KEY
     if not url:
         local_log(f"Error http_push_server url: {url}  data: {json.dumps(data)}")
         return None
