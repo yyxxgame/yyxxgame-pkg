@@ -29,6 +29,8 @@ def log_execute_time_monitor(exec_lmt_time=20):
     """
 
     def decorator(func):
+
+        @functools.wraps(func)
         def inner(*args, **kwargs):
 
             begin_dt = time.time()
