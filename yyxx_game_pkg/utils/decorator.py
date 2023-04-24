@@ -4,21 +4,23 @@
 @Author: ltw
 @Time: 2022/8/4
 """
+import functools
+import pickle
+import random
 import time
 import traceback
-import random
-import pickle
-import functools
 from concurrent import futures
+
 from yyxx_game_pkg.logger.log import root_log
+from yyxx_game_pkg.xtrace.helper import get_current_trace_id
 
 
 def fix_str(obj, max_len=5000):
     """
-    切割过长str, 避免打印过多无用信息 
+    切割过长str, 避免打印过多无用信息
     """
     msg = str(obj)
-    return msg[0: min(len(msg), max_len)]
+    return msg[0 : min(len(msg), max_len)]
 
 
 def log_execute_time_monitor(exec_lmt_time=20):
@@ -29,10 +31,8 @@ def log_execute_time_monitor(exec_lmt_time=20):
     """
 
     def decorator(func):
-
         @functools.wraps(func)
         def inner(*args, **kwargs):
-
             begin_dt = time.time()
             res = func(*args, **kwargs)
             end_dt = time.time()
@@ -46,8 +46,10 @@ def log_execute_time_monitor(exec_lmt_time=20):
                     _args.append(fix_str(_arg, 100))
                 for k, _v in kwargs.items():
                     kwargs[k] = fix_str(_v, 100)
+                trace_id = get_current_trace_id()
                 root_log(
-                    f"<log_execute_time_monitor>func <<{func.__name__}>> deal over time "
+                    f"<log_execute_time_monitor> trace_id: {trace_id} "
+                    f"func <<{func.__name__}>> deal over time "
                     f"begin_at: {begin_dt} end_at: {end_dt}, sec: {offset}"
                     f"ex_info{ex_info}, params: {str(args)}, {str(kwargs)}"
                 )
@@ -76,8 +78,9 @@ def except_monitor(func):
                 _args.append(fix_str(_arg, 100))
             for k, _v in kwargs.items():
                 kwargs[k] = fix_str(_v, 100)
+            trace_id = get_current_trace_id()
             root_log(
-                f"<except_monitor> "
+                f"<except_monitor> trace_id: {trace_id} "
                 f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
                 f"exc: {traceback.format_exc()} {e}"
             )
@@ -120,7 +123,6 @@ def singleton(cls):
 
 
 def singleton_unique(cls):
-
     instances = {}
 
     @functools.wraps(cls)
@@ -139,7 +141,6 @@ def singleton_unique_obj_args(cls):
 
     @functools.wraps(cls)
     def get_instance(*args, **kw):
-
         unique_key = f"{cls}_{list(map(str, args))}_{kw}"
         if unique_key not in instances:
             instances[unique_key] = cls(*args, **kw)
