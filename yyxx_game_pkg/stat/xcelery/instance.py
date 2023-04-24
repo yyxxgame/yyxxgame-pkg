@@ -36,6 +36,8 @@ class CeleryInstance:
             from opentelemetry.instrumentation.requests import RequestsInstrumentor
             from yyxx_game_pkg.xtrace.helper import register_to_jaeger
 
+            conf_jaeger["service_name"] += f"-{celery_name}"
+
             register_to_jaeger(**conf_jaeger)
             CeleryInstrumentor().instrument()
             RequestsInstrumentor().instrument()
@@ -55,6 +57,7 @@ class CeleryInstance:
         :return:
         """
         from celery import current_task
+
         try:
             return current_task.request.id
         except:
@@ -75,6 +78,7 @@ class CeleryInstance:
         parser.add_argument("-n", "--name")
         args = parser.parse_known_args()
         return args[0]
+
     # endregion
 
 
