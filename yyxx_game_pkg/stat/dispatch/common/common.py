@@ -5,7 +5,7 @@ import functools
 
 from fastapi.exceptions import HTTPException
 
-from yyxx_game_pkg.stat.dispatch.common.log import local_log
+from yyxx_game_pkg.stat.log import local_log
 from yyxx_game_pkg.xtrace.helper import get_current_trace_id, add_span_events
 
 

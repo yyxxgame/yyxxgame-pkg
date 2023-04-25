@@ -4,7 +4,7 @@
 import traceback
 
 from yyxx_game_pkg.stat.dispatch.common.common import fastapi_except_monitor
-from yyxx_game_pkg.stat.dispatch.common.log import local_log
+from yyxx_game_pkg.stat.log import local_log
 from yyxx_game_pkg.stat.dispatch.core.manager import RuleManager
 from yyxx_game_pkg.stat.dispatch.core.structs import ProtoSchedule
 from yyxx_game_pkg.stat.dispatch.core.workflows import WorkFlowMethods

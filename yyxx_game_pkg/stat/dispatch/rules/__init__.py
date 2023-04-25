@@ -4,7 +4,7 @@
 import os
 import importlib
 from os.path import dirname
-from yyxx_game_pkg.stat.dispatch.common.log import local_log
+from yyxx_game_pkg.stat.log import local_log
 
 
 def rules_auto_import():

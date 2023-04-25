@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2023/3/14
-from yyxx_game_pkg.stat.dispatch.common.log import local_log
+from yyxx_game_pkg.stat.log import local_log
 from yyxx_game_pkg.stat.dispatch.core.manager import rule_register
 from yyxx_game_pkg.stat.dispatch.core.workflows import WorkFlowMethods
 from yyxx_game_pkg.stat.dispatch.logic.task_logic import parse_task
