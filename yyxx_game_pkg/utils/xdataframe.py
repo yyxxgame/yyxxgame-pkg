@@ -95,6 +95,7 @@ def cal_round_rate(data, precision=2, suffix="%", invalid_value="-"):
     if isinstance(data, pd.DataFrame):
         return data.apply(cal_round_rate, args=(precision, suffix), axis=0)
     if isinstance(data, pd.Series):
+        data = data.fillna(invalid_value)
         if precision == 0:
             data = data.astype(int)
         else:
@@ -148,6 +149,8 @@ def df_json_normalize(_df, columns, prefixes=None, sep=".", column_prefix=False)
     column_prefix: 使用字段名作为前缀
     """
     for idx, record_column in enumerate(columns):
+        if record_column not in _df.columns:
+            continue
         tmp_df = pd.DataFrame(_df[record_column].tolist())
         record_prefix = None
         if column_prefix:
