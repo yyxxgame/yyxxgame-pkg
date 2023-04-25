@@ -36,7 +36,8 @@ class CeleryInstance:
             from opentelemetry.instrumentation.requests import RequestsInstrumentor
             from yyxx_game_pkg.xtrace.helper import register_to_jaeger
 
-            conf_jaeger["service_name"] += f"-{celery_name}"
+            if celery_name:
+                conf_jaeger["service_name"] += f"-{celery_name}"
 
             register_to_jaeger(**conf_jaeger)
             CeleryInstrumentor().instrument()
