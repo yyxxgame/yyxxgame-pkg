@@ -95,7 +95,7 @@ def cal_round_rate(data, precision=2, suffix="%", invalid_value="-"):
     if isinstance(data, pd.DataFrame):
         return data.apply(cal_round_rate, args=(precision, suffix), axis=0)
     if isinstance(data, pd.Series):
-        if invalid_value.isdigit():
+        if str(invalid_value).isdigit():
             data = data.fillna(invalid_value)
         if precision == 0:
             data = data.astype(int)
