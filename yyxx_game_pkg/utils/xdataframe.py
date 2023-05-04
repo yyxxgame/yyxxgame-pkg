@@ -152,7 +152,7 @@ def df_json_normalize(_df, columns, prefixes=None, sep=".", column_prefix=False)
     for idx, record_column in enumerate(columns):
         if record_column not in _df.columns:
             continue
-        tmp_df = pd.DataFrame(_df[record_column].tolist())
+        tmp_df = pd.DataFrame(_df[record_column].apply(fill_dict).tolist())
         record_prefix = None
         if column_prefix:
             record_prefix = record_column
@@ -212,3 +212,13 @@ def df_rm_columns(_df, columns):
         if rm_columns:
             _df = _df.drop(columns=rm_columns)
     return _df
+
+
+def fill_dict(data):
+    """填充{}到nan"""
+    return {} if not isinstance(data, dict) and pd.isna(data) else data
+
+
+def fill_list(data):
+    """填充[]到nan"""
+    return [] if not isinstance(data, list) and pd.isna(data) else data
