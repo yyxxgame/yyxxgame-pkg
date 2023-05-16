@@ -222,3 +222,49 @@ def fill_dict(data):
 def fill_list(data):
     """填充[]到nan"""
     return [] if not isinstance(data, list) and pd.isna(data) else data
+
+
+def df_expand_labels(_df, key, bins, insert_zero=True):
+    """
+    # money_df ####
+    # player_id, money
+    # 19296,  8
+    # 21169,  8
+    # 24003,  98
+    # 25016,  2
+    # 25254,  2
+    money_df[["money_label", "label_rank"]] = df_expand_labels(
+        money_df, "money", bins=[0, 8, 41, 267, 500, 1000, 2000, 5000, 10000, 20000, 30000, 50000, 999999]
+    ) =>
+    # player_id, money, money_label, label_rank
+    # 19296,    8,  1-8,    8
+    # 21169,    8,  1-8,    8
+    # 24003,    98, 1-8,    8
+    # 25016,    2,  1-8,    8
+    # 25254,    2,  42-267, 267
+    insert_zero : 是否在bins最前面插入0
+    :return:
+    """
+
+    def prefix_bins(_bins):
+        _bins = sorted(map(int, _bins))
+        if insert_zero and _bins[0] != 0:
+            _bins.insert(0, 0)
+        return _bins
+
+    bins = prefix_bins(bins)
+    concat = "-"
+
+    def cut_bins(row):
+        val = row[key]
+        if not val:
+            return val
+
+        if val > bins[-1]:
+            val = bins[-1]
+
+        position = bisect_left(bins, val)
+        labels = f"{bins[position - 1] + 1}{concat}{bins[position]}"
+        return labels, bins[position]
+
+    return _df.apply(cut_bins, axis=1, result_type="expand")
