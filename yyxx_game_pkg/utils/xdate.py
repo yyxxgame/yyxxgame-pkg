@@ -117,6 +117,9 @@ def delta_dt_day(date, delta=0, end=0):
         return date2dt_day_end(date) + datetime.timedelta(days=delta)
     return date2dt_day(date) + datetime.timedelta(days=delta)
 
+def add_days(date, delta, end=0):
+    return delta_dt_day(date, delta, end)
+
 
 def date2stamp(dt_date):
     """
