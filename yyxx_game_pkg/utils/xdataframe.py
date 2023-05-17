@@ -268,3 +268,37 @@ def df_expand_labels(_df, key, bins, insert_zero=True):
         return labels, bins[position]
 
     return _df.apply(cut_bins, axis=1, result_type="expand")
+
+
+def div_rate(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Series:
+    """
+    dataframe div函数计算百分比
+    example:
+        data_df["pay_rate"] = div_rate(data_df, "pid_cnt", "act_player_cnt")
+    :return:
+    """
+    return (
+        data_df[top_key]
+        .div(data_df[bottom_key], axis=0)
+        .round(precision + 2)
+        .apply(lambda x: f"{round(x * 100, precision) }%")
+    )
+
+
+def concat_cols(data_df: pd.DataFrame, cols: list, concat_by="|") -> pd.Series:
+    """
+    合将列，汇总后的列为：recharge_cnt|recharge_type_id
+    example:
+        data_df["show_pid_cnt"] = concat_cols(data_df, ["pid_cnt", "pid_rate"]) -> 98|10.0%
+    """
+    res = None
+    for col in cols:
+        if res is None:
+            res = data_df[col].astype(str)
+        else:
+            res = res + data_df[col].astype(str)
+        if col == cols[-1]:
+            continue
+        res = res + concat_by
+    return res
+
