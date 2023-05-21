@@ -66,6 +66,39 @@ git clone https://github.com/yyxxgame/yyxxgame-pkg.git
 - poetry shell
 ```
 
+4.添加包
+
+关于`poetry`的使用，参考文档：[http://yydocs.yyxxgame.com/web/#/183/1758](http://yydocs.yyxxgame.com/web/#/183/1758)
+
+```shell
+- poetry add numpy  # 基本使用
+- poetry add numpy --optional  # 添加额外包（针对项目单独使用的包）
+```
+> 如果使用`--optional`，需要手动修改`pyproject.toml`文件
+>   - 1.在`[tool.poetry.extras]`增加相应`extra`分组和包
+>   - 2.命令行`poetry lock`更新`poetry.lock`文件
+>   - 3.命令行`poetry install -E center_api`安装`optional`中的包
+
+```toml
+# example
+[tool.poetry.extras]
+center_api = ["flask", "numpy"]
+stat = ["pandas", "numpy"]
+```
+
+5.安装依赖
+```shell
+# 开发 yyxxgame-pkg 安装依赖
+# 安装基础依赖，以及额外center_api依赖
+- poetry install -E stat
+- poetry install -E stat -E center_api  # 安装多个额外依赖
+- poetry install --extras "stat center_api"
+
+# 项目中使用 yyxxgame-pkg 安装依赖
+- poetry add yyxx-game-pkg[stat]
+- pip install yyxx-game-pkg[stat]
+```
+
 ### 文件目录说明
 ```
 yyxxgame-pkg 
