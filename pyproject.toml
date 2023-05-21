@@ -24,21 +24,41 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.8, <4"
 toml = "^0.10.2"
+
 opentelemetry-api = "^1.16.0"
-opentelemetry-exporter-jaeger = "^1.16.0"
 opentelemetry-sdk = "^1.16.0"
+opentelemetry-exporter-jaeger = "^1.16.0"
 opentelemetry-instrumentation-requests = "^0.37b0"
-requests = "^2.28.2"
-line-profiler = "^4.0.3"
-celery = "^5.2.7"
-fastapi = "^0.94.0"
-uvicorn = "^0.21.0"
-redis = "^4.5.1"
 opentelemetry-instrumentation-fastapi = "0.37b.0"
-pika = "^1.3.1"
-pymysql = "^1.0.2"
-dbutils = "^3.0.2"
 opentelemetry-instrumentation-celery = "0.37b0"
+line-profiler = "^4.0.3"
+
+redis = "^4.5.1"
+pymysql = "^1.0.2"
+pika = "^1.3.1"
+dbutils = "^3.0.2"
 ujson = "^5.7.0"
+
+requests = "^2.28.2"
+celery = "^5.2.7"
+uvicorn = "^0.21.0"
 pandas = "^1.5.3"
-opentelemetry-instrumentation-django = "0.37b0"
+pycryptodome = "^3.17"
+
+fastapi = {version = "^0.94.0", optional = true}
+
+pillow = {version = "^9.5.0", optional = true}
+filetype = {version = "^1.2.0", optional = true}
+django = {version = "^4.2.1", optional = true}
+flask = {version = "^2.3.2", optional = true}
+cookiecutter = {version = "^2.1.1", optional = true}
+
+[tool.poetry.extras]
+stat = ["fastapi"]
+server_center = ["django", "pillow", "filetype"]
+center_api = ["flask", "cookiecutter"]
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+flake8-isort = "^6.0.0"
+pre-commit = "^3.3.2"
