@@ -5,27 +5,8 @@
 @Time: 2023/3/9
 """
 import redis
+from yyxx_game_pkg.logger.log import root_log
 from yyxx_game_pkg.utils.decorator import singleton_unique_obj_args
-
-
-def get_redis(config: dict):
-    """
-    缓存redis
-    :return:
-    """
-
-    class Config(RedisConfig):
-        """
-        redis config
-        """
-
-        HOST = config["host"]
-        PORT = config["port"]
-        DB = config["db"]
-        PASSWORD = config["password"]
-        OVERDUE_SECOND = config.get("overdue_second", 86400)
-
-    return RedisHelper(Config())
 
 
 class RedisConfig:
@@ -52,6 +33,7 @@ class RedisHelper:
             host=config.HOST, port=config.PORT, db=config.DB, password=config.PASSWORD
         )
         self.__r = redis.Redis(connection_pool=connection_pool)
+        root_log(f"<RedisHelper> init, info:{config}")
 
     @property
     def redis_cli(self):
@@ -123,3 +105,23 @@ class RedisHelper:
         :return:
         """
         return self.__r.lrange(key, start, end)
+
+
+def get_redis(config: dict) -> RedisHelper:
+    """
+    缓存redis
+    :return:
+    """
+
+    class Config(RedisConfig):
+        """
+        redis config
+        """
+
+        HOST = config["host"]
+        PORT = config["port"]
+        DB = config["db"]
+        PASSWORD = config["password"]
+        OVERDUE_SECOND = config.get("overdue_second", 86400)
+
+    return RedisHelper(Config())
