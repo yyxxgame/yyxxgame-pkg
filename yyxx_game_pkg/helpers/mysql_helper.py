@@ -6,24 +6,12 @@
 """
 import pymysql
 from dbutils.pooled_db import PooledDB
-from yyxx_game_pkg.utils.decorator import except_monitor, log_execute_time_monitor, singleton_unique_obj_args
+from yyxx_game_pkg.utils.decorator import (
+    except_monitor,
+    log_execute_time_monitor,
+    singleton_unique_obj_args,
+)
 from yyxx_game_pkg.logger.log import root_log
-
-
-# #################### 模块对外接口 ####################
-def get_dbpool(config: dict):
-    class Config(MysqlConfig):
-        HOST = config["host"]
-        PORT = config["port"]
-        USER = config["user"]
-        PASSWD = config["password"]
-        DB = config["db"]
-        USE_UNICODE = config.get("use_unicode", True)
-        CHARSET = config.get("charset", "utf8")
-        MAX_CACHED = config.get("maxcached", 0)
-        MAX_CONNECTIONS = config.get("maxconnections", 0)
-
-    return MysqlDbPool(Config())
 
 
 # ####################################################
@@ -40,13 +28,18 @@ class MysqlConfig:
 
     def __str__(self):
         return "host:{},port:{},db:{},use_unicode:{},charset:{},max_cache:{},max_connections:{}".format(
-            self.HOST, self.PORT, self.DB, self.USE_UNICODE, self.CHARSET, self.MAX_CACHED, self.MAX_CONNECTIONS
+            self.HOST,
+            self.PORT,
+            self.DB,
+            self.USE_UNICODE,
+            self.CHARSET,
+            self.MAX_CACHED,
+            self.MAX_CONNECTIONS,
         )
 
 
 @singleton_unique_obj_args
 class MysqlDbPool(object):
-
     def __init__(self, config: MysqlConfig):
         self.DB_POOL = PooledDB(
             creator=pymysql,
@@ -74,3 +67,19 @@ class MysqlDbPool(object):
         :return:
         """
         self.DB_POOL.close()
+
+
+# #################### 模块对外接口 ####################
+def get_dbpool(config: dict) -> MysqlDbPool:
+    class Config(MysqlConfig):
+        HOST = config["host"]
+        PORT = config["port"]
+        USER = config["user"]
+        PASSWD = config["password"]
+        DB = config["db"]
+        USE_UNICODE = config.get("use_unicode", True)
+        CHARSET = config.get("charset", "utf8")
+        MAX_CACHED = config.get("maxcached", 0)
+        MAX_CONNECTIONS = config.get("maxconnections", 0)
+
+    return MysqlDbPool(Config())

@@ -1,0 +1,6 @@
+{
+  "author": "author",
+  "python_version": "python3.11",
+  "sdk_name": "sdk_name",
+  "timestamp": "{{ cookiecutter.timestamp }}"
+}
