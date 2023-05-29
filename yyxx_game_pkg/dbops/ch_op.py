@@ -29,7 +29,7 @@ class CHOperation(DatabaseOperation):
         res_df = self.get_all_df(sql)
         if not res_df.empty:
             return res_df.iloc[0]
-        return pd.Series()
+        return pd.Series(dtype=str)
 
     def get_all_df(self, sql):
         """
