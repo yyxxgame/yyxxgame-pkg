@@ -6,12 +6,14 @@
 """
 import pymysql
 from dbutils.pooled_db import PooledDB
+from pymysql.cursors import Cursor
+
+from yyxx_game_pkg.logger.log import root_log
 from yyxx_game_pkg.utils.decorator import (
     except_monitor,
     log_execute_time_monitor,
     singleton_unique_obj_args,
 )
-from yyxx_game_pkg.logger.log import root_log
 
 
 # ####################################################
@@ -25,9 +27,10 @@ class MysqlConfig:
     CHARSET = None
     MAX_CACHED = None
     MAX_CONNECTIONS = None
+    CURSOR = None
 
     def __str__(self):
-        return "host:{},port:{},db:{},use_unicode:{},charset:{},max_cache:{},max_connections:{}".format(
+        return "host:{},port:{},db:{},use_unicode:{},charset:{},max_cache:{},max_connections:{},cursor:{}".format(
             self.HOST,
             self.PORT,
             self.DB,
@@ -35,6 +38,7 @@ class MysqlConfig:
             self.CHARSET,
             self.MAX_CACHED,
             self.MAX_CONNECTIONS,
+            self.CURSOR,
         )
 
 
@@ -52,6 +56,7 @@ class MysqlDbPool(object):
             db=config.DB,
             use_unicode=config.USE_UNICODE,
             charset=config.CHARSET,
+            cursorclass=config.CURSOR,
         )
         root_log(f"<MysqlDbPool> init, info:{config}")
 
@@ -81,5 +86,6 @@ def get_dbpool(config: dict) -> MysqlDbPool:
         CHARSET = config.get("charset", "utf8")
         MAX_CACHED = config.get("maxcached", 0)
         MAX_CONNECTIONS = config.get("maxconnections", 0)
+        CURSOR = config.get("cursor", Cursor)
 
     return MysqlDbPool(Config())
