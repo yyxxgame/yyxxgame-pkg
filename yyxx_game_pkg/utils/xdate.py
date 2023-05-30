@@ -12,6 +12,7 @@ from enum import Enum
 DAY = 1
 WEEK = 2
 MONTH = 3
+VERSION = 4
 
 
 # 时间转换
@@ -81,14 +82,19 @@ def date2dt_day_end(date) -> datetime.datetime:
     return date2dt_day(date, 23, 59, 59)
 
 
-def day2date(day, fmt="%Y%m%d") -> datetime.datetime:
+def day2date(day, fmt="%Y%m%d", end=0) -> datetime.datetime:
     """
     "20210531" to "2021-05-31 00:00:00"
     :param day: 时间字符串
     :param fmt: 时间字符串格式 默认 "%Y%m%d"
+    :param end: 0: 00:00:00; 1: 23:59:59
     :return: datetime obj
     """
-    return datetime.datetime.strptime(str(day), fmt)
+    date = datetime.datetime.strptime(str(day), fmt)
+    if end:
+        datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
+    else:
+        return date
 
 
 def date2day(date):
@@ -96,6 +102,21 @@ def date2day(date):
     "2021-05-31 12:23:40" to "20210531"
     """
     return date.strftime("%Y%m%d")
+
+
+def date2date(date, _h=0, _m=0, _s=0, end=0):
+    """
+    "2021-05-31 12:23:40" to "2021-05-31 00:00:00"
+    :param date: datetime obj
+    :param _h: hour
+    :param _m: minute
+    :param _s: second
+    :param end: 0: 00:00:00; 1: 23:59:59
+    :return: datetime obj
+    """
+    if end:
+        return datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
+    return datetime.datetime(date.year, date.month, date.day, int(_h), int(_m), int(_s))
 
 
 def day_diff(day1, day2):
@@ -156,21 +177,29 @@ def get_week_str(date, fmt="%Y%m%d"):
     return f"{sday}~{eday}"
 
 
-def date_type_trans(date, date_type=DAY, fmt="%Y%m%d"):
+def date_type_trans(day, date_type=DAY, fmt="%Y%m%d", version_configs=None):
     """
     周期时间格式化
-    :param date: 时间字符串
+    :param day: 时间字符串 20230201
     :param date_type: 周期类型(1: 天 2: 周 3: 月)
     :param fmt: 时间字符串格式 默认 "%Y%m%d"
+    :param version_configs: 版本配置list [[版本号, 开始day, 结束day]]
     :return: 周期字符串
     """
     if date_type == DAY:
-        return datetime.datetime.strptime(str(date), fmt).strftime("%Y-%m-%d")
+        return datetime.datetime.strptime(str(day), fmt).strftime("%Y-%m-%d")
     if date_type == WEEK:
-        return get_week_str(date, fmt)
+        return get_week_str(day, fmt)
     if date_type == MONTH:
-        return datetime.datetime.strptime(str(date), fmt).strftime("%Y年%m月")
-    return date
+        return datetime.datetime.strptime(str(day), fmt).strftime("%Y年%m月")
+    if date_type == VERSION:
+        if version_configs is None:
+            return day
+        for version, start_day, end_day in version_configs:
+            if start_day <= day <= end_day:
+                return f"{version}版本"
+        return "未配置版本"
+    return day
 
 
 def to_start_of_interval(_t: datetime.datetime, unit="minute", interval=5):

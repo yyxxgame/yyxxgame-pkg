@@ -97,10 +97,9 @@ def cal_round_rate(data, precision=2, suffix="%", invalid_value="-"):
     if isinstance(data, pd.Series):
         if str(invalid_value).isdigit():
             data = data.fillna(invalid_value)
+        data = data.astype(float).round(precision)
         if precision == 0:
             data = data.astype(int)
-        else:
-            data = data.astype(float).round(precision)
         return data.apply(lambda d: invalid_value if (d == np.inf or np.isnan(d)) else f"{d}{suffix}")
     if isinstance(data, (int, float)):
         if np.isnan(data) or data == np.inf:
@@ -282,6 +281,20 @@ def div_rate(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Seri
         .div(data_df[bottom_key], axis=0)
         .round(precision + 2)
         .apply(lambda x: f"{round(x * 100, precision) }%")
+    )
+
+
+def div_round(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Series:
+    """
+    dataframe div函数
+    example:
+        data_df["pay_rate"] = div_round(data_df, "pid_cnt", "act_player_cnt")
+    :return:
+    """
+    return (
+        data_df[top_key]
+        .div(data_df[bottom_key], axis=0)
+        .round(precision)
     )
 
 
