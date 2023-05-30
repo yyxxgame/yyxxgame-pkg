@@ -1,17 +1,18 @@
-
 # -*- coding: utf-8 -*-
 # @Author   : pmz
 # @Time     : 2023/04/18 16:36:36
 # @Software : python3.11
 # @Desc     : make_sign
+from typing import Iterable
+
 from yyxx_game_pkg.crypto.basic import md5
 
 
 def make_sign(
     values: dict,
     secret_key: str,
-    exclude: list = None,
     *,
+    exclude: Iterable = None,
     time_key="time",
     make_sign_func=md5,
     make_sign_key: str = None,

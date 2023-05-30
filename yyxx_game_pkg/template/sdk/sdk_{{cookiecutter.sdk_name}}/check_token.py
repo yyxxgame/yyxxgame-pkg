@@ -74,6 +74,19 @@ class Check_Token(MapFactor, BaseCheckToken):
         """
         return super().channel_make_sign(values, sign_key)
 
+    def sdk_check_token(self, channel_data, post_data):
+        """
+        默认使用 登录验证URL进行二次验证
+
+        如果不是使用登录验证URL的方式进行二次验证
+        重写此方法进行验证
+        同时，可以删除 sdk_helper 和 channel_make_sign
+
+        return 的值在 response_helper 中使用
+        具体返回什么视情况而定
+        """
+        return super().sdk_check_token(channel_data, post_data)
+
     def response_helper(self, response: dict, **kwargs) -> dict:
         """
         返回数据
@@ -85,6 +98,7 @@ class Check_Token(MapFactor, BaseCheckToken):
                 "ret": 1,
                 "user_id": kwargs["?"],  # ? 值根据具体参数填写
                 # --------------------------------
+                # 如果还有其他参数, 按需添加
             }
             return data
 

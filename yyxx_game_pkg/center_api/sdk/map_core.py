@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # @Author   : pmz
 # @Time     : 2023/04/18 15:42:33
@@ -12,8 +11,7 @@ from flask import request
 from yyxx_game_pkg.center_api.model.Operator import Operator
 from yyxx_game_pkg.center_api.model.OperatorServer import OperatorServer
 from yyxx_game_pkg.conf import settings
-from yyxx_game_pkg.crypto.basic import (RANDOM_STRING_CHARS_LOWER,
-                                        get_random_string, md5)
+from yyxx_game_pkg.crypto.basic import RANDOM_STRING_CHARS_LOWER, get_random_string, md5
 from yyxx_game_pkg.crypto.make_sign import make_sign
 from yyxx_game_pkg.helpers.op_helper import OPHelper
 
@@ -26,16 +24,7 @@ class MapCore(OPHelper):
     Callback = None
     OutTime = 0
 
-    make_sign_exclude = [
-        "sign",
-        "signature",
-        "time",
-        "timestamp",
-        "gmip",
-        "cp_platform",
-        "ch_conter",
-        "opts",
-    ]
+    make_sign_exclude = {"gmip", "cp_platform", "ch_conter", "opts"}
     API_KEY = settings.API_KEY
     params = None
     _plat_code = None
@@ -68,11 +57,17 @@ class MapCore(OPHelper):
             return False
         return True
 
-    def make_sign(self, values, sign_key=None) -> str:
-        return make_sign(values, self.api_key, self.make_sign_exclude, self.Time)
+    def make_sign(self, values) -> str:
+        self.make_sign_exclude.add(self.Flag)
+        return make_sign(
+            values, self.api_key, exclude=self.make_sign_exclude, time_key=self.Time
+        )
 
     def channel_make_sign(self, values, sign_key) -> str:
-        return make_sign(values, sign_key, self.make_sign_exclude, self.Time)
+        self.make_sign_exclude.add(self.Flag)
+        return make_sign(
+            values, sign_key, exclude=self.make_sign_exclude, time_key=None
+        )
 
     def check_time_out(self, values):
         _time = int(values.get(self.Time, 0))
@@ -81,7 +76,7 @@ class MapCore(OPHelper):
             return False
         return True
 
-    def check_public(self):
+    def check_public(self, values) -> bool:
         return True
 
     def sdk_rechfeed(self, error_code, msg="") -> dict:
