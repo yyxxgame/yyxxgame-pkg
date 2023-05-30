@@ -18,13 +18,17 @@ class Operator(OPHelper):
     @classmethod
     def get_key(cls, operator, game_channel_id):
         try:
-            cache_key = "api_operator_channel_%s_%s_key" % (operator, game_channel_id)
+            cache_key = "api_operator_channel_%s_%s_key" % (
+                operator,
+                game_channel_id,
+            )
             package = {}
             subpackage = {}
 
             sdk_data = redis.get_data(cache_key)
 
             if not sdk_data:
+                sdk_data = {}
                 sql = """
                     SELECT
                         t1.alias as operator, t2.game_channel_id, t2.group_id, t2.iw_id, t2.sdk_config, t3.alias as iw_alias

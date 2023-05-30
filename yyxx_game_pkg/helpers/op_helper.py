@@ -6,6 +6,7 @@
 import datetime
 import json
 
+from pymysql.cursors import Cursor, DictCursor
 from yyxx_game_pkg.conf import settings
 from yyxx_game_pkg.dbops.mysql_op import MysqlOperation
 from yyxx_game_pkg.helpers.mysql_helper import get_dbpool
@@ -15,14 +16,15 @@ from yyxx_game_pkg.helpers.redis_helper import get_redis
 class OPHelper:
     # --------------- mysql start ---------------
     @classmethod
-    def connection(cls, mysql_alias="default"):
+    def connection(cls, mysql_alias="default", dict_cursor=True):
         db_settings = {}
         for k, v in settings.DATABASES[mysql_alias].items():
-            if v.isdigit():  # PORT 必须为数字
+            if k == "PORT" and isinstance(v, str) and v.isdigit():  # PORT 必须为数字
                 v = int(v)
             db_settings[k.lower()] = v
             if k == "NAME":
                 db_settings["db"] = db_settings.pop("name")
+        db_settings["cursor"] = DictCursor if dict_cursor else Cursor
         return get_dbpool(db_settings).get_connection()
 
     @classmethod
@@ -79,14 +81,24 @@ class OPHelper:
 
     @classmethod
     def cache_sql_one(
-        cls, sql, redis_key, ex=None, redis_alias="default", mysql_alias="default"
+        cls,
+        sql,
+        redis_key,
+        ex=None,
+        redis_alias="default",
+        mysql_alias="default",
     ):
         sql_func = cls.mp().get_one
         return cls.cache(sql, sql_func, redis_key, ex, redis_alias, mysql_alias)
 
     @classmethod
     def cache_sql_all(
-        cls, sql, redis_key, ex=None, redis_alias="default", mysql_alias="default"
+        cls,
+        sql,
+        redis_key,
+        ex=None,
+        redis_alias="default",
+        mysql_alias="default",
     ):
         sql_func = cls.mp().get_all
         return cls.cache(sql, sql_func, redis_key, ex, redis_alias, mysql_alias)
