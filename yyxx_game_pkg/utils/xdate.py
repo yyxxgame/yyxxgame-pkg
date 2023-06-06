@@ -92,9 +92,17 @@ def day2date(day, fmt="%Y%m%d", end=0) -> datetime.datetime:
     """
     date = datetime.datetime.strptime(str(day), fmt)
     if end:
-        datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
-    else:
-        return date
+        return datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
+    return date
+
+
+def day2str_date(day) -> str:
+    """
+    '20220301' -> '2022-03-01'
+    效率更高
+    """
+    day_s = str(day)
+    return day_s[:4] + '-' + day_s[4:6] + '-' + day_s[5:7]
 
 
 def date2day(date):
@@ -138,7 +146,11 @@ def delta_dt_day(date, delta=0, end=0):
         return date2dt_day_end(date) + datetime.timedelta(days=delta)
     return date2dt_day(date) + datetime.timedelta(days=delta)
 
+
 def add_days(date, delta, end=0):
+    """
+    易读接口
+    """
     return delta_dt_day(date, delta, end)
 
 

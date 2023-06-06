@@ -107,3 +107,24 @@ def http_push_server(url, data, server_api_key):
     result = http_request(url, post_data, False, "get")
     local_log(f"http_push_server url:{url} res: {result}")
     return result
+
+
+def make_post_data(ex_params, api_key):
+    """
+    生成post_data
+    """
+    _t = int(time.time())
+    values = {"time": _t, "params": json.dumps(ex_params)}
+    keys = values.keys()
+    keys = sorted(keys)
+    params = []
+    for key in keys:
+        params.append(f"{key}={values[key]}")
+    params = "&".join(params)
+    timestamp = str(_t + (_t % 38975))
+    _tmp = md5(f"{params}{api_key}")
+    sign = md5(f"{timestamp}{_tmp}")
+
+    post_data = {"time": _t, "params": ex_params, "sign": sign}
+    post_data = set_params(post_data)
+    return post_data
