@@ -102,7 +102,7 @@ def day2str_date(day) -> str:
     效率更高
     """
     day_s = str(day)
-    return day_s[:4] + '-' + day_s[4:6] + '-' + day_s[5:7]
+    return day_s[:4] + '-' + day_s[4:6] + '-' + day_s[6:]
 
 
 def date2day(date):
