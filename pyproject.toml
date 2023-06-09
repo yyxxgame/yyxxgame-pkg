@@ -40,7 +40,7 @@ dbutils = "^3.0.2"
 ujson = "^5.7.0"
 
 requests = "2.27.1"
-celery = "^5.2.7"
+celery = "5.2.7"
 uvicorn = "^0.21.0"
 pandas = "^1.5.3"
 pycryptodome = "^3.17"
