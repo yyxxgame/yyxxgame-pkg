@@ -15,7 +15,7 @@ class FunctorWithTrace:
     """
     用于处理多线程执行任务时trace上下文丢失
     ThreadPoolExecutor submit时使用该类包裹，自动添加trace上下文
-    with TracedThreadPoolExecutor(max_workers=50) as executor:
+    with ThreadPoolExecutor(max_workers=50) as executor:
         executor.submit(FunctorWithTrace(funcxxx, *args, **kwargs))
     """
 
