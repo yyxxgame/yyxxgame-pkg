@@ -17,7 +17,7 @@ def make_sign(
     make_sign_func=md5,
     make_sign_key: str = None,
     digest_mod=None,
-):
+) -> str:
     """
     签名方法
     :param values: 需要加密的数据（字典）

@@ -21,6 +21,7 @@ class Check_Token(MapFactor, BaseCheckToken):
     # params value: kwargs的键
     # --> post_data[key] = kwargs[value]
     params = {}
+    sdk_exclude = ()
 
     # 父类中核心代码，此处可删除
     # def run_check_token(self, *args, **kwargs) -> dict:
@@ -36,22 +37,23 @@ class Check_Token(MapFactor, BaseCheckToken):
     #
     #     return response_helper(response, **kwargs)
 
-    def sdk_helper(self, **kwargs) -> (dict, dict):
+    def sdk_helper(self, sdk_exclude=(), **kwargs) -> (dict, dict):
         """
         channel_data = kwargs.get("channel_data", {})
 
         post_data = {}
         for k, v in self._params.items():
             post_data[k] = kwargs.get(v)
-        if self.time_param:
-            post_data[self.time_param[0]] = self.time_param[1]
-        if self.sign_param:
-            post_data[self.sign_param] = self.channel_make_sign(
+        if self.Time not in sdk_exclude:
+            post_data[self.Time] = int(time.time())
+        if self.Flag not in sdk_exclude:
+            post_data[self.Flag] = self.channel_make_sign(
                 post_data, channel_data.get("app_key", "")
             )
 
         return channel_data, post_data
 
+        :param sdk_exclude: exclude parameters
         :param kwargs: 参数
         :return: channel_data, post_data
 

@@ -100,7 +100,9 @@ def cal_round_rate(data, precision=2, suffix="%", invalid_value="-"):
         data = data.astype(float).round(precision)
         if precision == 0:
             data = data.astype(int)
-        return data.apply(lambda d: invalid_value if (d == np.inf or np.isnan(d)) else f"{d}{suffix}")
+        return data.apply(
+            lambda d: invalid_value if (d == np.inf or np.isnan(d)) else f"{d}{suffix}"
+        )
     if isinstance(data, (int, float)):
         if np.isnan(data) or data == np.inf:
             return invalid_value
@@ -271,11 +273,18 @@ def df_expand_labels(_df, key, bins, insert_zero=True):
 
 def div_rate(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Series:
     """
-    dataframe div函数计算百分比
+    dataframe div函数计算百分比 top_key / bottom_key
     example:
         data_df["pay_rate"] = div_rate(data_df, "pid_cnt", "act_player_cnt")
     :return:
     """
+    if isinstance(top_key, list):
+        return (
+            data_df[top_key]
+            .div(data_df[bottom_key], axis=0)
+            .round(precision + 2)
+            .applymap(lambda x: f"{round(x * 100, precision) }%")
+        )
     return (
         data_df[top_key]
         .div(data_df[bottom_key], axis=0)
@@ -286,16 +295,12 @@ def div_rate(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Seri
 
 def div_round(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Series:
     """
-    dataframe div函数
+    dataframe div函数 top_key / bottom_key
     example:
         data_df["pay_rate"] = div_round(data_df, "pid_cnt", "act_player_cnt")
     :return:
     """
-    return (
-        data_df[top_key]
-        .div(data_df[bottom_key], axis=0)
-        .round(precision)
-    )
+    return data_df[top_key].div(data_df[bottom_key], axis=0).round(precision)
 
 
 def concat_cols(data_df: pd.DataFrame, cols: list, concat_by="|") -> pd.Series:
@@ -314,4 +319,3 @@ def concat_cols(data_df: pd.DataFrame, cols: list, concat_by="|") -> pd.Series:
             continue
         res = res + concat_by
     return res
-

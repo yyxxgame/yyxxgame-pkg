@@ -58,13 +58,11 @@ class MapCore(OPHelper):
         return True
 
     def make_sign(self, values) -> str:
-        self.make_sign_exclude.add(self.Flag)
         return make_sign(
             values, self.api_key, exclude=self.make_sign_exclude, time_key=self.Time
         )
 
     def channel_make_sign(self, values, sign_key) -> str:
-        self.make_sign_exclude.add(self.Flag)
         return make_sign(
             values, sign_key, exclude=self.make_sign_exclude, time_key=None
         )
