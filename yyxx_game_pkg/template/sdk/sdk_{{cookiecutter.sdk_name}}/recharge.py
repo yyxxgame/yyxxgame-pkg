@@ -31,8 +31,8 @@ class Recharge(MapRecharge, BaseRecharge):
             cp_order_id: str = "billno"
             channel_order_id: str = "order_id"
             player_id: str = "role_id"
-            is_check_username: int = 1
             channel_username: str = "openid"
+            is_check_username: int = 1
             is_test: int = 0
 
         self.params.cp_order_id = "xxx"
@@ -68,6 +68,7 @@ class Recharge(MapRecharge, BaseRecharge):
         pay_dt 充值时间（秒）
         --------------------------------
         """
+        super().get_params_helper(data, data_ary)
 
     def make_sign_helper(self, values) -> (dict, str):
         """
