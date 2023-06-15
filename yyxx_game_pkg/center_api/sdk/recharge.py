@@ -25,8 +25,9 @@ class Params:
     cp_order_id: str = "billno"
     channel_order_id: str = "order_id"
     player_id: str = "role_id"
-    is_check_username: int = 1
     channel_username: str = "openid"
+    money: str = "amount"
+    is_check_username: int = 1
     is_test: int = 0
 
 
@@ -82,6 +83,9 @@ class BaseRecharge(MapCore, ABC):
         pay_dt 充值时间（秒）
         --------------------------------
         """
+        amount = int(data.get(self.params.money, 0))
+        data_ary["real_money"] = int(amount / 100)
+        data_ary["money"] = amount / 100
 
     def make_sign_helper(self, values) -> (dict, str):
         ext_ary = values[self.params.extra].split(",")

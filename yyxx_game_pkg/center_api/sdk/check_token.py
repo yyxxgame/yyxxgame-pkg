@@ -29,16 +29,13 @@ class BaseCheckToken(MapCore, ABC):
     根据渠道需求填写以下参数
     @param is_https: 请求是否为https；默认 True
     @param method: 请求方式 POST GET；默认 POST
-    @param params: 发送和收到 参数的字段名
-    @param time_param: 时间戳字段 time / timestamp，十位时间戳（秒） / 十三位时间戳（毫秒）
-    @param sign_param: 签名字段 sign / signature
+    @param params: (key)发送和(value)接收 参数的字段名
     """
 
     is_https = True  # True False
     method = "POST"
     # params = {}
-    time_param = None  # ("time", int(time.time()))
-    sign_param = "sign"
+    sdk_exclude = ()
 
     def run_check_token(self, *args, **kwargs) -> dict:
         """
@@ -48,7 +45,7 @@ class BaseCheckToken(MapCore, ABC):
         if sdk_helper is None:
             return self.sdk_rechfeed(ErrorCode.ERROR_INVALID_PARAM)
 
-        channel_data, post_data = sdk_helper(**kwargs)
+        channel_data, post_data = sdk_helper(self.sdk_exclude, **kwargs)
         response = self.sdk_check_token(channel_data, post_data)
 
         return response_helper(response, **kwargs)
@@ -59,7 +56,7 @@ class BaseCheckToken(MapCore, ABC):
         根据需求 return 相应的数据
         :return: {"ret": 1, "user_id": "any_user_id"}
         """
-        return self.sdk_rechfeed(ErrorCode.ERROR_SERVER_API_URL_ERROR)
+        return self.sdk_rechfeed(ErrorCode.ERROR_INVALID_PARAM, "验证失败")
 
     @property
     def _params(self):
@@ -71,23 +68,25 @@ class BaseCheckToken(MapCore, ABC):
         }
         """
         if self.params is None:
-            raise ValueError("params must be specified")
+            raise ValueError("params must be specified as a dict")
 
         return self.params
 
-    def sdk_helper(self, **kwargs) -> (dict, dict):
+    def sdk_helper(self, sdk_exclude=(), **kwargs) -> (dict, dict):
         """
         处理 sdk 数据
+        :param sdk_exclude: sdk_helper 处理数据，要排除的key
+            可选值: time(self.Time) sign(self.Flag)
         """
         channel_data = kwargs.get("channel_data", {})
 
         post_data = {}
         for k, v in self._params.items():
             post_data[k] = kwargs.get(v)
-        if self.time_param:
-            post_data[self.time_param[0]] = self.time_param[1]
-        if self.sign_param:
-            post_data[self.sign_param] = self.channel_make_sign(
+        if self.Time not in sdk_exclude:
+            post_data[self.Time] = int(time.time())
+        if self.Flag not in sdk_exclude:
+            post_data[self.Flag] = self.channel_make_sign(
                 post_data, channel_data.get("app_key", "")
             )
 
