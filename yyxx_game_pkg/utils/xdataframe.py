@@ -319,3 +319,19 @@ def concat_cols(data_df: pd.DataFrame, cols: list, concat_by="|") -> pd.Series:
             continue
         res = res + concat_by
     return res
+
+
+def df_astype(_df: pd.DataFrame, columns=(), excludes=(), tpe=str):
+    """
+    dataframe转类型,可指定列进行转换,也可反向排除某些列,进行转换
+    主要用于某些数据列,仅少数列无需转,多数列需要转时,需要列举所有的列,此举可减少编写
+    columns:需转换的列
+    excludes:除了excludes外的列将进行转换(优先级更高)
+    tpe:需转换的类型
+    """
+    if excludes:
+        df_columns = _df.columns.tolist()
+        columns = list(set(df_columns) - set(excludes))
+    if columns:
+        _df[columns] = _df[columns].astype(tpe)
+    return _df
