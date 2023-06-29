@@ -30,15 +30,15 @@ class MysqlConfig:
     CURSOR = None
 
     def __str__(self):
-        return "host:{},port:{},db:{},use_unicode:{},charset:{},max_cache:{},max_connections:{},cursor:{}".format(
+        # 不能返回无法序列化的数据， 否则单例会失效
+        return "host:{},port:{},db:{},use_unicode:{},charset:{},max_cache:{},max_connections:{}".format(
             self.HOST,
             self.PORT,
             self.DB,
             self.USE_UNICODE,
             self.CHARSET,
             self.MAX_CACHED,
-            self.MAX_CONNECTIONS,
-            self.CURSOR,
+            self.MAX_CONNECTIONS
         )
 
 
