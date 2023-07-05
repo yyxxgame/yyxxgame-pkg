@@ -309,7 +309,6 @@ def combine_where(where_spec):
                     val = val[:-1]
                 else:
                     val = f"{val}$"
-                val = f"'{val}'"
             return {key: {op_word: val}}
         else:
             res = []
