@@ -32,6 +32,7 @@ opentelemetry-instrumentation-requests = "^0.37b0"
 opentelemetry-instrumentation-fastapi = "0.37b.0"
 opentelemetry-instrumentation-celery = "0.37b0"
 opentelemetry-instrumentation-flask = "^0.37b0"
+opentelemetry-instrumentation-django = "^0.37b0"
 line-profiler = "^4.0.3"
 
 redis = "^4.5.1"

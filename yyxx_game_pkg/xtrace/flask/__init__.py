@@ -4,10 +4,11 @@
 
 import json
 from flask import g, current_app
-from yyxx_game_pkg.xtrace import helper
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import get_current_span
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+from yyxx_game_pkg.xtrace import helper
 
 
 class FlaskJaegerInstrumentor:
@@ -17,7 +18,8 @@ class FlaskJaegerInstrumentor:
     @staticmethod
     def _after_request(response):
         try:
-            log_max_size = current_app.config["JAEGER"].get("log_max_size", 2048)
+            jaeger_config = current_app.config["JAEGER"]
+            log_max_size = jaeger_config.get("log_max_size", 2048)
             span = get_current_span()
             # request event
             request_params = g.get("request_params")
@@ -28,9 +30,10 @@ class FlaskJaegerInstrumentor:
                     print(e)
                 span.add_event("request", {"params": str(request_params)[:log_max_size]})
             # response event
-            response_params = g.get("response_params")
-            if response_params:
-                span.add_event("response", {"params": str(response_params)[:log_max_size]})
+            if jaeger_config.get("is_log"):
+                response_params = g.get("response_params")
+                if response_params:
+                    span.add_event("response", {"params": str(response_params)[:log_max_size]})
             # inject trace parent to response header
             TraceContextTextMapPropagator().inject(response.headers)
         except Exception as e:
