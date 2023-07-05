@@ -5,4 +5,4 @@
 @Time: 2023/7/4
 """
 
-from mongo_op import MongoOperation
+from yyxx_game_pkg.dbops.mongo_op.mongo_op import MongoOperation
