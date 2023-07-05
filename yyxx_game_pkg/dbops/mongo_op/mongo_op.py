@@ -54,9 +54,9 @@ class SingletonMongoClient(MongoClient):
         return pd.DataFrame(list(cursor))
 
 
-class PyMongoOperationClient:
+class PyMongoClient:
     """
-    PyMongoOperationClient
+    PyMongoClient
     """
 
     def __init__(self, mongo_uri, db_name):
@@ -98,13 +98,13 @@ class MongoOperation(DatabaseOperation):
         """
 
     @staticmethod
-    def new_client(mongo_url, game_db) -> PyMongoOperationClient:
+    def new_client(mongo_url, game_db) -> PyMongoClient:
         """
         :param mongo_url:
         :param game_db:
         :return:
         """
-        mgo_client = PyMongoOperationClient(mongo_url, game_db)
+        mgo_client = PyMongoClient(mongo_url, game_db)
         return mgo_client
 
     @except_monitor
