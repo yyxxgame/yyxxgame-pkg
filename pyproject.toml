@@ -53,6 +53,7 @@ filetype = {version = "^1.2.0", optional = true}
 django = {version = "^4.2.1", optional = true}
 flask = {version = "^2.3.2", optional = true}
 cookiecutter = {version = "^2.1.1", optional = true}
+httpx = "^0.24.1"
 
 [tool.poetry.extras]
 stat = ["fastapi"]

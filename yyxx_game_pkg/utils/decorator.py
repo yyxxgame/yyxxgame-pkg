@@ -182,8 +182,8 @@ def redis_cache_result(handle, redis_key=None, prefix="_fix", sec=3600):
         def wrapper(*args, **kwargs):
             try:
                 _arg = pickle.dumps(args)
-            except Exception as e:
-                root_log(e)
+            except Exception:
+                # 静默处理
                 _arg = pickle.dumps(args[1:])
             _kwargs = pickle.dumps(kwargs)
             # 不指明redis_key默认用func.name
