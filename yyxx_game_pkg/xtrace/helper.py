@@ -3,15 +3,13 @@
 # @Time     : 2023/2/28
 
 from functools import wraps
-
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.trace.status import Status, StatusCode
 from opentelemetry.trace import get_current_span
-
+from opentelemetry.trace.status import Status, StatusCode
 
 _tracer = trace.get_tracer(__name__)
 
@@ -50,7 +48,7 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
     trace.get_tracer_provider().add_span_processor(span_processor)
 
 
-def trace_span(ret_trace_id: bool = False, set_attributes: bool = False):
+def trace_span(ret_trace_id: bool = False, set_attributes: bool = False, operation_name: str = ""):
     """:cvar
     函数的span装饰器
     """
@@ -58,8 +56,10 @@ def trace_span(ret_trace_id: bool = False, set_attributes: bool = False):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            operation_name = f"{func.__module__}.{func.__name__}"
-            with _tracer.start_as_current_span(operation_name) as span:
+            _operation_name = operation_name
+            if not _operation_name:
+                _operation_name = f"{func.__module__}.{func.__name__}"
+            with _tracer.start_as_current_span(_operation_name) as span:
                 try:
                     result = func(*args, **kwargs)
                     if ret_trace_id:
