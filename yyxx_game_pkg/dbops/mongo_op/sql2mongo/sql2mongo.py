@@ -237,10 +237,8 @@ def create_mongo_spec(spec_dict):
             op_val = 1 if agg_key == "*" else f"${agg_key}"
             if as_field:
                 select_results["$group"].update({as_field: {op_func: op_val}})
-                select_results["$project"].update({as_field: 1})
             else:
                 select_results["$group"].update({real_field: {op_func: op_val}})
-                select_results["$project"].update({real_field: 1})
 
     if drop_id:
         select_results["$project"].update({"_id": 0})
