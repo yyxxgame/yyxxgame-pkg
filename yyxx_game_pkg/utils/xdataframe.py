@@ -335,3 +335,51 @@ def df_astype(_df: pd.DataFrame, columns=(), excludes=(), tpe=str):
     if columns:
         _df[columns] = _df[columns].astype(tpe)
     return _df
+
+
+def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
+    """
+    # money_df ####
+    # player_id, money
+    # 19296,  0
+    # 21169,  8
+    # 24003,  98
+    money_df[["money_label", "label_rank"]] = show_range_labels(
+        money_df, "money", bins=[0, 8, 41], max_label_fmt="{}+"
+    ) =>
+    # player_id, money, money_label, label_rank
+    # 19296,    0,  "",    -1
+    # 21169,    8,  "1-8",    8
+    # 24003,    98, "41+”,    41
+    insert_zero : 是否在bins最前面插入0
+    :return:
+    """
+
+    def prefix_bins(_bins):
+        _bins = sorted(map(int, _bins))
+        if insert_zero and _bins[0] != 0:
+            _bins.insert(0, 0)
+        return _bins
+
+    bins = prefix_bins(bins)
+    concat = "-"
+
+    def cut_bins(row):
+        val = row[key]
+        if not val:
+            return "", -1
+
+        if val > bins[-1]:
+            val = bins[-1]
+
+        position = bisect_left(bins, val)
+        if position <= 0:
+            return "", -1
+        left_val = bins[position - 1] + 1
+        right_val = bins[position]
+        labels = f"{left_val}{concat}{right_val}"
+        if position == len(bins) - 1 and max_label_fmt is not None:
+            labels = max_label_fmt.format(left_val)
+        return labels, bins[position]
+
+    return _df.apply(cut_bins, axis=1, result_type="expand")
