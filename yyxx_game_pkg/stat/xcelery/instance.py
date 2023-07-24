@@ -8,7 +8,7 @@ celery 实例入口
 import argparse
 from celery import Celery
 
-from yyxx_game_pkg.logger.log import root_log
+from yyxx_game_pkg.stat.log import root_log
 
 
 class CeleryInstance:
