@@ -27,8 +27,11 @@ class LogConfig:
             "formatters": {
                 "def_fmt": {
                     "datefmt": "%Y-%m-%d %H:%M:%S",
-                    "format": "[%(asctime)s,%(msecs)d: %(levelname)s/%(process)d] %(message)s",
-                    "class": "logging.Formatter",
+                    "class": "yyxx_game_pkg.logger.formatters.TraceFormatter",
+                    "format": (
+                        "[%(asctime)s,%(msecs)d: %(levelname)s/%(process)d][%(filename)s:%(funcName)s:%(lineno)d]"
+                        "[%(trace_id)s] %(message)s"
+                    ),
                 },
             },
             "handlers": {

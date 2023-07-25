@@ -3,37 +3,30 @@
 @File: log
 @Author: ltw
 @Time: 2023/3/10
+@updateTime: 2023/07/24 by winslen
 """
-from yyxx_game_pkg.logger import log
-from yyxx_game_pkg.xtrace.helper import get_current_trace_id
+# 未使用的也不能删除
+from yyxx_game_pkg.logger.log import (
+    LogLevelTyping,
+    LogConfigTyping,
+    root_log,
+    Log,
+    logger,
+    local_logger,
+    local_log,
+    debug_logger,
+    debug_log,
+    LogConfig,
+)
 
 
-class StatLogConfig(log.LogConfig):
+class StatLogConfig(LogConfig):
     """
     logging 配置
     """
+
     LOCAL_LOG_FILE = "/data/logs/local.log"
     DEBUG_LOG_FILE = "/data/logs/debug.log"
 
 
-logger = log.Log(StatLogConfig)
-
-
-def local_log(msg):
-    """
-    local log rotate file
-    :param msg:
-    :return:
-    """
-    trace_id = get_current_trace_id()
-    msg = f"[{trace_id}] {msg}"
-    logger.local_log(msg)
-
-
-def debug_log(msg):
-    """
-    debug log file
-    :param msg:
-    :return:
-    """
-    logger.debug_log(msg)
+Log.init_config(StatLogConfig)

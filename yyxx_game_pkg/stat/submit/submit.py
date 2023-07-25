@@ -8,7 +8,7 @@ from yyxx_game_pkg.stat.submit.logic.submit_logic import (
     set_config,
     send,
 )
-from yyxx_game_pkg.logger.log import root_log
+from yyxx_game_pkg.stat.log import root_log
 
 
 def submit_schedule(schedule: str, file_path: str, api_addr: str, jaeger: dict):
