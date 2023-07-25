@@ -23,7 +23,7 @@ def root_log(msg):
     """
     root logger
     """
-    logging.getLogger().warning(msg)
+    logging.getLogger().warning(msg, stacklevel=2)
 
 
 class Log:
