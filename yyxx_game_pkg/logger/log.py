@@ -97,31 +97,35 @@ class Log:
         """
         return logging.getLogger(self.config.DEBUG_LOGGER_NAME)
 
-    def local_log(self, msg: str, level: LogLevelTyping = "info", stacklevel: int = 2, **kwargs):
+    def local_log(self, msg: str, level: LogLevelTyping = "info", stacklevel: int = 2, addstacklevel=0, **kwargs):
         """
         正常滚动日志 输出路径见 config.LOG_FILE
         :param msg: 消息文本
         :param level: 消息级别
         :param stacklevel: 堆栈信息向上查找层数(默认2层,即为调用此函数的堆栈)
+        :param addstacklevel: 以调用此函数的堆栈(stacklevel的值)作为基础,继续向上查找的层数,即stacklevel+addstacklevel层
+            使用此参数无需关心下层函数的层级,只需要关心调用函数上层的层级即可
         :param kwargs: 额外参数
         :return:
         """
         if kwargs:
             self.root_logger().warning(f"[yyxx-Log] Unexpected parameters => {kwargs}")
-        getattr(self.local_logger(), level.lower())(msg, stacklevel=stacklevel)
+        getattr(self.local_logger(), level.lower())(msg, stacklevel=stacklevel+addstacklevel)
 
-    def debug_log(self, msg: str, level: LogLevelTyping = "info", stacklevel: int = 2, **kwargs):
+    def debug_log(self, msg: str, level: LogLevelTyping = "info", stacklevel: int = 2, addstacklevel=0, **kwargs):
         """
         测试日志 不滚动 输出路径见 config.LOG_FILE
         :param msg: 消息文本
         :param level: 消息级别
         :param stacklevel: 堆栈信息向上查找层数(默认2层,即为调用此函数的堆栈)
+        :param addstacklevel: 以调用此函数的堆栈(stacklevel的值)作为基础,继续向上查找的层数,即stacklevel+addstacklevel层
+            使用此参数无需关心下层函数的层级,只需要关心调用函数上层的层级即可
         :param kwargs: 额外参数
         :return:
         """
         if kwargs:
             self.root_logger().warning(f"[yyxx-Log] Unexpected parameters => {kwargs}")
-        getattr(self.debug_logger(), level.lower())(msg, stacklevel=stacklevel)
+        getattr(self.debug_logger(), level.lower())(msg, stacklevel=stacklevel + addstacklevel)
 
 
 logger = Log()
