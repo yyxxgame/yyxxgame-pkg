@@ -19,11 +19,16 @@ LogLevelTyping = Literal["critical", "error", "warning", "info", "debug"]
 LogConfigTyping = TypeVar("LogConfigTyping", bound=LogConfig)
 
 
-def root_log(msg):
+def root_log(msg, level: LogLevelTyping = "info", stacklevel: int = 2, addstacklevel=0):
     """
     root logger
+    :param msg: 消息文本
+    :param level: 消息级别
+    :param stacklevel: 堆栈信息向上查找层数(默认2层,即为调用此函数的堆栈)
+    :param addstacklevel: 以调用此函数的堆栈(stacklevel的值)作为基础,继续向上查找的层数,即stacklevel+addstacklevel层
+    使用此参数无需关心下层函数的层级,只需要关心调用函数上层的层级即可
     """
-    logging.getLogger().warning(msg, stacklevel=2)
+    getattr(logging.getLogger(), level.lower())(msg, stacklevel=stacklevel+addstacklevel)
 
 
 class Log:

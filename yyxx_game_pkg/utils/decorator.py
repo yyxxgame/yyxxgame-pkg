@@ -78,9 +78,8 @@ def except_monitor(func):
                 _args.append(fix_str(_arg, 100))
             for k, _v in kwargs.items():
                 kwargs[k] = fix_str(_v, 100)
-            trace_id = get_current_trace_id()
             root_log(
-                f"<except_monitor> trace_id: {trace_id} "
+                "<except_monitor>"
                 f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
                 f"exc: {traceback.format_exc()} {e}"
             )
@@ -89,21 +88,35 @@ def except_monitor(func):
     return inner
 
 
-def except_return(default=None):
+
+def except_return(default=None, echo_raise=True):
     """
     # 异常后指定返回值
-    :param default: 返回值
+    :param default: 返回值(或者可执行函数)
+    :param echo_raise: 是否打印报错信息
     :return:
     """
 
     def decorator(func):
         @functools.wraps(func)
-        def wrapper(*args, **kw):
+        def wrapper(*args, **kwargs):
             try:
-                return func(*args, **kw)
+                return func(*args, **kwargs)
             except Exception as e:
-                root_log(f"{e}: exc:{traceback.format_exc()}")
-                return default
+                if echo_raise:
+                    _args = []
+                    for _arg in args:
+                        _args.append(fix_str(_arg, 100))
+                    for k, _v in kwargs.items():
+                        kwargs[k] = fix_str(_v, 100)
+                    root_log(
+                        "<except_return>"
+                        f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
+                        f"exc: {traceback.format_exc()} {e}",
+                        level="error",
+                    )
+
+                return default(e) if callable(default) else default
 
         return wrapper
 
@@ -195,9 +208,7 @@ def redis_cache_result(handle, redis_key=None, prefix="_fix", sec=3600):
                 res = pickle.loads(cache_data)
                 return res
             res = func(*args, **kwargs)
-            handle.set_data(
-                cache_key, pickle.dumps(res), ex=sec + random.randint(0, 30)
-            )
+            handle.set_data(cache_key, pickle.dumps(res), ex=sec + random.randint(0, 30))
             return res
 
         return wrapper

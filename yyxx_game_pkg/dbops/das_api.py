@@ -35,6 +35,30 @@ def trans_unsupported_types(val):
     return val
 
 
+class DasApiException(Exception):
+    pass
+
+
+class DasApiChQueryException(DasApiException):
+    pass
+
+
+class DasApiChExecuteException(DasApiException):
+    pass
+
+
+class DasApiMongoQueryException(DasApiException):
+    pass
+
+
+class DasApiEsQueryException(DasApiException):
+    pass
+
+
+class DasApiEsInsertException(DasApiException):
+    pass
+
+
 class DasApi:
     """
     DasApi py
@@ -60,7 +84,7 @@ class DasApi:
         """
         b_ok, res = DasApi._post(das_url, "das/mgo/query", post_data=post_data)
         if not b_ok:
-            raise Exception(res)
+            raise DasApiMongoQueryException(res)
         res = re.sub(
             r'{\\"\$numberLong\\": \\"\d+\\"}',
             lambda m: re.search(r"\d+", m.group()).group(),
@@ -90,7 +114,7 @@ class DasApi:
         """
         b_ok, res = DasApi._post(das_url, "das/es/query", post_data=post_data)
         if not b_ok:
-            raise Exception(res)
+            raise DasApiEsQueryException(res)
         engine = post_data.get("engine", 0)
         use_search = post_data.get("search_from", -1) >= 0
         data = json.loads(res)
@@ -130,7 +154,7 @@ class DasApi:
         """
         b_ok, res = DasApi._post(das_url, "das/es/insert", post_data=post_data)
         if not b_ok:
-            raise Exception(res)
+            raise DasApiEsInsertException(res)
         return res
 
     @staticmethod
@@ -145,7 +169,7 @@ class DasApi:
         """
         b_ok, res = DasApi._post(das_url, "/das/ch/query", post_data=post_data)
         if not b_ok:
-            raise Exception(res)
+            raise DasApiChQueryException(res)
         data = json.loads(res)
 
         res_df = pd.DataFrame(data["datarows"], columns=data["columns"])
@@ -163,7 +187,7 @@ class DasApi:
         """
         b_ok, res = DasApi._post(das_url, "/das/ch/exec", post_data=post_data)
         if not b_ok:
-            raise Exception(res)
+            raise DasApiChExecuteException(res)
         return b_ok
 
 
