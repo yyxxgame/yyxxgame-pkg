@@ -7,6 +7,7 @@
 logger 默认设置
 """
 import logging.config
+import traceback
 from typing import Literal, Type, TypeVar
 from pathlib import Path
 
@@ -58,10 +59,13 @@ class Log:
         self = cls()
         if log_config == self.config:
             return
-        self.config = log_config
-        self.make_path()
-        logging.config.dictConfig(log_config.dict_config())
-        root_log("logger init")
+        try:
+            self.config = log_config
+            self.make_path()
+            logging.config.dictConfig(log_config.dict_config())
+            root_log("logger init")
+        except ValueError as _e:
+            traceback.print_exc()
 
     def make_path(self):
         """
@@ -76,10 +80,13 @@ class Log:
                 if cfg_key != "filename":
                     continue
                 file_paths.append(val)
-        for path in file_paths:
-            path_obj = Path(path)
-            path_obj.parent.mkdir(parents=True, exist_ok=True)
-            path_obj.touch(exist_ok=True)
+        try:
+            for path in file_paths:
+                path_obj = Path(path)
+                path_obj.parent.mkdir(parents=True, exist_ok=True)
+                path_obj.touch(exist_ok=True)
+        except OSError as _e:
+            traceback.print_exc()
 
     def root_logger(self) -> logging.Logger:
         """
