@@ -20,7 +20,7 @@ LogLevelTyping = Literal["critical", "error", "warning", "info", "debug"]
 LogConfigTyping = TypeVar("LogConfigTyping", bound=LogConfig)
 
 
-def root_log(msg, level: LogLevelTyping = "info", stacklevel: int = 2, addstacklevel=0):
+def root_log(msg, level: LogLevelTyping = "warning", stacklevel: int = 2, addstacklevel=0):
     """
     root logger
     :param msg: 消息文本
