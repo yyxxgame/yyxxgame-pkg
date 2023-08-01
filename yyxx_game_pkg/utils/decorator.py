@@ -81,12 +81,12 @@ def except_monitor(func):
             root_log(
                 "<except_monitor>"
                 f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
-                f"exc: {traceback.format_exc()} {e}"
+                f"exc: {traceback.format_exc()} {e}",
+                level="error",
             )
         return res
 
     return inner
-
 
 
 def except_return(default=None, echo_raise=True):
@@ -208,7 +208,9 @@ def redis_cache_result(handle, redis_key=None, prefix="_fix", sec=3600):
                 res = pickle.loads(cache_data)
                 return res
             res = func(*args, **kwargs)
-            handle.set_data(cache_key, pickle.dumps(res), ex=sec + random.randint(0, 30))
+            handle.set_data(
+                cache_key, pickle.dumps(res), ex=sec + random.randint(0, 30)
+            )
             return res
 
         return wrapper
