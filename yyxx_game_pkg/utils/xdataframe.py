@@ -232,20 +232,21 @@ def div_rate(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Seri
         data_df["pay_rate"] = div_rate(data_df, "pid_cnt", "act_player_cnt")
     :return:
     """
+    fmt_show = f"%0.{precision}f"
     if isinstance(top_key, list):
         return (
             data_df[top_key]
             .div(data_df[bottom_key], axis=0)
             .round(precision + 2)
             .fillna(0)
-            .applymap(lambda x: f"{round(x * 100, precision) }%")
+            .applymap(lambda x: f"{ fmt_show % round(x * 100, precision) }%")
         )
     return (
         data_df[top_key]
         .div(data_df[bottom_key], axis=0)
         .round(precision + 2)
         .fillna(0)
-        .apply(lambda x: f"{round(x * 100, precision) }%")
+        .apply(lambda x: f"{fmt_show % round(x * 100, precision) }%")
     )
 
 
