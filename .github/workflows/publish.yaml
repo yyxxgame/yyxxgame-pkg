@@ -5,10 +5,10 @@ on:
 #    paths:
 #      - 'yyxx_game_pkg/**'
     branches:
-      - master
+      - compat
 
     tags:
-      - 'v*'
+      - 'compat.v*'
 
 jobs:
   publish:

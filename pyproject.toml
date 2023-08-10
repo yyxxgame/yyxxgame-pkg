@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 # 定义项目元数据
-name = "yyxx-game-pkg"
+name = "yyxx-game-pkg-compact"
 version = "0.0.0"
 description = "yyxx game custom module"
 authors = ["yyxx-game"]
