@@ -4,9 +4,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 # 定义项目元数据
-name = "yyxx-game-pkg-compact"
+name = "yyxx-game-pkg-compat"
 version = "0.0.0"
-description = "yyxx game custom module"
+description = "yyxx game custom module on compat"
 authors = ["yyxx-game"]
 license = "MIT"
 homepage = "https://github.com/yyxxgame/yyxxgame-pkg"
