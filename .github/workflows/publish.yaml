@@ -47,9 +47,9 @@ jobs:
       - name: Publish a Python distribution to PyPI
         run: poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
 
-      - name: Publish to yyxxgame GitLab
-        run: |
-          poetry config repositories.yyxx-gitlab http://gitlabcenter.yyxxgame.com/api/v4/projects/156/packages/pypi
-          poetry config http-basic.yyxx-gitlab __token__ ${{secrets.YYXX_GITLAB_PUBLISH_TOKEN}}
-          poetry publish --repository yyxx-gitlab
+#      - name: Publish to yyxxgame GitLab
+#        run: |
+#          poetry config repositories.yyxx-gitlab http://gitlabcenter.yyxxgame.com/api/v4/projects/156/packages/pypi
+#          poetry config http-basic.yyxx-gitlab __token__ ${{secrets.YYXX_GITLAB_PUBLISH_TOKEN}}
+#          poetry publish --repository yyxx-gitlab
 
