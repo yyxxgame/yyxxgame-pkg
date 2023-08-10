@@ -116,7 +116,7 @@ def except_return(default=None, echo_raise=True):
                         level="error",
                     )
 
-                return default(e) if callable(default) else default
+                return default(e=e, f_args=args, f_kwargs=kwargs) if callable(default) else default
 
         return wrapper
 
