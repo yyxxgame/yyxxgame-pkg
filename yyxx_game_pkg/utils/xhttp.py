@@ -104,7 +104,7 @@ def http_push_server(url, data, server_api_key):
     post_data_log = json.dumps(post_data, ensure_ascii=False)
     local_log(f"http_push_server url:{url} post_data: {post_data_log}")
 
-    result = http_request(url, post_data, False, "get")
+    result = http_request(url, post_data, False, "post")
     local_log(f"http_push_server url:{url} res: {result}")
     return result
 
