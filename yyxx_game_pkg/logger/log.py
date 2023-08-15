@@ -8,19 +8,20 @@ logger 默认设置
 """
 import logging.config
 import traceback
-from typing import Literal, Type, TypeVar
+# from typing import Literal, Type, TypeVar
 from pathlib import Path
 
 from .config import LogConfig
 
+
 # log日志级别
-LogLevelTyping = Literal["critical", "error", "warning", "info", "debug"]
+# LogLevelTyping = Literal["critical", "error", "warning", "info", "debug"]
 
 # LogConfig类及其子类
-LogConfigTyping = TypeVar("LogConfigTyping", bound=LogConfig)
+# LogConfigTyping = TypeVar("LogConfigTyping", bound=LogConfig)
 
 
-def root_log(msg, level: LogLevelTyping = "warning", stacklevel: int = 2, addstacklevel=0):
+def root_log(msg, level="warning", stacklevel=2, addstacklevel=0):
     """
     root logger
     :param msg: 消息文本
@@ -29,7 +30,7 @@ def root_log(msg, level: LogLevelTyping = "warning", stacklevel: int = 2, addsta
     :param addstacklevel: 以调用此函数的堆栈(stacklevel的值)作为基础,继续向上查找的层数,即stacklevel+addstacklevel层
     使用此参数无需关心下层函数的层级,只需要关心调用函数上层的层级即可
     """
-    getattr(logging.getLogger(), level.lower())(msg, stacklevel=stacklevel+addstacklevel)
+    getattr(logging.getLogger(), level.lower())(msg)
 
 
 class Log:
@@ -46,7 +47,7 @@ class Log:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, log_config: Type[LogConfigTyping] = LogConfig):
+    def __init__(self, log_config=LogConfig):
         if self._init:
             return
         self._init = True
@@ -54,7 +55,7 @@ class Log:
         self.init_config(log_config)
 
     @classmethod
-    def init_config(cls, log_config: Type[LogConfigTyping] = LogConfig):
+    def init_config(cls, log_config=LogConfig):
         """应用新配置"""
         self = cls()
         if log_config == self.config:
@@ -109,7 +110,7 @@ class Log:
         """
         return logging.getLogger(self.config.DEBUG_LOGGER_NAME)
 
-    def local_log(self, msg: str, level: LogLevelTyping = "info", stacklevel: int = 2, addstacklevel=0, **kwargs):
+    def local_log(self, msg: str, level="info", stacklevel=2, addstacklevel=0, **kwargs):
         """
         正常滚动日志 输出路径见 config.LOG_FILE
         :param msg: 消息文本
@@ -122,9 +123,9 @@ class Log:
         """
         if kwargs:
             self.root_logger().warning(f"[yyxx-Log] Unexpected parameters => {kwargs}")
-        getattr(self.local_logger(), level.lower())(msg, stacklevel=stacklevel+addstacklevel)
+        getattr(self.local_logger(), level.lower())(msg, stacklevel=stacklevel + addstacklevel)
 
-    def debug_log(self, msg: str, level: LogLevelTyping = "info", stacklevel: int = 2, addstacklevel=0, **kwargs):
+    def debug_log(self, msg: str, level="info", stacklevel=2, addstacklevel=0, **kwargs):
         """
         测试日志 不滚动 输出路径见 config.LOG_FILE
         :param msg: 消息文本
