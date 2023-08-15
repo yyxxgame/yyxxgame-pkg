@@ -3,38 +3,28 @@
 # @Time     : 2023/03/28 10:44:11
 # @Software : python3.11
 # @Desc     : AES encryption AES 加密
-from base64 import b64decode, b64encode
+import json
 
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
+from SecureHTTP import AESDecrypt, AESEncrypt
+
+from yyxx_game_pkg.conf import settings
+from yyxx_game_pkg.logger.log import root_log
 
 
-class AESCrypto:
-    def __init__(self, key: str, iv: str, block_size: int = AES.block_size):
-        """
-        :param key: AES 秘钥key
-        :param iv: AES 密钥偏移量iv
-        :param block_size:
-        """
-        self.key = key
-        self.iv = iv if iv else key[:block_size]
-        self.block_size = block_size
-        self.cipher = AES.new(
-            key=self.key.encode(), mode=AES.MODE_CBC, iv=self.iv.encode()
-        )
-
-    def encryption(self, data: str) -> str:
-        """
-        AES 加密
-        """
-        text = pad(data.encode(), self.block_size)
-        encrypted = self.cipher.encrypt(text)
-        return b64encode(encrypted).decode()
-
-    def decryption(self, data: str) -> str:
-        """
-        AES 解密
-        """
-        encrypted = b64decode(data)
-        decrypted = self.cipher.decrypt(encrypted)
-        return unpad(decrypted, self.block_size).decode()
+def encryption_deal_with(data, _type="D"):
+    key = settings.ENCRTPTION_KEY
+    try:
+        if _type == "D":
+            aes_data = AESDecrypt(key, data, input="hex")
+            aes_data = str(aes_data, encoding="utf-8")
+            try:
+                data = json.loads(aes_data[5:])
+            except Exception as e:
+                aes_data = aes_data.replace("\\", "\\\\")
+                data = json.loads(aes_data[5:], strict=False)
+                root_log(f"json解析错误: {aes_data}, {e}", level="error")
+        elif _type == "E":
+            data = AESEncrypt(key, data, output="hex")
+    except Exception as e:
+        root_log(f"type: {_type}, 错误: {e}", level="error")
+    return data
