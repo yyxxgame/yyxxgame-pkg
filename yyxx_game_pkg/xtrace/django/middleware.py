@@ -43,13 +43,13 @@ class _DjangoJaegerMiddleware(MiddlewareMixin):
                 if admin_alias:
                     span.set_attributes({"request.admin.alias": admin_alias})
                 settings_middleware = getattr(settings, get_django_middleware_setting(), [])
-                if "django.middleware.gzip.GZipMiddleware" in settings_middleware and response.headers.get(
+                if "django.middleware.gzip.GZipMiddleware" in settings_middleware and response.get(
                         "Content-Encoding") == 'gzip':
                     span.add_event("response", {"params": gzip.decompress(response.content).decode()[:self._log_max_size]})
                 else:
                     span.add_event("response", {"params": response.content.decode()[:self._log_max_size]})
             # inject trace parent to response header
-            TraceContextTextMapPropagator().inject(response.headers)
+            TraceContextTextMapPropagator().inject(response)
         except Exception as e:
             print(e)
         return response
