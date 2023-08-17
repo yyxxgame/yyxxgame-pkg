@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Author   : LvWenQi
 # @Time     : 2023/06/12
-
-import json
 from flask import g, current_app
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import get_current_span
@@ -23,12 +21,7 @@ class FlaskJaegerInstrumentor:
             span = get_current_span()
             # request event
             request_params = g.get("request_params")
-            if request_params:
-                try:
-                    request_params = json.dumps(request_params, ensure_ascii=False)
-                except Exception as e:
-                    print(e)
-                span.add_event("request", {"params": str(request_params)[:log_max_size]})
+            span.add_event("request", {"params": str(request_params)[:log_max_size]})
             # response event
             if jaeger_config.get("is_log"):
                 response_params = g.get("response_params")
