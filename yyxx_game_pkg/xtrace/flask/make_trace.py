@@ -40,15 +40,27 @@ def trace_response(func):
         temp = self.whether_decryption
         self.whether_decryption = False
         response_data_raw = func(self, data)
-        response_data = json.loads(response_data_raw)
-        if isinstance(response_data, dict):
-            trace_info = make_trace_parent()
-            response_data["trace"] = trace_info
-            g.response_params = response_data
-            response_data = json.dumps(response_data)
-            if temp:
-                response_data = encryption_deal_with(response_data, "E")
-            return response_data
-        else:
-            return response_data_raw
+        trace_info = make_trace_parent()
+        try:
+            response_data = json.loads(response_data_raw)
+            if isinstance(response_data, dict):
+                response_data["trace"] = trace_info
+                g.response_params = response_data
+                response_data = json.dumps(response_data)
+                if temp:
+                    response_data = encryption_deal_with(response_data, "E")
+                    g.response_params["encrypt"] = response_data
+                return response_data
+        except Exception as e:
+            pass
+
+        g.response_params = {
+            "response": response_data_raw,
+            "trace": trace_info,
+        }
+        if temp:
+            response_data_raw = encryption_deal_with(response_data_raw, "E")
+            g.response_params["encrypt"] = response_data_raw
+        return response_data_raw
+
     return inner
