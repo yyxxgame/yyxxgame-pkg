@@ -249,6 +249,10 @@ def create_mongo_spec(spec_dict):
     if where_spec:
         where_spec = where_spec[0]
         where_results.update({"$match": combine_where(where_spec)})
+        if select_results["$project"]:
+            # if project is empty means "select *" don't need to update other keys
+            where_projects = update_projects(where_spec, {})
+            select_results["$project"].update(where_projects)
 
     # limit parsing
     limit_spec = spec_dict.get("limit")
@@ -308,16 +312,31 @@ def combine_where(where_spec):
                 else:
                     val = f"{val}$"
             return {key: {op_word: val}}
-        else:
-            res = []
-            for spec in where_spec:
-                res.append(combine_where(spec))
-            return res
-    else:
-        for op_word, vals in where_spec.items():
-            val_res = combine_where(vals)
-            return {COND_KEYWORDS[op_word]: val_res}
+        res = []
+        for spec in where_spec:
+            res.append(combine_where(spec))
+        return res
+    for op_word, vals in where_spec.items():
+        val_res = combine_where(vals)
+        return {COND_KEYWORDS[op_word]: val_res}
 
+
+def update_projects(where_spec, projects):
+    """
+    auto update where key to projects
+    """
+    if isinstance(where_spec, list):
+        if isinstance(where_spec[0], str):
+            key, _ = where_spec[:2]
+            projects.update({key: 1})
+            return projects
+        res = []
+        for spec in where_spec:
+            res.append(update_projects(spec, projects))
+        return res
+    for _, vals in where_spec.items():
+        update_projects(vals, projects)
+    return projects
 
 if __name__ == "__main__":
     # sql = """
@@ -358,8 +377,9 @@ if __name__ == "__main__":
     #     """
     # todo unit test
     sql = """
-        select sum(online) as online_cnt
+        select *
         from player
+        where pid = 4868020 and sid = 2
     """
     sql_spec = sql_to_spec(sql)
     print(sql_spec)
