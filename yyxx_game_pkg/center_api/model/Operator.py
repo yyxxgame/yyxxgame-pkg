@@ -6,17 +6,15 @@
 import json
 
 from redis import AuthenticationError
-from yyxx_game_pkg.helpers.op_helper import OPHelper, mp, redis
+from yyxx_game_pkg.helpers.op_helper import OPHelper
 from yyxx_game_pkg.utils.xstring import parse_json
 
 
 class Operator(OPHelper):
-    """
-    注意：需要先设置 connection 和 redis_handle
-    """
-
     @classmethod
     def get_key(cls, operator, game_channel_id):
+        redis = cls.redis()
+        mp = cls.mp()
         try:
             cache_key = "api_operator_channel_%s_%s_key" % (
                 operator,
@@ -123,7 +121,6 @@ class Operator(OPHelper):
                 sdk_data = parse_json(sdk_data)
             return sdk_data
         except AuthenticationError:
-            print("redis error")
             return {}
         except Exception as e:
             print(e, type(e))

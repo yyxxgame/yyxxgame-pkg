@@ -67,7 +67,7 @@ class BaseRecharge(MapCore, ABC):
         data_ary["player_id"] = data.get(self.params.player_id)
         data_ary["is_check_username"] = self.params.is_check_username
         data_ary["channel_username"] = data.get(self.params.channel_username, "")
-        if len(ext_ary) > 6:
+        if len(ext_ary) > 5:
             data_ary["recharge_id"] = int(ext_ary[5])
 
     def get_params_helper(self, data, data_ary) -> None:
