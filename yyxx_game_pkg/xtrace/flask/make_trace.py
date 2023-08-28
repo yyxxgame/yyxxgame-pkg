@@ -37,12 +37,7 @@ def trace_response(func):
         temp = self.whether_decryption
         self.whether_decryption = False
         response_data_raw = func(self, data)
-        trace_info = make_trace_parent()
-
-        g.response_params = {
-            "trace": trace_info,
-            "response": response_data_raw,
-        }
+        g.response_params = response_data_raw
         if temp:
             response_data_raw = encryption_deal_with(response_data_raw, "E")
         return response_data_raw
