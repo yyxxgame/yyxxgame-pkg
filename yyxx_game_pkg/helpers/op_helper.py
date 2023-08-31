@@ -6,6 +6,7 @@
 import datetime
 import json
 
+from pymysql import Connection
 from pymysql.cursors import Cursor, DictCursor
 from yyxx_game_pkg.conf import settings
 from yyxx_game_pkg.dbops.mysql_op import MysqlOperation
@@ -16,7 +17,7 @@ from yyxx_game_pkg.helpers.redis_helper import get_redis
 class OPHelper:
     # --------------- mysql start ---------------
     @classmethod
-    def connection(cls, mysql_alias="default", dict_cursor=True):
+    def connection(cls, mysql_alias="default", dict_cursor=True) -> Connection:
         db_settings = {}
         for k, v in settings.DATABASES[mysql_alias].items():
             if k == "PORT" and isinstance(v, str) and v.isdigit():  # PORT 必须为数字
@@ -104,7 +105,3 @@ class OPHelper:
         return cls.cache(sql, sql_func, redis_key, ex, redis_alias, mysql_alias)
 
     # --------------- redis cache end ---------------
-
-
-redis = OPHelper.redis()
-mp = OPHelper.mp()
