@@ -41,7 +41,7 @@ class FlaskJaegerInstrumentor:
             tracer_provider=None,
             excluded_urls=None,
             meter_provider=None
-    )
+    ):
         try:
             jaeger_config = app.config["JAEGER"]
             helper.register_to_jaeger(jaeger_config['service_name'], jaeger_config['jaeger_host'],
