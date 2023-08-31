@@ -103,3 +103,48 @@ def add_span_events(event_name: str, events: dict):
     """
     span = get_current_span()
     span.add_event(event_name, events)
+
+
+def get_trace_parent():
+    span = trace.get_current_span()
+    span_context = span.get_span_context()
+    if span_context == trace.INVALID_SPAN_CONTEXT:
+        return {}
+    trace_id = trace.format_trace_id(span_context.trace_id)
+    trace_parent_string = f"00-{trace_id}-{trace.format_span_id(span_context.span_id)}-{span_context.trace_flags:02x}"
+    return {
+        "trace_id": trace_id,
+        "trace_parent_string": trace_parent_string,
+    }
+
+
+def trace_span_extract(ret_trace_id: bool = False, set_attributes: bool = False, operation_name: str = ""):
+    """:cvar
+    函数的span装饰器（trace from trace_parent_string）
+
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            trace_parent_string = kwargs.get('trace_parent_string', '')
+            carrier = {'traceparent': trace_parent_string}
+            ctx = TraceContextTextMapPropagator().extract(carrier=carrier)
+            _operation_name = operation_name
+            if not _operation_name:
+                _operation_name = f"{func.__module__}.{func.__name__}"
+            with _tracer.start_as_current_span(_operation_name, context=ctx) as span:
+                try:
+                    result = func(*args, **kwargs)
+                    if ret_trace_id:
+                        return result, hex(span.get_span_context().trace_id)
+                    if set_attributes:
+                        span.set_attributes({"kwargs": str(kwargs), "args": str(args)})
+                    return result
+                except Exception as e:
+                    span.set_status(Status(StatusCode.ERROR, str(e)))
+                    raise
+
+        return wrapper
+
+    return decorator
