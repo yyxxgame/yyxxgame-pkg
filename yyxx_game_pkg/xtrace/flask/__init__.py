@@ -33,12 +33,27 @@ class FlaskJaegerInstrumentor:
             print(e)
         return response
 
-    def instrument(self, app):
+    def instrument(
+            self,
+            app,
+            request_hook=None,
+            response_hook=None,
+            tracer_provider=None,
+            excluded_urls=None,
+            meter_provider=None
+    )
         try:
             jaeger_config = app.config["JAEGER"]
             helper.register_to_jaeger(jaeger_config['service_name'], jaeger_config['jaeger_host'],
                                       jaeger_config['jaeger_port'])
-            FlaskInstrumentor().instrument_app(app)
+            FlaskInstrumentor().instrument_app(
+                app,
+                request_hook=request_hook,
+                response_hook=response_hook,
+                tracer_provider=tracer_provider,
+                excluded_urls=excluded_urls,
+                meter_provider=meter_provider
+            )
             # add after request trace middleware
             app.after_request_funcs.setdefault(None, []).append(self._after_request)
         except Exception as e:
