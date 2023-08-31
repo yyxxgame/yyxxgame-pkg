@@ -21,13 +21,15 @@ def get_tracer():
     return _tracer
 
 
-def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6831):
+def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6831,
+                       udp_split_oversized_batches: bool = True):
     """
     注册服务到jaeger，这样就可以发送tracer相关信息到jaeger服务器
     Args:
         service_name:  注册的服务明
         jaeger_host:   jaeger地址
-        jaeger_port:
+        jaeger_port:   The port of the Jaeger-Agent.
+        udp_split_oversized_batches: Re-emit oversized batches in smaller chunks.
 
     Returns: TracerProvider
 
@@ -39,6 +41,7 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
     jaeger_exporter = JaegerExporter(
         agent_host_name=jaeger_host,
         agent_port=jaeger_port,
+        udp_split_oversized_batches=udp_split_oversized_batches
     )
 
     # Create a BatchSpanProcessor and add the exporter to it
