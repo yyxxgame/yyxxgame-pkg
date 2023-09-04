@@ -21,13 +21,15 @@ def get_tracer():
     return _tracer
 
 
-def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6831):
+def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6831,
+                       udp_split_oversized_batches: bool = True):
     """
     注册服务到jaeger，这样就可以发送tracer相关信息到jaeger服务器
     Args:
         service_name:  注册的服务明
         jaeger_host:   jaeger地址
-        jaeger_port:
+        jaeger_port:   The port of the Jaeger-Agent.
+        udp_split_oversized_batches: Re-emit oversized batches in smaller chunks.
 
     Returns: TracerProvider
 
@@ -39,6 +41,7 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
     jaeger_exporter = JaegerExporter(
         agent_host_name=jaeger_host,
         agent_port=jaeger_port,
+        udp_split_oversized_batches=udp_split_oversized_batches
     )
 
     # Create a BatchSpanProcessor and add the exporter to it
@@ -48,7 +51,12 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
     trace.get_tracer_provider().add_span_processor(span_processor)
 
 
-def trace_span(ret_trace_id: bool = False, set_attributes: bool = False, operation_name: str = ""):
+def default_attributes_func(*args, **kwargs) -> dict:
+    return {"kwargs": str(kwargs), "args": str(args)}
+
+
+def trace_span(ret_trace_id: bool = False, set_attributes: bool = False, operation_name: str = "",
+               get_attributes_func=default_attributes_func):
     """:cvar
     函数的span装饰器
     """
@@ -65,7 +73,8 @@ def trace_span(ret_trace_id: bool = False, set_attributes: bool = False, operati
                     if ret_trace_id:
                         return result, hex(span.get_span_context().trace_id)
                     if set_attributes:
-                        span.set_attributes({"kwargs": str(kwargs), "args": str(args)})
+                        attributes = get_attributes_func(*args, **kwargs)
+                        span.set_attributes(attributes)
                     return result
                 except Exception as e:
                     span.set_status(Status(StatusCode.ERROR, str(e)))
