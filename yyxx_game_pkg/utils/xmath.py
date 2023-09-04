@@ -4,7 +4,7 @@
 @Author: ltw
 @Time: 2022/9/27
 """
-import xListStr
+from yyxx_game_pkg.utils import xListStr
 
 
 def cal_rate(top, bottom, precision=1, limit=100.0):
