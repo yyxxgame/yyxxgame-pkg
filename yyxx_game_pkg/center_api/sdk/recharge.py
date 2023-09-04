@@ -7,7 +7,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from yyxx_game_pkg.center_api.sdk.map_core import MapCore
-from yyxx_game_pkg.conf import settings
 
 
 @dataclass
