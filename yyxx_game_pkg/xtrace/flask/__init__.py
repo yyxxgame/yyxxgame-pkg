@@ -3,6 +3,9 @@
 # @Time     : 2023/06/12
 from flask import g, current_app
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.pymysql import PyMySQLInstrumentor
 from opentelemetry.trace import get_current_span
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
@@ -43,6 +46,10 @@ class FlaskJaegerInstrumentor:
             meter_provider=None
     ):
         try:
+            RequestsInstrumentor().instrument()  # requests
+            PyMySQLInstrumentor().instrument()  # pymysql
+            RedisInstrumentor().instrument()  # redis
+
             jaeger_config = app.config["JAEGER"]
             helper.register_to_jaeger(jaeger_config['service_name'], jaeger_config['jaeger_host'],
                                       jaeger_config['jaeger_port'])
