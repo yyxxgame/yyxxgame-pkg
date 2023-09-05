@@ -3,6 +3,9 @@
 # @Time     : 2023/06/12
 from flask import g, current_app
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.pymysql import PyMySQLInstrumentor
 from opentelemetry.trace import get_current_span
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
@@ -40,9 +43,20 @@ class FlaskJaegerInstrumentor:
             response_hook=None,
             tracer_provider=None,
             excluded_urls=None,
-            meter_provider=None
+            meter_provider=None,
+            trace_requests=True,
+            trace_redis=True,
+            trace_pymysql=True
     ):
         try:
+            # auto generate span
+            if trace_requests:
+                RequestsInstrumentor().instrument()
+            if trace_redis:
+                RedisInstrumentor().instrument()
+            if trace_pymysql:
+                PyMySQLInstrumentor().instrument()
+
             jaeger_config = app.config["JAEGER"]
             helper.register_to_jaeger(jaeger_config['service_name'], jaeger_config['jaeger_host'],
                                       jaeger_config['jaeger_port'])

@@ -84,7 +84,7 @@ class MapCore(OPHelper):
         return {"ret": code, "msg": msg}
 
     def feedback(
-        self, error_code, msg_data: dict | list = None, msg="", *args, **kwargs
+        self, error_code, msg_data=None, msg="", *args, **kwargs
     ):
         if type(error_code) == dict:
             if not msg:

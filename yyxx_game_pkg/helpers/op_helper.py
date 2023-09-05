@@ -104,7 +104,3 @@ class OPHelper:
         return cls.cache(sql, sql_func, redis_key, ex, redis_alias, mysql_alias)
 
     # --------------- redis cache end ---------------
-
-
-redis = OPHelper.redis()
-mp = OPHelper.mp()

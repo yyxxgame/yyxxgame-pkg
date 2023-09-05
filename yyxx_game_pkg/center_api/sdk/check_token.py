@@ -5,16 +5,12 @@
 # @Desc     : 二次认证
 import time
 from abc import ABC, abstractmethod
-from typing import Callable, NewType
 from urllib.parse import unquote
 
 from yyxx_game_pkg.center_api.sdk.map_core import MapCore
 from yyxx_game_pkg.utils.error_code import ErrorCode
 from yyxx_game_pkg.utils.xhttp import http_request
 from yyxx_game_pkg.utils.xstring import parse_json
-
-SDK_HELPER = NewType("SDK_HELPER", Callable[[...], None])
-RESPONSE_HELPER = NewType("RESPONSE_HELPER", Callable[[...], None])
 
 
 class BaseCheckToken(MapCore, ABC):
@@ -51,7 +47,7 @@ class BaseCheckToken(MapCore, ABC):
         return response_helper(response, **kwargs)
 
     @abstractmethod
-    def response_helper(self, response: dict | None, **kwargs) -> dict:
+    def response_helper(self, response, **kwargs):
         """
         根据需求 return 相应的数据
         :return: {"ret": 1, "user_id": "any_user_id"}
@@ -72,7 +68,7 @@ class BaseCheckToken(MapCore, ABC):
 
         return self.params
 
-    def sdk_helper(self, sdk_exclude=(), **kwargs) -> (dict, dict):
+    def sdk_helper(self, sdk_exclude=(), **kwargs):
         """
         处理 sdk 数据
         :param sdk_exclude: sdk_helper 处理数据，要排除的key
@@ -92,7 +88,7 @@ class BaseCheckToken(MapCore, ABC):
 
         return channel_data, post_data
 
-    def sdk_check_token(self, channel_data, post_data) -> dict | None:
+    def sdk_check_token(self, channel_data, post_data):
         """
         处理方法不适用时，重写此方法
         默认使用发送请求的方式获取token验证结果
@@ -111,7 +107,7 @@ class BaseCheckToken(MapCore, ABC):
         return parse_json(unquote(result))
 
     @property
-    def sdk_version_map(self) -> dict:
+    def sdk_version_map(self):
         """
         sdk version map
         如果存在多个version版本，需要添加对应的版本映射
@@ -123,7 +119,7 @@ class BaseCheckToken(MapCore, ABC):
             },
         }
 
-    def sdk_version_choice(self, **kwargs) -> (SDK_HELPER, RESPONSE_HELPER):
+    def sdk_version_choice(self, **kwargs):
         """
         匹配对应 sdk version 相关方法 sdk_handler response_helper
         """
