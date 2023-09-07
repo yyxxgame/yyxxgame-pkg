@@ -42,7 +42,6 @@ class CeleryInstance:
             register_to_jaeger(**conf_jaeger)
             CeleryInstrumentor().instrument()
             RequestsInstrumentor().instrument()
-            root_log(f"<CeleryInstance> tracer on, jaeger:{conf_jaeger}")
 
         log_str = (
             f"<CeleryInstance> get_celery_instance, app_name:{celery_name}, config:{_app.conf}, publish_flag:"
