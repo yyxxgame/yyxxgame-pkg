@@ -44,10 +44,9 @@ class CeleryInstance:
             RequestsInstrumentor().instrument()
 
         log_str = (
-            f"<CeleryInstance> get_celery_instance, app_name:{celery_name}, config:{_app.conf}, publish_flag:"
-            f"{_app.conf.get('PUBLISH_FLAG')}"
+            f"<CeleryInstance> get_celery_instance, app_name:{celery_name}, publish_flag:{_app.conf.get('PUBLISH_FLAG')}"
         )
-        root_log(log_str)
+        root_log(log_str, level='error')
         return _app
 
     @staticmethod
