@@ -93,7 +93,7 @@ def _get_schedule(schedule_name):
             schedule = importlib.import_module(module)
             is_work_flow = True
         except Exception as e:
-            root_log(e)
+            root_log(e, level='error')
 
     return schedule, is_work_flow
 

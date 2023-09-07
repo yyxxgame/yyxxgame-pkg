@@ -40,7 +40,7 @@ def http_request(
             return None
         return content
     except Exception as e:
-        local_log(f"http_request  Error Exception: {e}")
+        local_log(f"http_request  Error Exception: {e}", level='error')
         return None
 
 
@@ -84,7 +84,7 @@ def http_push_server(url, data, server_api_key):
     :return:
     """
     if not url:
-        local_log(f"Error http_push_server url: {url}  data: {json.dumps(data)}")
+        local_log(f"Error http_push_server url: {url}  data: {json.dumps(data)}", level='error')
         return None
 
     _t = int(time.time())

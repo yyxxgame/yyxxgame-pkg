@@ -48,7 +48,7 @@ def fastapi_except_monitor(func):
             import traceback
 
             err_log = f"<except_monitor> func:{func.__module__}.{func.__name__} exc: {traceback.format_exc()} {e}"
-            local_log(err_log)
+            local_log(err_log, level='error')
             err_msg = {"detail": err_log, "trace_id": get_current_trace_id()}
             add_span_events("error", err_msg)
             raise HTTPException(status_code=500, detail=err_msg)

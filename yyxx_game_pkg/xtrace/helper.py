@@ -2,6 +2,7 @@
 # @Author   : KaiShin
 # @Time     : 2023/2/28
 
+import os
 from functools import wraps
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -22,7 +23,7 @@ def get_tracer():
 
 
 def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6831,
-                       udp_split_oversized_batches: bool = True):
+                       udp_split_oversized_batches: bool = True, **kwargs):
     """
     注册服务到jaeger，这样就可以发送tracer相关信息到jaeger服务器
     Args:
@@ -49,6 +50,8 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
 
     # add to the tracer
     trace.get_tracer_provider().add_span_processor(span_processor)
+
+    set_jaeger_environ(**kwargs)
 
 
 def default_attributes_func(*args, **kwargs) -> dict:
@@ -112,3 +115,13 @@ def add_span_events(event_name: str, events: dict):
     """
     span = get_current_span()
     span.add_event(event_name, events)
+
+
+def set_jaeger_environ(**kwargs):
+    jaeger_web_url = kwargs.get('jaeger_web_url', '')
+    if jaeger_web_url and not os.environ.get('JAEGER_WEB_URL'):
+        os.environ['JAEGER_WEB_URL'] = jaeger_web_url
+    jaeger_web_url_levels = kwargs.get('jaeger_web_url_levels', '')
+    if jaeger_web_url_levels and not os.environ.get('JAEGER_WEB_URL_LEVELS'):
+        os.environ['JAEGER_WEB_URL_LEVELS'] = ','.join(jaeger_web_url_levels) if isinstance(
+            jaeger_web_url_levels, list) else jaeger_web_url_levels

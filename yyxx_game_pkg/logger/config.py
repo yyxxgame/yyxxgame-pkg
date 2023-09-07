@@ -30,7 +30,7 @@ class LogConfig:
                     "class": "yyxx_game_pkg.logger.formatters.TraceFormatter",
                     "format": (
                         "[%(asctime)s,%(msecs)d: %(levelname)s/%(process)d][%(filename)s:%(funcName)s:%(lineno)d]"
-                        "[%(trace_id)s] %(message)s"
+                        "[%(trace_url)s] %(message)s"
                     ),
                 },
             },

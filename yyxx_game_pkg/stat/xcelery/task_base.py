@@ -22,5 +22,6 @@ class TaskCustomBase(Task):
         return super(TaskCustomBase, self).on_success(retval, task_id, args, kwargs)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        root_log(f"<{self._task_type}> on_failure, reason:{exc}, task_id:{task_id}, args:{args}, kwargs:{kwargs}")
+        root_log(f"<{self._task_type}> on_failure, reason:{exc}, task_id:{task_id}, args:{args}, kwargs:{kwargs}",
+                 level='error')
         return super(TaskCustomBase, self).on_failure(exc, task_id, args, kwargs, einfo)

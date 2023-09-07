@@ -4,7 +4,6 @@
 @Author: ltw
 @Time: 2022/9/27
 """
-from yyxx_game_pkg.utils import xListStr
 
 
 def cal_rate(top, bottom, precision=1, limit=100.0):
@@ -58,6 +57,8 @@ class MergeContinuousNumber:
 
     @classmethod
     def parse_to_sql(cls, num_lst: list[int], key_name="", single_split_len=5, batch_num=0):
+        from yyxx_game_pkg.utils import xListStr
+
         if not num_lst:
             return ""
         continuous_num_lst, single_lst = cls.merge_continuous_num(
