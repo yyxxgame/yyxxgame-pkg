@@ -15,5 +15,5 @@ class TraceFormatter(logging.Formatter):
         # 根据当前的日志消息动态生成写入logger的消息
         return (
             f"""[{self.formatTime(record)}] [pid:{record.process}] [{record.filename} {record.module} """
-            f"""{record.funcName}:{record.lineno}] [{record.name}:{record.levelname}] - [{trace_id}] {msg}"""
+            f"""{record.funcName}:{record.lineno}] [{record.name}:{record.levelname}] - ["trace":"{trace_id}"] {msg}"""
         )
