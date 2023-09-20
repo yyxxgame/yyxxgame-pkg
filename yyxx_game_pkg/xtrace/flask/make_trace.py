@@ -3,6 +3,7 @@
 # @Time     : 2023/08/14 14:23:05
 # @Software : python3.6
 # @Desc     : flask trace
+import json
 from functools import wraps
 
 from flask import g
@@ -25,7 +26,8 @@ def trace_request(func):
     @wraps(func)
     def inner(*args, **kwargs):
         res = func(*args, **kwargs)
-        g.request_params = kwargs
+        kwargs.get("data_list", {}).pop("ch_conter", None)
+        g.request_params = json.dumps(kwargs)
         return res
 
     return inner
@@ -51,7 +53,7 @@ def set_trace_tags(params=(), action=""):
         def inner(*args, **kwargs):
             res = func(*args, **kwargs)
             span = trace.get_current_span()
-            attributes = {k: kwargs[k] for k in params}
+            attributes = {k: kwargs.get(k, None) for k in params}
             attributes["action"] = action
             span.set_attributes(attributes)
             return res
