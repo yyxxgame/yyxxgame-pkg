@@ -4,14 +4,20 @@ log config
 """
 
 
-class LogConfig:
+class BaseLogConfig:
+    DEBUG_LOGGER_NAME = "py_debug"
+    LOCAL_LOGGER_NAME = "py_local"
+
+    @classmethod
+    def dict_config(cls):
+        return {}
+
+
+class LogConfig(BaseLogConfig):
     """
     log config class
     不同项目配置调整继承该类
     """
-
-    DEBUG_LOGGER_NAME = "py_debug"
-    LOCAL_LOGGER_NAME = "py_local"
 
     LOCAL_LOG_FILE = "/tmp/local.log"
     DEBUG_LOG_FILE = "/tmp/debug.log"

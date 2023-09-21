@@ -11,13 +11,13 @@ import traceback
 from typing import Literal, Type, TypeVar
 from pathlib import Path
 
-from .config import LogConfig
+from .config import BaseLogConfig, LogConfig
 
 # log日志级别
 LogLevelTyping = Literal["critical", "error", "warning", "info", "debug"]
 
 # LogConfig类及其子类
-LogConfigTyping = TypeVar("LogConfigTyping", bound=LogConfig)
+LogConfigTyping = TypeVar("LogConfigTyping", bound=BaseLogConfig)
 
 
 def root_log(msg, level: LogLevelTyping = "warning", stacklevel: int = 2, addstacklevel=0):
@@ -39,19 +39,22 @@ class Log:
 
     _instance = None
     _init = False
-    config = None
+    config = BaseLogConfig
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, log_config: Type[LogConfigTyping] = LogConfig):
-        if self._init:
+    def __init__(self, log_config: Type[LogConfigTyping] = BaseLogConfig):
+        if self._init or not log_config:
             return
         self._init = True
         # 日志配置初始化
-        self.init_config(log_config)
+        if not logging.getLogger().handlers:
+            self.init_config(log_config)
+        elif not self.config:
+            self.config = BaseLogConfig
 
     @classmethod
     def init_config(cls, log_config: Type[LogConfigTyping] = LogConfig):
