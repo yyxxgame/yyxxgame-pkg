@@ -23,7 +23,8 @@ def cal_rate(top, bottom, precision=1, limit=100.0):
         limit = int(limit)
     if limit > 0:
         res = min(limit, res)
-    return "{}%".format(res)
+    fmt = f"%0.{precision}f"
+    return "{}%".format(fmt % res)
 
 
 def compare_rate(val_a, val_b):
@@ -37,17 +38,22 @@ def compare_rate(val_a, val_b):
     return rate
 
 
-def cal_round(top, bottom, precision=1):
+def cal_round(top, bottom, precision=1, string=False):
     """
     # 除
     :param top: 分子
     :param bottom: 分母
     :param precision: 小数点
+    :param string: 是否返回string
     :return:
     """
     if bottom == 0:
         return 0
-    return round(float(top) / bottom, precision)
+    res = round(float(top) / bottom, precision)
+    if string:
+        fmt = f"%0.{precision}f"
+        return fmt % res
+    return res
 
 
 class MergeContinuousNumber:
