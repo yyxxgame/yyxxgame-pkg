@@ -23,7 +23,8 @@ def get_tracer():
 
 
 def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6831,
-                       udp_split_oversized_batches: bool = True):
+                       udp_split_oversized_batches: bool = True,
+                       SpanProcessorClass=BatchSpanProcessor):
     """
     注册服务到jaeger，这样就可以发送tracer相关信息到jaeger服务器
     Args:
@@ -31,6 +32,7 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
         jaeger_host:   jaeger地址
         jaeger_port:   The port of the Jaeger-Agent.
         udp_split_oversized_batches: Re-emit oversized batches in smaller chunks.
+        SpanProcessorClass: default BatchSpanProcessor
 
     Returns: TracerProvider
 
@@ -46,7 +48,7 @@ def register_to_jaeger(service_name: str, jaeger_host: str, jaeger_port: int = 6
     )
 
     # Create a BatchSpanProcessor and add the exporter to it
-    span_processor = BatchSpanProcessor(jaeger_exporter)
+    span_processor = SpanProcessorClass(jaeger_exporter)
 
     # add to the tracer
     trace.get_tracer_provider().add_span_processor(span_processor)
