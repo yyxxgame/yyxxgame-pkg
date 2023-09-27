@@ -6,10 +6,27 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.pymysql import PyMySQLInstrumentor
-from opentelemetry.trace import get_current_span
+from opentelemetry.sdk.trace import ReadableSpan
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.trace import get_current_span, SpanKind
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
 from yyxx_game_pkg.xtrace import helper
+from yyxx_game_pkg.conf import settings
+
+
+class CustomSpanProcessor(BatchSpanProcessor):
+    def on_end(self, span: ReadableSpan) -> None:
+        jaeger_config = settings.JAEGER
+        exclude_spans = jaeger_config.get("exclude_spans", {})
+
+        for k, v in exclude_spans.items():
+            if span.attributes.get(k) in v:
+                # 设置 span 的 kind 为 INTERNAL，表示不进行追踪
+                span._kind = SpanKind.INTERNAL
+                return
+
+        super().on_end(span)
 
 
 class FlaskJaegerInstrumentor:
@@ -44,9 +61,9 @@ class FlaskJaegerInstrumentor:
             tracer_provider=None,
             excluded_urls=None,
             meter_provider=None,
-            trace_requests=True,
-            trace_redis=True,
-            trace_pymysql=True
+            trace_requests=False,
+            trace_redis=False,
+            trace_pymysql=False
     ):
         try:
             # auto generate span
@@ -58,8 +75,11 @@ class FlaskJaegerInstrumentor:
                 PyMySQLInstrumentor().instrument()
 
             jaeger_config = app.config["JAEGER"]
-            helper.register_to_jaeger(jaeger_config['service_name'], jaeger_config['jaeger_host'],
-                                      jaeger_config['jaeger_port'])
+            span_process_class = CustomSpanProcessor if jaeger_config.get("exclude_spans") else BatchSpanProcessor
+            helper.register_to_jaeger(
+                jaeger_config['service_name'], jaeger_config['jaeger_host'], jaeger_config['jaeger_port'],
+                SpanProcessorClass=span_process_class
+            )
             FlaskInstrumentor().instrument_app(
                 app,
                 request_hook=request_hook,
