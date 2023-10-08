@@ -45,7 +45,8 @@ class FlaskJaegerInstrumentor:
             jaeger_config = app.config["JAEGER"]
             helper.register_to_jaeger(jaeger_config['service_name'], jaeger_config['jaeger_host'],
                                       jaeger_config['jaeger_port'])
-            FlaskInstrumentor().instrument_app(app)
+            excluded_urls = jaeger_config.get("excluded_urls", None)
+            FlaskInstrumentor().instrument_app(app, excluded_urls=excluded_urls)
             # add after request trace middleware
             app.after_request_funcs.setdefault(None, []).append(self._after_request)
         except Exception as e:
