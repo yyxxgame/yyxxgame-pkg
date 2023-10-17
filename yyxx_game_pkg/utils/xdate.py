@@ -23,7 +23,7 @@ def str2date(date_str):
     if isinstance(date_str, bytes):
         date_str = date_str.decode(encoding="utf8")
 
-    if isinstance(date_str, (int, float)) or date_str.isnumeric():
+    if isinstance(date_str, (int, float)) or (isinstance(date_str, str) and date_str.isnumeric()):
         # 时间戳
         if len(str(date_str)) == 8:
             # 20230101
