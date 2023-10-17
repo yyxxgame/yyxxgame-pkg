@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 
 
+# test
 def empty_df(columns=None):
     """
     :param columns:
@@ -100,9 +101,7 @@ def cal_round_rate(data, precision=2, suffix="%", invalid_value="-"):
         data = data.astype(float).round(precision)
         if precision == 0:
             data = data.astype(int)
-        return data.apply(
-            lambda d: invalid_value if (d == np.inf or np.isnan(d)) else f"{d}{suffix}"
-        )
+        return data.apply(lambda d: invalid_value if (d == np.inf or np.isnan(d)) else f"{d}{suffix}")
     if isinstance(data, (int, float)):
         if np.isnan(data) or data == np.inf:
             return invalid_value
