@@ -304,7 +304,7 @@ def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
         money_df, "money", bins=[0, 8, 41], max_label_fmt="{}+"
     ) =>
     # player_id, money, money_label, label_rank
-    # 19296,    0,  "",    -1
+    # 19296,    0,  NaN,    NaN
     # 21169,    8,  "1-8",    8
     # 24003,    98, "41+”,    41
     insert_zero : 是否在bins最前面插入0
@@ -313,7 +313,7 @@ def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
 
     def prefix_bins(_bins):
         _bins = sorted(map(int, _bins))
-        if insert_zero and _bins[0] != 0:
+        if insert_zero and _bins[0] > 0:
             _bins.insert(0, 0)
         return _bins
 
@@ -323,14 +323,11 @@ def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
     def cut_bins(row):
         val = row[key]
         if not val:
-            return "", -1
-
-        if val > bins[-1]:
-            val = bins[-1]
+            return np.nan, np.nan
 
         position = bisect_left(bins, val)
-        if position <= 0:
-            return "", -1
+        if position >= len(bins):
+            return np.nan, np.nan
         left_val = bins[position - 1] + 1
         right_val = bins[position]
         labels = f"{left_val}{concat}{right_val}"
