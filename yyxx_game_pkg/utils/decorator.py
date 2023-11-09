@@ -10,6 +10,7 @@ import random
 import time
 import traceback
 from concurrent import futures
+import os
 
 from yyxx_game_pkg.logger.log import root_log
 from yyxx_game_pkg.xtrace.helper import get_current_trace_id
@@ -140,7 +141,7 @@ def singleton_unique(cls):
 
     @functools.wraps(cls)
     def get_instance(*args, **kw):
-        unique_key = f"{cls}_{args}_{kw}"
+        unique_key = f"{os.getpid()}_{cls}_{args}_{kw}"
         if unique_key not in instances:
             instances[unique_key] = cls(*args, **kw)
         return instances[unique_key]
@@ -154,7 +155,7 @@ def singleton_unique_obj_args(cls):
 
     @functools.wraps(cls)
     def get_instance(*args, **kw):
-        unique_key = f"{cls}_{list(map(str, args))}_{kw}"
+        unique_key = f"{os.getpid()}_{cls}_{list(map(str, args))}_{kw}"
         if unique_key not in instances:
             instances[unique_key] = cls(*args, **kw)
         return instances[unique_key]

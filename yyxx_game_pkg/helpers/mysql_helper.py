@@ -25,6 +25,7 @@ class MysqlConfig:
     DB = None
     USE_UNICODE = None
     CHARSET = None
+    MIN_CACHED = None
     MAX_CACHED = None
     MAX_CONNECTIONS = None
     CURSOR = None
@@ -47,6 +48,7 @@ class MysqlDbPool(object):
     def __init__(self, config: MysqlConfig):
         self.DB_POOL = PooledDB(
             creator=pymysql,
+            mincached=config.MIN_CACHED,
             maxcached=config.MAX_CACHED,
             maxconnections=config.MAX_CONNECTIONS,
             host=config.HOST,
@@ -84,6 +86,7 @@ def get_dbpool(config: dict) -> MysqlDbPool:
         DB = config["db"]
         USE_UNICODE = config.get("use_unicode", True)
         CHARSET = config.get("charset", "utf8")
+        MIN_CACHED = config.get("mincached", 0)
         MAX_CACHED = config.get("maxcached", 0)
         MAX_CONNECTIONS = config.get("maxconnections", 0)
         CURSOR = config.get("cursor", Cursor)
