@@ -199,11 +199,11 @@ def date_type_trans(day, date_type=DAY, fmt="%Y%m%d", version_configs=None):
     :return: 周期字符串
     """
     if date_type == DAY:
-        return datetime.datetime.strptime(str(day), fmt).strftime("%Y-%m-%d")
+        return f"{int(day / 10000)}-{int(day % 10000 / 100)}-{day % 100}"
     if date_type == WEEK:
         return get_week_str(day, fmt)
     if date_type == MONTH:
-        return datetime.datetime.strptime(str(day), fmt).strftime("%Y年%m月")
+        return f"{int(day / 10000)}年{int(day % 10000 / 100)}月"
     if date_type == VERSION:
         if version_configs is None:
             return day
