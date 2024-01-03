@@ -1,0 +1,9 @@
+{
+    "task": [
+        {
+          "/**/": "缓存刷新任务[xcache刷新]",
+          "interval": "*/2 * * * *",
+          "schedule": "schedule_cache_refresh"
+        }
+    ]
+}

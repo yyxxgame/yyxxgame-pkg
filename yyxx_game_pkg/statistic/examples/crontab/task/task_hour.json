@@ -1,0 +1,18 @@
+{
+  "task": [
+    {
+      "/**/": "每小时0分统计 bitmap中间表统计 新增用户登录统计 新增用户充值统计",
+      "interval": "0 0-23 * * *",
+      "schedule": "schedule_work_flow_hour"
+    }, {
+      "/**/": "每小时0分统计 bitmap中间表统计 新增用户登录统计 新增用户充值统计",
+      "interval": "0 0-23 * * *",
+      "schedule": "schedule_statistic_start_of_hour"
+    },
+    {
+      "/**/": "每小时10分统计 热词聊天上报(数据中心)",
+      "interval": "10 0-23 * * *",
+      "schedule": "schedule_work_flow_heat_words"
+    }
+  ]
+}

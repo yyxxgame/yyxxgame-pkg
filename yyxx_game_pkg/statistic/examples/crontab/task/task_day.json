@@ -1,0 +1,39 @@
+{
+  "task": [
+    {
+      "/**/": "0点跨天任务(工作流)",
+      "interval": "0 0 * * *",
+      "schedule": "schedule_work_flow_day"
+    },
+    {
+      "/**/": "4点跨天任务",
+      "interval": "10 4 * * *",
+      "schedule": "schedule_statistic_task_day_4"
+    },
+    {
+      "/**/": "4点跨天任务(工作流)",
+      "interval": "0 4 * * *",
+      "schedule": "schedule_work_flow_day_4"
+    },
+    {
+      "/**/": "6点任务(工作流)",
+      "interval": "0 6 * * *",
+      "schedule": "schedule_work_flow_day_6"
+    },
+    {
+      "/**/": "9点数据监控检测",
+      "interval": "0 9 * * *",
+      "schedule": "schedule_statistic_task_monitor"
+    },
+    {
+      "/**/": "12,18点重复上报数据监控检测",
+      "interval": "0 12,18 * * *",
+      "schedule": "schedule_statistic_task_monitor_repeat_report"
+    },
+    {
+      "/**/": "每周四凌晨1点30分AI合服申请特征统计",
+      "interval": "30 1 4 * *",
+      "schedule": "schedule_statistic_server_merge_apply_feature"
+    }
+  ]
+}

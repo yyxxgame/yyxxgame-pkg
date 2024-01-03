@@ -1,0 +1,6 @@
+{
+    "register_path": "schedule_rule",
+    "dispatch_host": "http://0.0.0.0:8171",
+    "jaeger": {
+    }
+}
