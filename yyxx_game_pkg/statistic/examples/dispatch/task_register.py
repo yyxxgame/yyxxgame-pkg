@@ -9,7 +9,7 @@ def unique_function_name_instance(**kwargs):            -> 注册到celery的key
 
 """
 from celery import current_app as app
-from yyxx_game_pkg.stat.xcelery.task_base import TaskCustomBase
+from yyxx_game_pkg.statistic.xcelery.task_base import TaskCustomBase
 from yyxx_game_pkg.xtrace.helper import trace_span
 
 

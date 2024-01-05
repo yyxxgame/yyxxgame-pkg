@@ -4,6 +4,10 @@
 @Author: ltw
 @Time: 2024/1/3
 """
+
+# 提交任务
+# submit.py -c "config/config.test.local.json" -s schedule_test_workflow@schedule_test
+
 # 规则名 [仅做标识用, 无其他含义 2024.01.03]
 SCHEDULE_NAME = "schedule_test_work_flow"
 

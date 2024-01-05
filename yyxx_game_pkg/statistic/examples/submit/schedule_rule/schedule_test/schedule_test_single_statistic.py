@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-@File: schedule_test_single_statistic_1.py
+@File: schedule_test_single_statistic.py
 @Author: ltw
 @Time: 2023/3/24
 """
+
+# 提交任务
+# submit.py -c "config/config.test.local.json" -s schedule_test_single_statistic@schedule_test
+
 # 规则名 [仅做标识用, 无其他含义 2024.01.03]
 SCHEDULE_NAME = "schedule_test_single_statistic_1"
 

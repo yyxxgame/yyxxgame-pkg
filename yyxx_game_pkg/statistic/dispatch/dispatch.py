@@ -9,6 +9,11 @@ from .route import router
 
 
 def startup(port: int = 8080, conf_jaeger: dict = None):
+    """
+    :param port:
+    :param conf_jaeger:
+    :return:
+    """
     # fast api
     app = fastapi.FastAPI()
     app.include_router(router)

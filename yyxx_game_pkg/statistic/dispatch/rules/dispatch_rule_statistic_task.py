@@ -7,11 +7,11 @@
 
 import copy
 import datetime
+import logging
 import random
 from math import sqrt
 
 from celery import current_app as app
-from yyxx_game_pkg.stat.log import local_log
 from yyxx_game_pkg.dbops.mysql_op import MysqlOperation
 from yyxx_game_pkg.helpers.mysql_helper import get_dbpool
 from yyxx_game_pkg.utils.xdate import split_date_str_by_day
@@ -20,6 +20,8 @@ from yyxx_game_pkg.utils.xListStr import split_list
 from ..core.manager import rule_register
 from .rule_base import ProtoSchedule, RuleBase
 
+logger = logging.getLogger(__name__)
+
 
 class DispatchRuleStatisticTaskLogic(RuleBase):
     """
@@ -27,6 +29,10 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
     """
 
     def build(self, schedule: ProtoSchedule):
+        """
+        :param schedule:
+        :return:
+        """
         sig = self.build_sig_logic(schedule)
         return sig
 
@@ -53,12 +59,15 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
         if not param_list:
             return None
 
-        local_log(
-            "<DispatchRule> build_sig_logic,"
-            f"schedule_name:{schedule_name}, auth: {auth_info}, "
-            f"queue_name:{queue_name}, stat_ids:{content_info['statistic_ids']}, "
-            f"task_len:{len(param_list)}, "
-            f"param:{param_list[0]}"
+        logger.info(
+            "<DispatchRule> build_sig_logic,schedule_name:%s, "
+            "auth: %s, queue_name:%s, stat_ids:%s, task_len:%d, param:%s",
+            schedule_name,
+            auth_info,
+            queue_name,
+            content_info["statistic_ids"],
+            len(param_list),
+            param_list[0],
         )
 
         # 构建signature
@@ -83,7 +92,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
         # 获取server_ids
         server_ids = self.__parse_server_ids(content)
         if not server_ids:
-            local_log(f"<DispatchRule> appoint_server_ids is None, content:{content}")
+            logger.info("<DispatchRule> appoint_server_ids is None, content:%s", content)
             status = ex_params.get("status", "")
             server_ids = self.get_all_server_ids(status)
 
@@ -104,7 +113,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
             if k:
                 continue
             _e = f"date_interval:{date_interval}, statistic_ids{statistic_ids}, server_ids{server_ids}"
-            local_log(f"[ERROR] <DispatchRule> __make_content_info, params {_e}")
+            logger.info("[ERROR] <DispatchRule> __make_content_info, params %s", _e)
             return None
 
         info_obj = {
@@ -144,39 +153,25 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
             # 当前小时
             # 01分处理为前一小时
             fix_0 = now + datetime.timedelta(minutes=-1)
-            sdate = datetime.datetime(
-                fix_0.year, fix_0.month, fix_0.day, fix_0.hour, 00, 00, 0
-            )
-            edate = datetime.datetime(
-                fix_0.year, fix_0.month, fix_0.day, fix_0.hour, 59, 59, 0
-            )
+            sdate = datetime.datetime(fix_0.year, fix_0.month, fix_0.day, fix_0.hour, 00, 00, 0)
+            edate = datetime.datetime(fix_0.year, fix_0.month, fix_0.day, fix_0.hour, 59, 59, 0)
         elif date_type == "ACROSS_DAY":
             # 昨天一天的数据
             yesterday = now + datetime.timedelta(days=-1)
-            sdate = datetime.datetime(
-                yesterday.year, yesterday.month, yesterday.day, 00, 00, 00, 0
-            )
-            edate = datetime.datetime(
-                yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 0
-            )
+            sdate = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 00, 00, 00, 0)
+            edate = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 0)
         elif date_type == "WEEK":
             # 昨天的周一至昨天的数据
             yesterday = now + datetime.timedelta(days=-1)
             week = yesterday.weekday()
             monday = yesterday + datetime.timedelta(days=-week)
-            sdate = datetime.datetime(
-                monday.year, monday.month, monday.day, 00, 00, 00, 0
-            )
-            edate = datetime.datetime(
-                yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 0
-            )
+            sdate = datetime.datetime(monday.year, monday.month, monday.day, 00, 00, 00, 0)
+            edate = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 0)
         elif date_type == "MONTH":
             # 昨天的月初至昨天的数据
             yesterday = now + datetime.timedelta(days=-1)
             sdate = datetime.datetime(yesterday.year, yesterday.month, 1, 00, 00, 00, 0)
-            edate = datetime.datetime(
-                yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 0
-            )
+            edate = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 0)
         else:
             return []
 
@@ -197,9 +192,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
             else:
                 statistic_ids = result_ids
         if not statistic_ids:
-            local_log(
-                f"[ERROR] <DispatchRuleStatisticTask> statistic_ids is None, content:{content}"
-            )
+            logger.info("[ERROR] <DispatchRuleStatisticTask> statistic_ids is None, content:%s", content)
             return []
         return statistic_ids
 
@@ -230,18 +223,16 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
         if cal_factor <= 1:
             p_info["server_id_slice_size"] = standard_server_slice
         else:
-            p_info["server_id_slice_size"] = int(
-                standard_server_slice * sqrt(cal_factor)
-            )
+            p_info["server_id_slice_size"] = int(standard_server_slice * sqrt(cal_factor))
 
         p_info["statistic_ids_slice_size"] = 1  # 每个统计单独分片
-        task_cnt = int(
-            len_stats_ids * max(len_server_ids / p_info["server_id_slice_size"], 1)
-        )
-        local_log(
-            "<__auto_split> "
-            f"len_stats_ids:{len_stats_ids}, len_server_ids:{len_server_ids}, "
-            f"info.server_id_slice_size:{p_info['server_id_slice_size']}, task_cnt:{task_cnt}"
+        task_cnt = int(len_stats_ids * max(len_server_ids / p_info["server_id_slice_size"], 1))
+        logger.info(
+            "<__auto_split> len_stats_ids:%d, len_server_ids:%d, info.server_id_slice_size:%s, task_cnt:%d",
+            len_stats_ids,
+            len_server_ids,
+            p_info["server_id_slice_size"],
+            task_cnt,
         )
 
     def __split_content_info(self, info: dict):
@@ -250,15 +241,11 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
             self.__auto_set_slice_size(info)
 
         # 服务器列表切片
-        server_id_group = split_list(
-            info["appoint_server_ids"], info["server_id_slice_size"]
-        )
+        server_id_group = split_list(info["appoint_server_ids"], info["server_id_slice_size"])
 
         # 统计id切片
         if info["statistic_ids_slice_size"] > 0:
-            statistic_id_group = split_list(
-                info["statistic_ids"], info["statistic_ids_slice_size"]
-            )
+            statistic_id_group = split_list(info["statistic_ids"], info["statistic_ids_slice_size"])
         else:
             statistic_id_group = [info["statistic_ids"]]
 

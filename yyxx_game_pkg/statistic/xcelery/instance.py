@@ -6,9 +6,9 @@
 celery 实例入口
 """
 import argparse
-from celery import Celery
+import logging
 
-from yyxx_game_pkg.stat.log import root_log
+from celery import Celery
 
 
 class CeleryInstance:
@@ -43,10 +43,8 @@ class CeleryInstance:
             CeleryInstrumentor().instrument()
             RequestsInstrumentor().instrument()
 
-        log_str = (
-            f"<CeleryInstance> get_celery_instance, app_name:{celery_name}, publish_flag:{_app.conf.get('PUBLISH_FLAG')}"
-        )
-        root_log(log_str, level='error')
+        log_str = f"<CeleryInstance> get_celery_instance, app_name:{celery_name}, publish_flag:{_app.conf.get('PUBLISH_FLAG')}"
+        logging.info(log_str)
         return _app
 
     @staticmethod

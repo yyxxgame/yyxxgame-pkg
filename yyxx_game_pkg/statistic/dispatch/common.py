@@ -2,10 +2,9 @@
 # @Author   : KaiShin
 # @Time     : 2023/3/14
 import functools
-
+import logging
 from fastapi.exceptions import HTTPException
 
-from yyxx_game_pkg.stat.log import local_log
 from yyxx_game_pkg.xtrace.helper import get_current_trace_id, add_span_events
 
 
@@ -42,7 +41,7 @@ def fastapi_except_monitor(func):
             import traceback
 
             err_log = f"<except_monitor> func:{func.__module__}.{func.__name__} exc: {traceback.format_exc()} {e}"
-            local_log(err_log, level='error')
+            logging.error(err_log)
             err_msg = {"detail": err_log, "trace_id": get_current_trace_id()}
             add_span_events("error", err_msg)
             raise HTTPException(status_code=500, detail=err_msg)

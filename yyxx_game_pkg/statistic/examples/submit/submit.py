@@ -9,7 +9,7 @@ import json
 import pathlib
 import sys
 
-from stat_pkg.submit.export import submit_schedule
+from yyxx_game_pkg.statistic.submit.export import submit_schedule
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(allow_abbrev=False)

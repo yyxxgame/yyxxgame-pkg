@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2023/3/9
+import logging
 import traceback
-
-from yyxx_game_pkg.stat.log import local_log
 
 # region logic入口
 from yyxx_game_pkg.xtrace.helper import get_current_trace_id
@@ -12,6 +11,8 @@ from ..common import fastapi_except_monitor
 from ..core.manager import RuleManager
 from ..core.structs import ProtoSchedule
 from .workflows import WorkFlowMethods
+
+logger = logging.getLogger(__name__)
 
 
 @fastapi_except_monitor
@@ -24,7 +25,7 @@ def task_logic(msg):
     task_sig_list = parse_task(msg)
     if not task_sig_list:
         err_msg = f"<task_logic> main_dispatch_logic, parse task failed: {traceback.format_exc()}"
-        local_log(err_msg)
+        logger.info(err_msg)
         return []
     # 分发任务
     return dispatch_tasks(task_sig_list)
@@ -48,13 +49,13 @@ def parse_task(schedule):
 
     # 校验队列名
     if schedule.schedule_queue_name is None:
-        local_log(f"<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule:{schedule}")
+        logger.info("<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule: %s", schedule)
         return task_sig_list
 
     # 获取对应计划解析规则
     rule = RuleManager().rules.get(instance_name)
     if not rule:
-        local_log(f"<parse_command_data> rule is None, instance_name:{instance_name}")
+        logger.info("<parse_command_data> rule is None, instance_name: %s", instance_name)
         return task_sig_list
 
     # 构建signature列表
@@ -93,6 +94,10 @@ def _dispatch_one_task(task_sig):
 
 
 def dispatch_tasks(task_sig_list):
+    """
+    :param task_sig_list:
+    :return:
+    """
     task_id_list = []  # task id列表
     task_type_list = []  # task类型列表（日志显示用）
     task_queue_flag_list = []  # task队列名列表（日志显示用）
@@ -103,7 +108,8 @@ def dispatch_tasks(task_sig_list):
 
         queue = task_sig.options.get("queue")
         priority = task_sig.options.get("priority")
-        task_queue_flag_list.append(f"{queue}@{priority}")
+        queue_flag = f"{queue}@{priority}"
+        task_queue_flag_list.append(queue_flag)
 
         # 获取任务数
         WorkFlowMethods.reset_max_sig_cnt()
@@ -113,15 +119,19 @@ def dispatch_tasks(task_sig_list):
         # 提交任务
         m_task_id, s_task_id_list = _dispatch_one_task(task_sig)
         task_id_list.append(m_task_id)
-        local_log(
-            f"<dispatch_tasks> record_task_id, queue:{queue}@{priority}, "
-            f"m_task_id:{m_task_id}, "
-            f"s_task_len:{len(s_task_id_list)}, s_task_id_list:{s_task_id_list}"
+        logger.info(
+            "<dispatch_tasks> record_task_id, queue:%s, m_task_id:%s, s_task_len:%d, s_task_id_list:%s",
+            queue_flag,
+            m_task_id,
+            len(s_task_id_list),
+            s_task_id_list,
         )
 
-    local_log(
-        f"<dispatch_tasks> dispatch_tasks, queue_name:{task_queue_flag_list} "
-        f"task_cnt:{task_cnt}, max_sig_cnt:{max_sig_cnt}"
+    logger.info(
+        "<dispatch_tasks> dispatch_tasks, queue_name:%s, task_cnt:%s, max_sig_cnt:%s",
+        task_queue_flag_list,
+        task_cnt,
+        max_sig_cnt,
     )
     return task_id_list
 

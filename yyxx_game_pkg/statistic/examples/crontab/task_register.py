@@ -8,11 +8,11 @@ def unique_function_name_instance(**kwargs):            -> 注册到celery的key
     return function_instance(**kwargs)                  -> 返回业务入口
 
 """
+import logging
 import subprocess
 from celery import current_app as app
-from yyxx_game_pkg.stat.xcelery.task_base import TaskCustomBase
+from yyxx_game_pkg.statistic.xcelery.task_base import TaskCustomBase
 from yyxx_game_pkg.xtrace.helper import trace_span
-from yyxx_game_pkg.logger.log import root_log as local_log
 
 
 @app.task(base=TaskCustomBase, ignore_result=True)
@@ -27,4 +27,4 @@ def crontab_task_instance(*_, **kwargs):
     cmd = kwargs["cmd"]
     # cmd = "python --version"
     output_str = subprocess.getstatusoutput(cmd)
-    local_log(f"crontab_task_instance cmd:{cmd}, res:{output_str}")
+    logging.info("crontab_task_instance cmd:%s, res:%s", cmd, output_str)

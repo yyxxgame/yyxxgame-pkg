@@ -5,7 +5,6 @@
 @Time: 2023/12/28
 """
 from celery import chain, group
-from yyxx_game_pkg.stat.log import local_log
 
 from ..core.manager import rule_register
 from .dispatch_rule_statistic_task import DispatchRuleStatisticTaskLogic

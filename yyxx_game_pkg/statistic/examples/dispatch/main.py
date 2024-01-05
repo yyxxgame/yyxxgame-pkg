@@ -4,10 +4,17 @@
 @Author: ltw
 @Time: 2023/3/22
 """
-import os
 import argparse
-from yyxx_game_pkg.stat.xcelery.instance import CeleryInstance
-from public.log import local_log
+import logging
+import os
+
+from rules.export import auto_import
+
+from yyxx_game_pkg.statistic.dispatch.dispatch import startup
+from yyxx_game_pkg.statistic.xcelery.instance import CeleryInstance
+from yyxx_game_pkg.statistic.log import logging_init
+
+logging_init()
 
 os.environ.setdefault("CELERY_CONFIG_MODULE", "config.celery_config_test")
 app = CeleryInstance.get_celery_instance()
@@ -17,11 +24,9 @@ if __name__ == "__main__":
     args = parser.parse_known_args()[0]
 
     port = int(args.port) if args.port else 8080
-    local_log("dispatch main start")
+    logging.info("dispatch main start")
     # run
     # python main.py --config /your/path/celery_config.py
-    from rules import auto_import
-    from stat_pkg.dispatch.dispatch import startup
 
     # auto load rules
     auto_import()

@@ -5,12 +5,11 @@
 """
 celery自定义任务基类
 """
+import logging
 import time
 from abc import ABC
 
 from celery import Task
-
-from yyxx_game_pkg.stat.log import local_log
 
 
 class TaskCustomBase(Task, ABC):
@@ -38,7 +37,7 @@ class TaskCustomBase(Task, ABC):
         """
         self._start_time = time.time()
         kw_logs = self.kwargs_logs(kwargs)
-        local_log(f"<{self._task_type}> before_start: {kw_logs}")
+        logging.info("<%s> before_start: %s", self._task_type, kw_logs)
 
     def on_success(self, retval, task_id, args, kwargs):
         """
@@ -46,9 +45,7 @@ class TaskCustomBase(Task, ABC):
         """
         end_time = time.time()
         kw_logs = self.kwargs_logs(kwargs)
-        local_log(
-            f"<{self._task_type}> on_success({end_time - self._start_time:.2f}s): {kw_logs}"
-        )
+        logging.info("<%s> on_success(%s): %s", self._task_type, f"{end_time - self._start_time:.2f}s", kw_logs)
         return super().on_success(retval, task_id, args, kwargs)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
@@ -57,9 +54,14 @@ class TaskCustomBase(Task, ABC):
         :return:
         """
         end_time = time.time()
-        local_log(
-            f"<{self._task_type}> on_failure({end_time - self._start_time:.2f}s): "
-            f"reason:{exc}, task_id:{task_id}, args:{args}, kwargs:{kwargs}"
+        logging.info(
+            "<%s> on_failure(%s): reason:%s, task_id:%s, args:%s, kwargs:%s",
+            self._task_type,
+            f"{end_time - self._start_time:.2f}s",
+            exc,
+            task_id,
+            args,
+            kwargs,
         )
         return super().on_failure(exc, task_id, args, kwargs, einfo)
 

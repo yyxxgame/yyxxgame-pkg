@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2022/2/16
-import os
 import json
+import logging
+import os
+
 from celery.schedules import crontab
-from yyxx_game_pkg.stat.log import local_log
 
 
 class TaskLoader:
@@ -72,8 +73,8 @@ class TaskLoader:
                 data["kwargs"] = {"cmd": f"{self.SUBMIT_SH} -s {schedule}"}
                 data["options"] = {"queue": current_app.conf.CRONTAB_QUEUE}
                 cron[task_name] = data
-                local_log(f"<TaskLoader.__load> load data: {data}")
-            local_log(f"<TaskLoader.__load> {json_file_name} load task cnt: {len(task_list)}")
+                logging.info("<TaskLoader.__load> load data: %s", data)
+            logging.info("<TaskLoader.__load> %s load task cnt: %s", json_file_name, len(task_list))
             file_json.close()
 
         return cron

@@ -5,7 +5,11 @@ from celery import group
 from ..core.structs import ProtoSchedule
 
 
-class RuleBase(object):
+class RuleBase:
+    """
+    RuleBase
+    """
+
     def __init__(self):
         self._business_instance_name = None
 
