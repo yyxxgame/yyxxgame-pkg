@@ -31,6 +31,8 @@ def auto_import(load_paths=LOAD_MODULE_PATHS):
                 continue
             if file_path.name.startswith("__init__"):
                 continue
+            if file_path.name.startswith("export.py"):
+                continue
             if not file_path.name.endswith(".py"):
                 continue
             import_path = str(file_path).replace("/", ".")[:-3]

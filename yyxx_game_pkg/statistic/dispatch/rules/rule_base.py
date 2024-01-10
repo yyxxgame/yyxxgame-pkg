@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author   : KaiShin
 # @Time     : 2023/3/13
-from celery import group
+from celery import group, signature
 from ..core.structs import ProtoSchedule
 
 
@@ -62,7 +62,6 @@ class RuleBase:
 
     @staticmethod
     def _make_signature(task_path, business_inst_name, *args, **kwargs):
-        exec(f"from {task_path} import {business_inst_name}")
-        return eval(business_inst_name).s(*args, **kwargs)
+        return signature(f"{task_path}.{business_inst_name}", args=args, kwargs=kwargs)
 
     # endregion

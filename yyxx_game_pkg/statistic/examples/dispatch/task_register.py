@@ -58,4 +58,20 @@ def pull_collect_instance(*args, **kwargs):
 def crontab_task_instance(*args, **kwargs):
     pass
 
-# endregion -------------------------系统接口-------------------------
+
+# ######################## 系统接口 ###########################
+@app.task(base=TaskCustomBase, ignore_result=True)
+def link_task(*_, **__):
+    """
+    连接任务
+    详见:yyxx_game_pkg.statistic.dispatch.logic.workflows.WorkFlowMethods.link_task_s
+    :param _:
+    :param __:
+    :return:
+    """
+
+
+# ######################## 测试接口 ###########################
+@app.task(base=TaskCustomBase)
+def add(*args, **kwargs):
+    pass

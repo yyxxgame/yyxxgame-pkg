@@ -4,9 +4,10 @@
 @Author: ltw
 @Time: 2023/12/28
 """
-from celery import chain, group
+from celery import chain, chord
 
 from ..core.manager import rule_register
+from ..logic.workflows import WorkFlowMethods
 from .dispatch_rule_statistic_task import DispatchRuleStatisticTaskLogic
 from .rule_base import ProtoSchedule
 
@@ -35,14 +36,14 @@ class DispatchRuleWorkFlowLogic(DispatchRuleStatisticTaskLogic):
         :param sub_sig_build_fn:
         :return:
         """
-        content_dict = schedule.schedule_content
         steps_contents = {}
-        for _, _content in content_dict.items():
+        for _, _content in schedule.schedule_content.items():
             for step, content_list in _content.items():
                 steps_contents[int(step)] = content_list
         step_keys = list(steps_contents.keys())
         step_keys = sorted(step_keys)
         steps_sig_list = []
+        sig_options = {"queue": schedule.queue, "priority": schedule.priority}
         for step in step_keys:
             _step_contents = steps_contents[step]
             if not _step_contents:
@@ -56,12 +57,11 @@ class DispatchRuleWorkFlowLogic(DispatchRuleStatisticTaskLogic):
                 _step_sigs.append(sub_sig)
             if not _step_sigs:
                 continue
-            steps_sig_list.append(group(*_step_sigs))
+            steps_sig_list.append(chord(*_step_sigs, WorkFlowMethods.link_task_s(**sig_options)))
         if not steps_sig_list:
             return None
         sig = chain(*steps_sig_list)
-        sig.options["queue"] = schedule.queue
-        sig.options["priority"] = schedule.priority
+        sig.options.update(sig_options)
         return sig
 
     def build_workflow_sig_logic(self, schedule):

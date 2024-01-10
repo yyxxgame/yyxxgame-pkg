@@ -12,8 +12,6 @@ from ..core.manager import RuleManager
 from ..core.structs import ProtoSchedule
 from .workflows import WorkFlowMethods
 
-logger = logging.getLogger(__name__)
-
 
 @fastapi_except_monitor
 def task_logic(msg):
@@ -25,7 +23,7 @@ def task_logic(msg):
     task_sig_list = parse_task(msg)
     if not task_sig_list:
         err_msg = f"<task_logic> main_dispatch_logic, parse task failed: {traceback.format_exc()}"
-        logger.info(err_msg)
+        logging.info(err_msg)
         return []
     # 分发任务
     return dispatch_tasks(task_sig_list)
@@ -49,13 +47,13 @@ def parse_task(schedule):
 
     # 校验队列名
     if schedule.schedule_queue_name is None:
-        logger.info("<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule: %s", schedule)
+        logging.info("<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule: %s", schedule)
         return task_sig_list
 
     # 获取对应计划解析规则
     rule = RuleManager().rules.get(instance_name)
     if not rule:
-        logger.info("<parse_command_data> rule is None, instance_name: %s", instance_name)
+        logging.info("<parse_command_data> rule is None, instance_name: %s", instance_name)
         return task_sig_list
 
     # 构建signature列表
@@ -103,6 +101,7 @@ def dispatch_tasks(task_sig_list):
     task_queue_flag_list = []  # task队列名列表（日志显示用）
     task_cnt = 0  # task数（日志显示用）
     max_sig_cnt = 0  # 单次提交任务数峰值（日志显示用）
+
     for task_sig in task_sig_list:
         task_type_list.append(type(task_sig))
 
@@ -119,7 +118,8 @@ def dispatch_tasks(task_sig_list):
         # 提交任务
         m_task_id, s_task_id_list = _dispatch_one_task(task_sig)
         task_id_list.append(m_task_id)
-        logger.info(
+
+        logging.info(
             "<dispatch_tasks> record_task_id, queue:%s, m_task_id:%s, s_task_len:%d, s_task_id_list:%s",
             queue_flag,
             m_task_id,
@@ -127,7 +127,7 @@ def dispatch_tasks(task_sig_list):
             s_task_id_list,
         )
 
-    logger.info(
+    logging.info(
         "<dispatch_tasks> dispatch_tasks, queue_name:%s, task_cnt:%s, max_sig_cnt:%s",
         task_queue_flag_list,
         task_cnt,

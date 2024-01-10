@@ -15,7 +15,7 @@ logging配置初始化, 仅提供函数, 不实际调用
 import logging.config
 import traceback
 from pathlib import Path
-from typing import TypeVar, Type
+from typing import Type, TypeVar
 
 from .config import LogConfig
 
@@ -33,7 +33,9 @@ class LogMethods:
         """应用log配置"""
         cls.make_path(log_config)
         logging.config.dictConfig(log_config.dict_config())
-        logging.getLogger().info("<LogMethods> dictConfig load %s", log_config.dict_config())
+        logging.info(
+            "<LogMethods> dictConfig load %s", log_config.dict_config()
+        )
 
     @staticmethod
     def make_path(config):

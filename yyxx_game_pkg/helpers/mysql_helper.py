@@ -4,11 +4,11 @@
 @Author: ltw
 @Time: 2023/3/22
 """
+import logging
 import pymysql
 from dbutils.pooled_db import PooledDB
 from pymysql.cursors import Cursor
 
-from yyxx_game_pkg.logger.log import root_log
 from yyxx_game_pkg.utils.decorator import (
     except_monitor,
     log_execute_time_monitor,
@@ -32,14 +32,14 @@ class MysqlConfig:
 
     def __str__(self):
         # 不能返回无法序列化的数据， 否则单例会失效
-        return "host:{},port:{},db:{},use_unicode:{},charset:{},max_cache:{},max_connections:{}".format(
-            self.HOST,
-            self.PORT,
-            self.DB,
-            self.USE_UNICODE,
-            self.CHARSET,
-            self.MAX_CACHED,
-            self.MAX_CONNECTIONS
+        return (
+            f"host:{self.HOST},"
+            f"port:{self.PORT},"
+            f"db:{self.DB},"
+            f"use_unicode:{self.USE_UNICODE},"
+            f"charset:{self.CHARSET},"
+            f"max_cache:{self.MAX_CACHED},"
+            f"max_connections:{self.MAX_CONNECTIONS}"
         )
 
 
@@ -60,7 +60,7 @@ class MysqlDbPool(object):
             charset=config.CHARSET,
             cursorclass=config.CURSOR,
         )
-        root_log(f"<MysqlDbPool> init, info:{config}")
+        logging.info("<MysqlDbPool> init, info:%s", config)
 
     @except_monitor
     @log_execute_time_monitor()

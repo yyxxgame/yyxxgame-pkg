@@ -20,8 +20,6 @@ from yyxx_game_pkg.utils.xListStr import split_list
 from ..core.manager import rule_register
 from .rule_base import ProtoSchedule, RuleBase
 
-logger = logging.getLogger(__name__)
-
 
 class DispatchRuleStatisticTaskLogic(RuleBase):
     """
@@ -59,7 +57,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
         if not param_list:
             return None
 
-        logger.info(
+        logging.info(
             "<DispatchRule> build_sig_logic,schedule_name:%s, "
             "auth: %s, queue_name:%s, stat_ids:%s, task_len:%d, param:%s",
             schedule_name,
@@ -92,7 +90,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
         # 获取server_ids
         server_ids = self.__parse_server_ids(content)
         if not server_ids:
-            logger.info("<DispatchRule> appoint_server_ids is None, content:%s", content)
+            logging.info("<DispatchRule> appoint_server_ids is None, content:%s", content)
             status = ex_params.get("status", "")
             server_ids = self.get_all_server_ids(status)
 
@@ -113,7 +111,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
             if k:
                 continue
             _e = f"date_interval:{date_interval}, statistic_ids{statistic_ids}, server_ids{server_ids}"
-            logger.info("[ERROR] <DispatchRule> __make_content_info, params %s", _e)
+            logging.info("[ERROR] <DispatchRule> __make_content_info, params %s", _e)
             return None
 
         info_obj = {
@@ -192,7 +190,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
             else:
                 statistic_ids = result_ids
         if not statistic_ids:
-            logger.info("[ERROR] <DispatchRuleStatisticTask> statistic_ids is None, content:%s", content)
+            logging.info("[ERROR] <DispatchRuleStatisticTask> statistic_ids is None, content:%s", content)
             return []
         return statistic_ids
 
@@ -227,7 +225,7 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
 
         p_info["statistic_ids_slice_size"] = 1  # 每个统计单独分片
         task_cnt = int(len_stats_ids * max(len_server_ids / p_info["server_id_slice_size"], 1))
-        logger.info(
+        logging.info(
             "<__auto_split> len_stats_ids:%d, len_server_ids:%d, info.server_id_slice_size:%s, task_cnt:%d",
             len_stats_ids,
             len_server_ids,
