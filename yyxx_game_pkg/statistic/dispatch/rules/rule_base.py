@@ -35,7 +35,9 @@ class RuleBase:
         :return: [group, chord, chain, signature]
         """
 
-    def make_signature_group(self, task_path, business_inst_name, queue, priority, kwargs_list=None):
+    def make_signature_group(
+        self, task_path, business_inst_name, queue, priority, kwargs_list=None
+    ):
         """
         构建单任务组
         :param task_path:
@@ -55,7 +57,10 @@ class RuleBase:
             sig_list.append(_sig)
         if not sig_list:
             return None
-        sig = group(*sig_list)
+        if len(sig_list) > 1:
+            sig = group(*sig_list)
+        else:
+            sig = sig_list[0]
         sig.options["queue"] = queue
         sig.options["priority"] = priority
         return sig
