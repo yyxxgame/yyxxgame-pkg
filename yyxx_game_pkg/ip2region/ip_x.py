@@ -25,7 +25,10 @@ def ip2region(target_ip):
 
     # 3. 执行查询
     # ip = "1.2.3.4"
-    region_str = searcher.searchByIPStr(target_ip)
+    try:
+        region_str = searcher.searchByIPStr(target_ip)
+    except:
+        region_str = ""
 
     searcher.close()
     return region_str
