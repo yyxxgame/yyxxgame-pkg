@@ -49,7 +49,7 @@ jobs:
 
       - name: Publish to yyxxgame GitLab
         run: |
-          poetry config repositories.yyxx-gitlab http://gitlabcenter.yyxxgame.com/api/v4/projects/156/packages/pypi
+          poetry config repositories.yyxx-gitlab ${{secrets.YYXX_GITLAB}}
           poetry config http-basic.yyxx-gitlab __token__ ${{secrets.YYXX_GITLAB_PUBLISH_TOKEN}}
           poetry publish --repository yyxx-gitlab
 

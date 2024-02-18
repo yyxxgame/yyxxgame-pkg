@@ -7,10 +7,16 @@
 import functools
 import json
 from bisect import bisect_left
+from typing import Union
 import pandas as pd
 import numpy as np
 
+NA = pd.NA
+NAT = pd.NaT
+NAN = np.nan
 
+
+# test
 def empty_df(columns=None):
     """
     :param columns:
@@ -84,24 +90,29 @@ def df_cut_bins(_df, key, bins, insert_zero=True):
     return _df[key].apply(cut_bins, bins=bins)
 
 
-def cal_round_rate(data, precision=2, suffix="%", invalid_value="-"):
+def cal_round_rate(
+    data=None, precision=2, suffix="%", invalid_value="-", data_divisor_ser=None, data_dividend_ser=None
+):
     """
-    :param data:
-    :param precision:
-    :param suffix:
-    :param invalid_value:
-    :return:
+    :param data: 数据列或dataframe
+    :param precision: 保留几位小数
+    :param suffix: 后缀(如%s)
+    :param invalid_value: 无效值(na,inf等情况)时填充的字段
+    :param data_divisor_ser: 除数(用于计算得出data,仅支持series)
+    :param data_dividend_ser: 被除数(用于计算得出data,仅支持series)
+    :return: dataframe or series
     """
+    if data is None and data_divisor_ser is not None and data_dividend_ser is not None:
+        data_dividend_ser = drop_duplicates_apply(data_dividend_ser, lambda num: num or pd.NA)
+        data = data_divisor_ser / data_dividend_ser
     if isinstance(data, pd.DataFrame):
         return data.apply(cal_round_rate, args=(precision, suffix), axis=0)
     if isinstance(data, pd.Series):
-        if str(invalid_value).isdigit():
-            data = data.fillna(invalid_value)
-        data = data.astype(float).round(precision)
+        tpe = lambda num: round(float(num), precision)
         if precision == 0:
-            data = data.astype(int)
-        return data.apply(
-            lambda d: invalid_value if (d == np.inf or np.isnan(d)) else f"{d}{suffix}"
+            tpe = int
+        return drop_duplicates_apply(
+            data, lambda d: f"{tpe(d)}{suffix}" if str(d).replace(".", "", 1).isdigit() else invalid_value
         )
     if isinstance(data, (int, float)):
         if np.isnan(data) or data == np.inf:
@@ -305,7 +316,7 @@ def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
         money_df, "money", bins=[0, 8, 41], max_label_fmt="{}+"
     ) =>
     # player_id, money, money_label, label_rank
-    # 19296,    0,  "",    -1
+    # 19296,    0,  NaN,    NaN
     # 21169,    8,  "1-8",    8
     # 24003,    98, "41+”,    41
     insert_zero : 是否在bins最前面插入0
@@ -314,7 +325,7 @@ def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
 
     def prefix_bins(_bins):
         _bins = sorted(map(int, _bins))
-        if insert_zero and _bins[0] != 0:
+        if insert_zero and _bins[0] > 0:
             _bins.insert(0, 0)
         return _bins
 
@@ -324,14 +335,11 @@ def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
     def cut_bins(row):
         val = row[key]
         if not val:
-            return "", -1
-
-        if val > bins[-1]:
-            val = bins[-1]
+            return np.nan, np.nan
 
         position = bisect_left(bins, val)
-        if position <= 0:
-            return "", -1
+        if position >= len(bins):
+            return np.nan, np.nan
         left_val = bins[position - 1] + 1
         right_val = bins[position]
         labels = f"{left_val}{concat}{right_val}"
@@ -340,3 +348,38 @@ def show_range_labels(_df, key, bins, insert_zero=True, max_label_fmt=None):
         return labels, bins[position]
 
     return _df.apply(cut_bins, axis=1, result_type="expand")
+
+
+def drop_duplicates_apply(df: Union[pd.DataFrame, pd.Series], apply_func, *args, **kwargs):
+    """
+    根据原数据去重后再进行apply处理数据, 减少迭代次数,全程使用pandas原生方法,速度优
+    :param df: 原数据df/series, 请使用提前使用df[columns], 不参与计算的列无需传值, 逻辑会根据所有列进行去重
+    :param apply_func: apply执行的函数
+    :param args: apply函数附加的参数
+    :param kwargs: apply函数附加的参数, 原数据为df时, 请根据实际情况传递axis=1/0
+    :return:
+    """
+    if isinstance(df, pd.DataFrame):
+        old_df = df.copy()
+        drop_df = old_df.drop_duplicates().copy()
+        columns = old_df.columns.tolist()
+        cb_df = drop_df.apply(apply_func, *args, **kwargs)
+    else:
+        old_df = df.to_frame().copy()
+        drop_df = old_df.drop_duplicates().copy()
+        columns = old_df.columns.tolist()
+        cb_df = drop_df[drop_df.columns.tolist()[0]].apply(apply_func, *args, **kwargs)
+    if isinstance(cb_df, pd.DataFrame):
+        drop_df = pd.concat([drop_df, cb_df], axis=1)
+        extend_columns = cb_df.columns.tolist()
+    else:
+        column = "EXTEND_COLUMN"
+        drop_df[column] = cb_df
+        extend_columns = column
+
+    old_df[columns] = old_df[columns].astype(str)
+    drop_df[columns] = drop_df[columns].astype(str)
+
+    tmp_df = old_df.merge(drop_df, on=columns, how="left")
+    tmp_df.index = old_df.index
+    return tmp_df[extend_columns]

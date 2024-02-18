@@ -4,8 +4,10 @@
 @Author: ltw
 @Time: 2023/3/9
 """
+import logging
+
 import redis
-from yyxx_game_pkg.logger.log import root_log
+
 from yyxx_game_pkg.utils.decorator import singleton_unique_obj_args
 
 
@@ -21,9 +23,7 @@ class RedisConfig:
     OVERDUE_SECOND = 86400
 
     def __str__(self):
-        return "host:{}, port:{}, db:{}, OVERDUE_SECOND:{}".format(
-            self.HOST, self.PORT, self.DB, self.OVERDUE_SECOND
-        )
+        return f"host:{self.HOST}, port:{self.PORT}, db:{self.DB}, OVERDUE_SECOND:{self.OVERDUE_SECOND}"
 
 
 @singleton_unique_obj_args
@@ -33,7 +33,7 @@ class RedisHelper:
             host=config.HOST, port=config.PORT, db=config.DB, password=config.PASSWORD
         )
         self.__r = redis.Redis(connection_pool=connection_pool)
-        root_log(f"<RedisHelper> init, info:{config}")
+        logging.info("<RedisHelper> init, info:%s", config)
 
     @property
     def redis_cli(self):

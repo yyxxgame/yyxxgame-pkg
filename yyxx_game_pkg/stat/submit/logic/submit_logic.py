@@ -44,27 +44,29 @@ def _to_protocol_by_schedule(
         proto_dict["SCHEDULE_QUEUE_NAME"] = queue_name
 
     if is_work_flow:
-        dict_rule = dict()
+        dict_rule = {}
         for schedule_param in content:
             group = schedule_param.get("group")
             step = schedule_param.get("step")
             custom_content = schedule_param.get("custom_content")
             sub_schedule_name = schedule_param.get("schedule")
+            delay = schedule_param.get("delay")
             if step is None or sub_schedule_name is None:
                 continue
             if group is None:
                 group = 1
             if not dict_rule.get(group):
-                dict_rule[group] = dict()
+                dict_rule[group] = {}
 
             if not dict_rule[group].get(step):
                 dict_rule[group][step] = []
-            schedule_str = to_protocol(
+            schedule_dict = to_protocol(
                 sub_schedule_name,
                 custom_content=custom_content,
                 custom_queue=queue_name,
             )
-            dict_rule[group][step].append(schedule_str)
+            schedule_dict.update({"delay": delay})
+            dict_rule[group][step].append(schedule_dict)
         content = dict_rule
 
     proto_dict["SCHEDULE_CONTENT"] = content
@@ -93,7 +95,7 @@ def _get_schedule(schedule_name):
             schedule = importlib.import_module(module)
             is_work_flow = True
         except Exception as e:
-            root_log(e, level='error')
+            root_log(e, level="error")
 
     return schedule, is_work_flow
 
@@ -145,6 +147,7 @@ def _modify_proto_content(schedule_content, content_key_value):
 
 
 # endregion
+
 
 # region 外部方法
 def set_config(path: str, api_addr: str):

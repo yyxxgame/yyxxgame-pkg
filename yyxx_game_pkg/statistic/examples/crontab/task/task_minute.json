@@ -1,0 +1,19 @@
+{
+  "task": [
+      {
+          "/**/": "客服中心vip上报10分钟一次",
+          "interval": "*/10 * * * *",
+          "schedule": "schedule_report_vip_call_center"
+      },
+      {
+          "/**/": "缓存刷新任务[xcache刷新]",
+          "interval": "*/5 * * * *",
+          "schedule": "schedule_cache_refresh"
+      },
+      {
+          "/**/": "实名制登录上报",
+          "interval": "*/1 * * * *",
+          "schedule": "schedule_report_login_call_zhongxuan_center"
+      }
+  ]
+}

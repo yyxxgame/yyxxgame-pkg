@@ -23,7 +23,9 @@ def str2date(date_str):
     if isinstance(date_str, bytes):
         date_str = date_str.decode(encoding="utf8")
 
-    if isinstance(date_str, (int, float)) or date_str.isnumeric():
+    if isinstance(date_str, (int, float)) or (
+        isinstance(date_str, str) and date_str.isnumeric()
+    ):
         # 时间戳
         if len(str(date_str)) == 8:
             # 20230101
@@ -102,7 +104,7 @@ def day2str_date(day) -> str:
     效率更高
     """
     day_s = str(day)
-    return day_s[:4] + '-' + day_s[4:6] + '-' + day_s[6:]
+    return day_s[:4] + "-" + day_s[4:6] + "-" + day_s[6:]
 
 
 def date2day(date):
@@ -199,11 +201,11 @@ def date_type_trans(day, date_type=DAY, fmt="%Y%m%d", version_configs=None):
     :return: 周期字符串
     """
     if date_type == DAY:
-        return datetime.datetime.strptime(str(day), fmt).strftime("%Y-%m-%d")
+        return f"{int(day / 10000)}-{str(int(day % 10000 / 100)).zfill(2)}-{str(day % 100).zfill(2)}"
     if date_type == WEEK:
         return get_week_str(day, fmt)
     if date_type == MONTH:
-        return datetime.datetime.strptime(str(day), fmt).strftime("%Y年%m月")
+        return f"{int(day / 10000)}年{str(int(day % 10000 / 100)).zfill(2)}月"
     if date_type == VERSION:
         if version_configs is None:
             return day
