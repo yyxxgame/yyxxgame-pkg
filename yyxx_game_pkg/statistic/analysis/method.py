@@ -90,7 +90,7 @@ def pay_user_actual_model(source_df: pd.DataFrame) -> pd.DataFrame:
         :pay_num: 对应创角天数付费账号数
     :return: df数据
     """
-    from utils import xdataframe
+    from yyxx_game_pkg.utils import xdataframe
 
     data_df = source_df.copy().fillna(0).astype(int)
     data_df = (
@@ -150,8 +150,8 @@ def pay_user_forecast_model(
     :param kwargs:忽略参数
     :return: df数据
     """
-    from utils import xdataframe
-    from statistic.analysis.model import load_logarithmic_data
+    from yyxx_game_pkg.utils import xdataframe
+    from yyxx_game_pkg.statistic.analysis.model import load_logarithmic_data
 
     data_df = pd.DataFrame(
         {
