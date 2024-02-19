@@ -4,8 +4,6 @@
 @Author: ltw
 @Time: 2024/2/18
 """
-import numpy as np
-from scipy.optimize import curve_fit
 
 
 def load_logarithmic_data(x_data, y_data, cal_days):
@@ -16,6 +14,8 @@ def load_logarithmic_data(x_data, y_data, cal_days):
     :param cal_days:
     :return:
     """
+    import numpy as np
+    from scipy.optimize import curve_fit
 
     def logarithmic_function(_x, _a, _b):
         _x = np.array(_x).astype(float)
