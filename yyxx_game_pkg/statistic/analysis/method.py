@@ -4,6 +4,7 @@
 @Author: ltw
 @Time: 2024/2/18
 """
+import pandas as pd
 
 
 def new_user_model(**kwargs):
@@ -21,7 +22,6 @@ def new_user_model(**kwargs):
             ["day", "user_keep", "pay_rate", "arppu", "rltv_add", "ltv", "rltv_multiple", "rltv", "recover_rate"]
         ]
     """
-    import pandas as pd
     from yyxx_game_pkg.statistic.analysis.model import load_logarithmic_data
 
     first_day_arppu = kwargs["first_day_arppu"]
@@ -78,3 +78,103 @@ def new_user_model(**kwargs):
         ["day", "user_keep", "pay_rate", "arppu", "rltv_add", "ltv", "rltv_multiple", "rltv", "recover_rate"]
     ]
     return res_df
+
+
+def pay_user_actual_model(source_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    付费用户模型数据计算
+    :param source_df: 原数据df, 具有列 ['cnt_day', 'pay_act_num', 'pay_money', 'pay_num']
+        :cnt_day: 创角天数
+        :pay_act_num: 对应创角天数付费留存
+        :pay_money: 对应创角天数付费总金额
+        :pay_num: 对应创角天数付费账号数
+    :return: df数据
+    """
+    from utils import xdataframe
+
+    data_df = source_df.copy().fillna(0).astype(int)
+    data_df = (
+        data_df.groupby(["cnt_day"]).agg({"pay_act_num": "sum", "pay_money": "sum", "pay_num": "sum"}).reset_index()
+    )
+    data_df = data_df.sort_values("cnt_day", ascending=True)
+    # 累计付费留存: 对应天数的付费留存玩家/首日的付费留存玩家
+    data_df["cumsum_pay"] = xdataframe.cal_round_rate(
+        data_df["pay_act_num"] / data_df["pay_act_num"].iloc[0] * 100, suffix="", invalid_value="0.0"
+    ).astype(float)
+    data_df["cumsum_pay_rate"] = data_df["cumsum_pay"].astype(str) + "%"
+    # 老付费用户付费率: 对应天数付费玩家数/在对应天数时的付费留存玩家
+    data_df["old_pay"] = xdataframe.cal_round_rate(
+        data_df["pay_num"] / data_df["pay_act_num"] * 100, suffix="", invalid_value="0.0"
+    ).astype(float)
+    data_df["old_pay_rate"] = data_df["old_pay"].astype(str) + "%"
+    # ARPPU: 对应天数的充值总金额/对应天数付费玩家数
+    data_df["arppu"] = xdataframe.cal_round_rate(
+        data_df["pay_money"] / data_df["pay_num"], suffix="", invalid_value="0.0"
+    ).astype(float)
+    # RLTV增加值: 对应天数累计付费留存*老付费用户付费率*arppu
+    data_df["rltv_add"] = xdataframe.cal_round_rate(
+        data_df["cumsum_pay"] * data_df["old_pay"] * data_df["arppu"] / 10000, suffix="", invalid_value="0.0"
+    ).astype(float)
+    # RTLV: 上一日的RLTV+对应日的RLTV增加值
+    data_df["rltv"] = data_df["rltv_add"].cumsum().round(2)
+    # RLTV倍数: 对应日的RLV/首日RLTV
+    data_df["rltv_mult"] = xdataframe.cal_round_rate(
+        data_df["rltv"] / data_df["rltv"].iloc[0], suffix="", invalid_value="0.0"
+    ).astype(float)
+    data_df = data_df[["cnt_day", "cumsum_pay_rate", "old_pay_rate", "arppu", "rltv_add", "rltv", "rltv_mult"]]
+    return data_df
+
+
+def pay_user_forecast_model(
+    *args,
+    cal_days: int,
+    day1_arppu: float,
+    day2_arppu: float,
+    day2_pay_rate: float,
+    x_data: list,
+    y_data: list,
+    unit_price: float,
+    **kwargs,
+) -> pd.DataFrame:
+    """
+    付费用户模型预测
+    !!! 请使用键值对进行传参 cal_days=30,day1_arppu=1.2
+    :param args:忽略参数
+    :param cal_days:预测天数
+    :param day1_arppu:首日ARPPU
+    :param day2_arppu:次日ARPPU
+    :param day2_pay_rate:次日(及以后)付费率(非%)
+    :param x_data: 对标数据-目标天数
+    :param y_data: 对标数据-累计付费留存(非%)
+    :param unit_price: 付费单价
+    :param kwargs:忽略参数
+    :return: df数据
+    """
+    from utils import xdataframe
+    from statistic.analysis.model import load_logarithmic_data
+
+    data_df = pd.DataFrame(
+        {
+            "cnt_day": range(1, cal_days + 1),
+            "old_pay_rate": [1] + [day2_pay_rate] * (cal_days - 1),
+            "arppu": [day1_arppu] + [day2_arppu] * (cal_days - 1),
+            "cumsum_pay_rate": [1] + load_logarithmic_data(x_data, y_data, cal_days),
+        }
+    )
+    # ltv增长值、ltv倍数计算
+    data_df["rltv_add"] = (data_df["cumsum_pay_rate"] * data_df["old_pay_rate"] * data_df["arppu"]).round(2)
+    # RTLV: 上一日的RLTV+对应日的RLTV增加值
+    data_df["rltv"] = data_df["rltv_add"].cumsum().round(2)
+    # RLTV倍数: 对应日的RLV/首日RLTV
+    data_df["rltv_mult"] = xdataframe.cal_round_rate(
+        data_df["rltv"] / data_df["rltv"].iloc[0], suffix="", invalid_value="0.0"
+    ).astype(float)
+    # 回本情况
+    data_df["recove_rate"] = xdataframe.cal_round_rate(100 * data_df["rltv"] / unit_price, invalid_value="0.0")
+    # 百分比转换
+    data_df["old_pay_rate"] = xdataframe.cal_round_rate(100 * data_df["old_pay_rate"], invalid_value="0.0")
+    data_df["cumsum_pay_rate"] = xdataframe.cal_round_rate(100 * data_df["cumsum_pay_rate"], invalid_value="0.0")
+    data_df = data_df[
+        ["cnt_day", "cumsum_pay_rate", "old_pay_rate", "arppu", "rltv_add", "rltv", "rltv_mult", "recove_rate"]
+    ]
+    return data_df
