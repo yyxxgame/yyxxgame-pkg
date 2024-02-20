@@ -9,17 +9,26 @@ import pandas as pd
 
 def new_user_model(**kwargs):
     """
+    新增用户模型预测函数
+    调用示例: res_df = new_user_model(
+                first_day_arppu=1.0,
+                after_first_day_arppu=1.0,
+                pay_rate=1.0,
+                cal_days=360,
+                unit_price=1,
+                pay_keep_list=[(2, 0.32), (7, 0.14), (30, 0.06), (90, 0.04)],
+            )
     :param kwargs:
-        first_day_arppu: 首日arppu, 例: 0.0
-        after_first_day_arppu: 次日后arppu, 例: 0,0
-        pay_rate: 付费率, 例: 0.0
+        first_day_arppu: 首日arppu, 例: 1.0
+        after_first_day_arppu: 次日后arppu, 例: 1,0
+        pay_rate: 付费率, 例: 1.0
         cal_days: 计算天数, 例: 360
-        unit_price: 付费单价, 例: 0
+        unit_price: 付费单价, 例: 1
         pay_keep_list: N日玩家留存, 例: [(2, 0.32), (7, 0.14), (30, 0.06), (90, 0.04)]
     :return:
         "注册天数","新增用户留存","用户付费率","ARPPU","LTV增加值","TLV","LTV倍数","RTLV","回本情况"
         res_df[
-            ["day", "user_keep", "pay_rate", "arppu", "rltv_add", "ltv", "rltv_multiple", "rltv", "recover_rate"]
+            ["cnt_day", "user_keep", "pay_rate", "arppu", "rltv_add", "tlv", "rltv_mult", "rltv", "recover_rate"]
         ]
     """
     from yyxx_game_pkg.statistic.analysis.model import load_logarithmic_data
@@ -39,34 +48,25 @@ def new_user_model(**kwargs):
     def init_data_list(data_len):
         return [i + 1 for i in range(data_len)]
 
-    # day 付费天数
-    # user_keep 新增用户留存
-    # pay_rate 用户付费率
-    # arppu ARPPU
-    # rltv_add RLTV增加值（对应天数累计付费留存*老付费用户付费率*arppu）
-    # ltv TLV （上一日的LTV+对应日的LTV增加值）
-    # rltv_multiple RLTV倍数 （对应日的RLV/首日RLTV）
-    # rltv RTLV （上一日的RLTV+对应日的RLTV增加值）
-    # recover_rate 回本率 （对应天数RLTV/付费单价）
     data = {
-        "day": init_data_list(cal_days),
-        "user_keep": [1] + accumulate_pay_rate_list,
-        "pay_rate": [pay_rate] * cal_days,
-        "arppu": [first_day_arppu] + [after_first_day_arppu] * (cal_days - 1),
-        "rltv_add": init_data_list(cal_days),
-        "ltv": init_data_list(cal_days),
-        "rltv_multiple": init_data_list(cal_days),
-        "rltv": init_data_list(cal_days),
-        "recover_rate": init_data_list(cal_days),
+        "cnt_day": init_data_list(cal_days),            # 注册天数
+        "user_keep": [1] + accumulate_pay_rate_list,    # 新增用户留存
+        "pay_rate": [pay_rate] * cal_days,              # 用户付费率
+        "arppu": [first_day_arppu] + [after_first_day_arppu] * (cal_days - 1),  # ARPPU
+        "rltv_add": init_data_list(cal_days),           # RLTV增加值（对应天数累计付费留存*老付费用户付费率*arppu）
+        "tlv": init_data_list(cal_days),                # TLV （上一日的LTV+对应日的LTV增加值）
+        "rltv_mult": init_data_list(cal_days),          # RLTV倍数 （对应日的RLV / 首日RLTV）
+        "rltv": init_data_list(cal_days),               # RTLV （上一日的RLTV + 对应日的RLTV增加值）
+        "recover_rate": init_data_list(cal_days),       # 回本率
     }
 
     res_df = pd.DataFrame(data)
 
     # ltv增长值、ltv倍数计算
     res_df["rltv_add"] = (res_df["user_keep"] * res_df["pay_rate"] * res_df["arppu"]).round(2)
-    res_df["ltv"] = res_df["rltv_add"].cumsum().round(2)
-    res_df["rltv_multiple"] = (res_df["ltv"] / res_df["ltv"].iloc[0]).round(2)
-    res_df["rltv"] = (res_df["arppu"].iloc[0] * (res_df["ltv"] / res_df["ltv"].iloc[0])).round(2)
+    res_df["tlv"] = res_df["rltv_add"].cumsum().round(2)
+    res_df["rltv_mult"] = (res_df["tlv"] / res_df["tlv"].iloc[0]).round(2)
+    res_df["rltv"] = (res_df["arppu"].iloc[0] * (res_df["tlv"] / res_df["tlv"].iloc[0])).round(2)
     res_df["recover_rate"] = (res_df["rltv"] / unit_price).round(4)
 
     # 格式转化
@@ -75,7 +75,90 @@ def new_user_model(**kwargs):
     res_df["recover_rate"] = res_df["recover_rate"].apply(lambda x: f"{round(x * 100, 4)}%")
 
     res_df = res_df[
-        ["day", "user_keep", "pay_rate", "arppu", "rltv_add", "ltv", "rltv_multiple", "rltv", "recover_rate"]
+        [
+            "cnt_day",
+            "user_keep",
+            "pay_rate",
+            "arppu",
+            "rltv_add",
+            "tlv",
+            "rltv_mult",
+            "rltv",
+            "recover_rate",
+        ]
+    ]
+    return res_df
+
+
+def new_user_actual(source_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    新增用户模型计算函数
+    :param source_df:
+        # 注册天数, 活跃用户数, 付费金额, 付费用户数
+        source_df[["cnt_day", "user_cnt", "recharge", "recharge_user_cnt"]]
+    :return pd.DataFrame:
+        res_df[[
+            "cnt_day",       # 注册天数
+            "user_lt",       # 新增用户留存(计算用 0.00)
+            "user_lt_show",  # 新增用户留存(展示用 0%)
+            "pay_rate",      # 用户付费率(计算用 0.00)
+            "pay_rate_show", # 用户付费率(展示用 0%)
+            "arppu",         # ARPPU
+            "ltv_add",       # LTV增加值
+            "tlv",           # TLV
+            "ltv_mult",      # LTV倍数
+            "rtlv"           # RTLV
+        ]]
+    """
+    from yyxx_game_pkg.utils import xdataframe
+
+    data_df = source_df.sort_values(by="cnt_day")
+    # 注册天数, 用户数, 付费金额, 付费用户数
+    data_df = data_df[["cnt_day", "user_cnt", "recharge", "recharge_user_cnt"]]
+
+    # 新增用户留存
+    data_df["new_cnt"] = data_df.iloc[0]["user_cnt"]  # 新增用户 = cnt_day 为 1 的活跃用户数
+    data_df["user_lt"] = xdataframe.div_round(data_df, "user_cnt", "new_cnt")
+    data_df["user_lt_show"] = data_df["user_lt"].apply(lambda x: f"{x:.2%}")
+
+    # 用户付费率
+    data_df["pay_rate"] = xdataframe.div_round(data_df, "recharge_user_cnt", "user_cnt")
+    data_df["pay_rate_show"] = data_df["pay_rate"].apply(lambda x: f"{x:.2%}")
+
+    # arppu
+    data_df["arppu"] = xdataframe.div_round(data_df, "recharge", "recharge_user_cnt")
+
+    # ltv增加值
+    # 留存 * 付费率 * ARPPU
+    data_df["ltv_add"] = data_df["user_lt"] * data_df["pay_rate"] * data_df["arppu"]
+    data_df["ltv_add"] = data_df["ltv_add"].round(2)
+
+    # tlv
+    data_df["tlv"] = data_df["ltv_add"].cumsum().round(2)
+
+    # LTV倍数
+    # tlv / 首日ltv增加值
+    data_df["day1_ltv_add"] = data_df.iloc[0]["ltv_add"]
+    data_df["ltv_mult"] = xdataframe.div_round(data_df, "tlv", "day1_ltv_add")
+
+    # RTLV
+    # 首日数值 = ARPPU，次日后等于首日数值 * 对应天数ltv倍数
+    data_df["day1_rtlv"] = data_df.iloc[0]["arppu"]
+    data_df["rtlv"] = xdataframe.div_round(data_df, "day1_rtlv", "ltv_mult")
+
+    res_df = data_df[
+        [
+            "cnt_day",
+            "user_lt",
+            "user_lt_show",
+            "pay_rate",
+            "pay_rate_show",
+            "arppu",
+            "ltv_add",
+            "tlv",
+            "ltv_mult",
+            "rtlv",
+        ]
     ]
     return res_df
 
@@ -150,8 +233,8 @@ def pay_user_forecast_model(
     :param kwargs:忽略参数
     :return: df数据
     """
-    from yyxx_game_pkg.utils import xdataframe
     from yyxx_game_pkg.statistic.analysis.model import load_logarithmic_data
+    from yyxx_game_pkg.utils import xdataframe
 
     data_df = pd.DataFrame(
         {
