@@ -24,8 +24,8 @@ class StatisticLogConfig(LogConfig):
     后台统计用配置
     """
 
-    LOCAL_LOG_FILE = "/tmp/local.log"
-    DEBUG_LOG_FILE = "/tmp/debug.log"
+    LOCAL_LOG_FILE = "/data/logs/local.log"
+    DEBUG_LOG_FILE = "/data/logs/debug.log"
 
     @classmethod
     def dict_config(cls):
