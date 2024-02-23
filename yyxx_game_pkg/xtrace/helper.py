@@ -117,6 +117,19 @@ def add_span_events(event_name: str, events: dict):
     span.add_event(event_name, events)
 
 
+def get_trace_parent():
+    span = trace.get_current_span()
+    span_context = span.get_span_context()
+    if span_context == trace.INVALID_SPAN_CONTEXT:
+        return {}
+    trace_id = trace.format_trace_id(span_context.trace_id)
+    trace_parent_string = f"00-{trace_id}-{trace.format_span_id(span_context.span_id)}-{span_context.trace_flags:02x}"
+    return {
+        "trace_id": trace_id,
+        "trace_parent_string": trace_parent_string,
+    }
+
+
 def set_jaeger_environ(**kwargs):
     jaeger_web_url = kwargs.get('jaeger_web_url', '')
     if jaeger_web_url and not os.environ.get('JAEGER_WEB_URL'):
