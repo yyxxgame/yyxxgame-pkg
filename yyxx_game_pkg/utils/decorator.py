@@ -71,9 +71,13 @@ def except_monitor(func):
     @functools.wraps(func)
     def inner(*args, **kwargs):
         res = None
+        # 直接抛出异常
+        is_raise = kwargs.pop("except_monitor_raise", False)
         try:
             res = func(*args, **kwargs)
         except Exception as e:
+            if is_raise:
+                raise
             _args = []
             for _arg in args:
                 _args.append(fix_str(_arg, 100))
