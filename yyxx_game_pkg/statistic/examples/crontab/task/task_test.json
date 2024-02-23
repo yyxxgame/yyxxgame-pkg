@@ -1,9 +1,14 @@
 {
     "task": [
         {
-          "/**/": "缓存刷新任务[xcache刷新]",
+          "/**/": "每2分钟提交, 测试任务",
           "interval": "*/2 * * * *",
-          "schedule": "schedule_cache_refresh"
+          "schedule": "schedule_test_workflow@schedule_test"
+        },
+        {
+          "/**/": "每小时0分统计 测试任务",
+          "interval": "0 0-23 * * *",
+          "schedule": "schedule_test_workflow@schedule_test"
         }
     ]
 }

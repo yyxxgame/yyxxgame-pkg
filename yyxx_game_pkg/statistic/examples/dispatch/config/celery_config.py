@@ -9,41 +9,30 @@ CUSTOM_TASK_REGISTER_PATH = "task_register"
 
 # 中央服mysql数据库配置【正式服不同实例】
 API_MYSQL_CONFIG = {
-    # 43.142.135.168
     "host": "10.111.0.10",
     "port": 3306,
     "user": "python",
-    "password": "python@h5fumo#//.2022",
+    "password": "123@123#//.2022",
     "db": "data_api",
+    "charset": "utf8mb4",
 }
 
 API_READ_MYSQL_CONFIG = {
-    # 43.142.135.168
     "host": "10.111.0.10",
     "port": 3306,
     "user": "python",
-    "password": "python@h5fumo#//.2022",
+    "password": "123@123#//.2022",
     "db": "data_api",
     "charset": "utf8mb4",
 }
 
 STAT_MYSQL_CONFIG = {
-    # 43.142.135.168
     "host": "10.111.0.10",
     "port": 3306,
     "user": "python",
-    "password": "python@h5fumo#//.2022",
+    "password": "123@123#//.2022",
     "db": "data_stat",
-}
-
-# rabbitmq配置
-RMQ_CONFIG = {
-    "host": "10.111.1.6",
-    "port": 30372,
-    "m_port": 30126,  # 管理端口
-    "user": "root",
-    "password": "root",
-    "v_host": "/",
+    "charset": "utf8mb4",
 }
 
 # redis配置
@@ -51,7 +40,7 @@ REDIS_CONFIG = {
     "host": "10.111.1.6",
     "port": 30016,
     "db": 6,
-    "password": "fumo!python",
+    "password": "123!123",
     "overdue_seconds": 60 * 60 * 24,
 }
 
@@ -66,11 +55,16 @@ JAEGER = {}
 # ############################# 自定义配置 end #############################
 
 # ############################# celery系统配置 start #############################
+REDIS_URL = (
+    f"redis://:{REDIS_CONFIG['password']}@{REDIS_CONFIG['host']}:{REDIS_CONFIG['port']}"
+)
+
 # broker
-broker_url = f"amqp://root:root@{RMQ_CONFIG['host']}:{RMQ_CONFIG['port']}/"
+broker_url = f"{REDIS_URL}/3"
 
 # backend
-result_backend = f"redis://:{REDIS_CONFIG['password']}@{REDIS_CONFIG['host']}:{REDIS_CONFIG['port']}/1"
+result_backend = f"{REDIS_URL}/1"
+
 
 # include
 include = [CUSTOM_TASK_REGISTER_PATH]

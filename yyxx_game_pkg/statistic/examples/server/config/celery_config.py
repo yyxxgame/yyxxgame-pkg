@@ -7,8 +7,33 @@ celery 配置环境
 # 任务注册路径(切勿随意修改)
 CUSTOM_TASK_REGISTER_PATH = "task_register"
 
-# 定时任务队列
-CRONTAB_QUEUE = "queue_crontab"
+# 中央服mysql数据库配置【正式服不同实例】
+API_MYSQL_CONFIG = {
+    "host": "10.111.0.10",
+    "port": 3306,
+    "user": "python",
+    "password": "123@123#//.2022",
+    "db": "data_api",
+    "charset": "utf8mb4",
+}
+
+API_READ_MYSQL_CONFIG = {
+    "host": "10.111.0.10",
+    "port": 3306,
+    "user": "python",
+    "password": "123@123#//.2022",
+    "db": "data_api",
+    "charset": "utf8mb4",
+}
+
+STAT_MYSQL_CONFIG = {
+    "host": "10.111.0.10",
+    "port": 3306,
+    "user": "python",
+    "password": "123@123#//.2022",
+    "db": "data_stat",
+    "charset": "utf8mb4",
+}
 
 # redis配置
 REDIS_CONFIG = {
@@ -24,7 +49,7 @@ PUBLISH_FLAG = "fumo_test"
 
 # jaeger上报配置
 JAEGER = {
-    # "service_name": "[master](test)crontab",
+    # "service_name": "[master](test)server",
     # "jaeger_host": "10.0.3.124",
     # "jaeger_port": 6831,
 }
@@ -60,4 +85,7 @@ result_expires = 60 * 60 * 1 + 60
 
 # 不移除 root logger 的 handler
 worker_hijack_root_logger = False
+
+# task_compression = "gzip"
+# result_compression = "gzip"
 # ############################# celery系统配置 end #############################

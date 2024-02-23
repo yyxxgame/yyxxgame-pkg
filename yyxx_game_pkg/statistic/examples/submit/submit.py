@@ -5,12 +5,16 @@
 @Time: 2023/3/22
 """
 import argparse
+import datetime
 import json
+import logging
 import pathlib
 import sys
 
+from yyxx_game_pkg.statistic.log import logging_init
 from yyxx_game_pkg.statistic.submit.export import submit_schedule
 
+logging_init()
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument("-c", "--config")
@@ -38,12 +42,22 @@ if __name__ == "__main__":
     #         "jaeger_port": 6831,
     #     },
     # }
-
-    # schedule_name 不区分statistic_task 和 work_flow目录 !!!!!!!!
     res = submit_schedule(
         schedule_name,
         conf["register_path"],
         conf["dispatch_host"],
         conf["jaeger"],
     )
-    print(f"{res.status_code}, {res.content}")
+
+    logging.info("[%s]: status: %s, content: %s", datetime.datetime.now(), res.status_code, res.content)
+
+# ##################### ##################### ####################
+# run:
+# -c 指定配置文件[可选]
+# -s 指定任务schedule[必填]
+# 默认路径 schedule_rule/schedule/*.py
+# 提交示例: python submit.py -c "config/config.json" -s schedule_test_single_statistic
+
+# 自定义路径(schedule_rule 目录下) schedule_rule/schedule_test/*.py
+# 提交示例: python submit.py -s schedule_test_workflow@schedule_test
+# ##################### ##################### ####################

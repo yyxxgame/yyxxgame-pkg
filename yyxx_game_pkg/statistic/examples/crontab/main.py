@@ -15,6 +15,5 @@ app.conf.update(beat_schedule=TaskLoader().load())
 
 # ##################### ##################### ####################
 # run:
-# scheduler: celery -A main beat --loglevel=info
-# worker: celery -A main worker -Q queue_crontab
+# scheduler & worker: celery -A main worker -n your_name -Q queue_crontab -c 1 -B -l info
 # ##################### ##################### ####################
