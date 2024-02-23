@@ -4,13 +4,13 @@
 @Author: ltw
 @Time: 2022/10/14
 """
-import time
 import hashlib
+import logging
+import time
 import urllib.parse
-import ujson as json
+
 import requests
-from celery import current_app
-from yyxx_game_pkg.logger.log import root_log as local_log
+import ujson as json
 
 
 def http_request(
@@ -40,7 +40,7 @@ def http_request(
             return None
         return content
     except Exception as e:
-        local_log(f"http_request  Error Exception: {e}", level='error')
+        logging.error("http_request  Error Exception: %s", e)
         return None
 
 
@@ -84,7 +84,9 @@ def http_push_server(url, data, server_api_key):
     :return:
     """
     if not url:
-        local_log(f"Error http_push_server url: {url}  data: {json.dumps(data)}", level='error')
+        logging.error(
+            f"Error http_push_server url: {url}  data: {json.dumps(data)}"
+        )
         return None
 
     _t = int(time.time())
@@ -102,10 +104,10 @@ def http_push_server(url, data, server_api_key):
     post_data = {"time": _t, "params": data, "sign": sign}
 
     post_data_log = json.dumps(post_data, ensure_ascii=False)
-    local_log(f"http_push_server url:{url} post_data: {post_data_log}")
+    logging.info(f"http_push_server url:{url} post_data: {post_data_log}")
 
     result = http_request(url, post_data, False, "post")
-    local_log(f"http_push_server url:{url} res: {result}")
+    logging.info(f"http_push_server url:{url} res: {result}")
     return result
 
 

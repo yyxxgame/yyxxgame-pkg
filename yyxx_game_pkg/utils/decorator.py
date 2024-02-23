@@ -5,14 +5,14 @@
 @Time: 2022/8/4
 """
 import functools
+import logging
+import os
 import pickle
 import random
 import time
 import traceback
 from concurrent import futures
-import os
 
-from yyxx_game_pkg.logger.log import root_log
 from yyxx_game_pkg.xtrace.helper import get_current_trace_id
 
 
@@ -48,7 +48,7 @@ def log_execute_time_monitor(exec_lmt_time=20):
                 for k, _v in kwargs.items():
                     kwargs[k] = fix_str(_v, 100)
                 trace_id = get_current_trace_id()
-                root_log(
+                logging.info(
                     f"<log_execute_time_monitor> trace_id: {trace_id} "
                     f"func <<{func.__name__}>> deal over time "
                     f"begin_at: {begin_dt} end_at: {end_dt}, sec: {offset}"
@@ -79,11 +79,10 @@ def except_monitor(func):
                 _args.append(fix_str(_arg, 100))
             for k, _v in kwargs.items():
                 kwargs[k] = fix_str(_v, 100)
-            root_log(
+            logging.error(
                 "<except_monitor>"
                 f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
-                f"exc: {traceback.format_exc()} {e}",
-                level="error",
+                f"exc: {traceback.format_exc()} {e}"
             )
         return res
 
@@ -110,14 +109,17 @@ def except_return(default=None, echo_raise=True):
                         _args.append(fix_str(_arg, 100))
                     for k, _v in kwargs.items():
                         kwargs[k] = fix_str(_v, 100)
-                    root_log(
+                    logging.error(
                         "<except_return>"
                         f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
-                        f"exc: {traceback.format_exc()} {e}",
-                        level="error",
+                        f"exc: {traceback.format_exc()} {e}"
                     )
 
-                return default(e=e, f_args=args, f_kwargs=kwargs) if callable(default) else default
+                return (
+                    default(e=e, f_args=args, f_kwargs=kwargs)
+                    if callable(default)
+                    else default
+                )
 
         return wrapper
 
@@ -172,7 +174,7 @@ def timeout_run(timeout=2, default=None):
                 future = executor.submit(func, *args, **kw)
                 return future.result(timeout=timeout)
             except Exception as e:
-                root_log(f"timeout_run {func} error {e} args:{args} kw:{kw}")
+                logging.info(f"timeout_run {func} error {e} args:{args} kw:{kw}")
                 return default
 
         return wrapper
