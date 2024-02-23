@@ -9,7 +9,7 @@ import re
 from SecureHTTP import AESDecrypt, AESEncrypt
 
 from yyxx_game_pkg.conf import settings
-from yyxx_game_pkg.logger.log import root_log
+# from yyxx_game_pkg.logger.log import root_log
 
 
 def remove_numeric_prefix(text):
@@ -30,11 +30,12 @@ def encryption_deal_with(data, _type="D"):
             except Exception as e:
                 aes_data = aes_data.replace("\\", "\\\\")
                 data = json.loads(aes_data, strict=False)
-                root_log(f"json解析错误: {aes_data}, {e}", level="error")
+                # root_log(f"json解析错误: {aes_data}, {e}", level="error")
         elif _type == "E":
             if isinstance(data, bytes):
                 data = data.decode("utf-8")
             data = AESEncrypt(key, data, output="hex")
     except Exception as e:
-        root_log(f"type: {_type}, 错误: {e}", level="error")
+        # root_log(f"type: {_type}, 错误: {e}", level="error")
+        pass
     return data
