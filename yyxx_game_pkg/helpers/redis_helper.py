@@ -33,7 +33,7 @@ class RedisHelper:
             host=config.HOST, port=config.PORT, db=config.DB, password=config.PASSWORD
         )
         self.__r = redis.Redis(connection_pool=connection_pool)
-        logging.info("<RedisHelper> init, info:%s", config)
+        logging.debug("<RedisHelper> init, info:%s", config)
 
     @property
     def redis_cli(self):

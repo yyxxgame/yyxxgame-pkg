@@ -42,9 +42,11 @@ class CeleryInstance:
             register_to_jaeger(**conf_jaeger)
             CeleryInstrumentor().instrument()
             RequestsInstrumentor().instrument()
-
-        log_str = f"<CeleryInstance> get_celery_instance, app_name:{celery_name}, publish_flag:{_app.conf.get('PUBLISH_FLAG')}"
-        logging.info(log_str)
+        logging.info("*" * 100)
+        logging.info("********************** - CeleryInstance ")
+        logging.info("********************** - app_name:%s ", celery_name)
+        logging.info("********************** - publish_flag:%s ", _app.conf.get("PUBLISH_FLAG"))
+        logging.info("*" * 100)
         return _app
 
     @staticmethod
@@ -80,8 +82,5 @@ class CeleryInstance:
 
 
 # region celery实例化
-"""
-app.conf.get('worker_max_tasks_per_child', 0)
-"""
 # app = CeleryInstance.get_celery_instance()
 # endregion

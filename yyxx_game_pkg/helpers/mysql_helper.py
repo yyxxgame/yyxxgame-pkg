@@ -60,7 +60,7 @@ class MysqlDbPool(object):
             charset=config.CHARSET,
             cursorclass=config.CURSOR,
         )
-        logging.info("<MysqlDbPool> init, info:%s", config)
+        logging.debug("<MysqlDbPool> init, info:%s", config)
 
     @except_monitor
     @log_execute_time_monitor()
