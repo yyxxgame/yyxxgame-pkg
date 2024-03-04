@@ -18,15 +18,15 @@ def logging_init():
     LogMethods.config(StatisticLogConfig)
 
 
-def local_log(msg):
+def local_log(msg, *args, **kwargs):
     """
     旧local_log兼容处理
     """
-    logging.info(msg)
+    logging.info(msg, *args, **kwargs)
 
 
-def debug_log(msg):
+def debug_log(msg, *args, **kwargs):
     """
     旧debug_log兼容处理
     """
-    logging.debug(msg)
+    logging.debug(msg, *args, **kwargs)
