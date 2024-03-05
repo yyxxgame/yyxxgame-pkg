@@ -167,7 +167,7 @@ class DasApi:
         }
         :return:
         """
-        b_ok, res = DasApi._post(das_url, "/das/ch/query", post_data=post_data)
+        b_ok, res = DasApi._post(das_url, "/das/ch/queryx", post_data=post_data)
         if not b_ok:
             raise DasApiChQueryException(res)
         data = json.loads(res)
