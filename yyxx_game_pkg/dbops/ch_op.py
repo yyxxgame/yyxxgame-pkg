@@ -15,10 +15,11 @@ class CHOperation(DatabaseOperation):
     Clickhouse操作
     """
 
-    def __init__(self, db_name, das_url):
+    def __init__(self, db_name, das_url, das_api=DasApi):
         super().__init__()
         self.db_name = db_name
         self.das_url = das_url
+        self.das_api = das_api
 
     def get_one_df(self, sql):
         """
@@ -38,7 +39,7 @@ class CHOperation(DatabaseOperation):
         :return:
         """
         sql = sql.replace("[ch_db]", self.db_name)
-        res_df = DasApi.ch_query(self.das_url, {"sql": sql})
+        res_df = self.das_api.ch_query(self.das_url, {"sql": sql})
         return res_df
 
     @except_monitor
@@ -50,5 +51,5 @@ class CHOperation(DatabaseOperation):
         :return:
         """
         sql = sql.replace("[ch_db]", self.db_name)
-        b_ok = DasApi.ch_execute(self.das_url, {"sql": sql})
+        b_ok = self.das_api.ch_execute(self.das_url, {"sql": sql})
         return b_ok
