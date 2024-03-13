@@ -4,10 +4,12 @@
 @Author: ltw
 @Time: 2023/3/31
 """
+import typing
+import pandas as pd
 import ujson as json
 
 
-def lst2str(lst, isdigit=True, symbol=",", warp="'") -> str:
+def lst2str(lst: typing.Union[str, pd.Series], isdigit=True, symbol=",", warp="'") -> str:
     """
     list转字符串
     lst2str(['a', 'b', 'c]) -> "'a', 'b', 'c'"
@@ -17,6 +19,8 @@ def lst2str(lst, isdigit=True, symbol=",", warp="'") -> str:
     :param warp: 字符串包裹符 默认单引号
     :return:
     """
+    if isinstance(lst, pd.Series):
+        lst = lst.tolist()
     if not lst:
         return ""
     if isinstance(lst, int):

@@ -7,7 +7,6 @@
 import re
 import time
 import datetime
-from enum import Enum
 
 DAY = 1
 WEEK = 2
@@ -20,6 +19,8 @@ def str2date(date_str):
     """
     时间字符串转datetime obj
     """
+    if isinstance(date_str, datetime.datetime):
+        return date_str
     if isinstance(date_str, bytes):
         date_str = date_str.decode(encoding="utf8")
 
