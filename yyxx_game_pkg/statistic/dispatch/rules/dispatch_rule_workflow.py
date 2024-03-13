@@ -57,7 +57,7 @@ class DispatchRuleWorkFlowLogic(DispatchRuleStatisticTaskLogic):
                 _step_sigs.append(sub_sig)
             if not _step_sigs:
                 continue
-            steps_sig_list.append(chord(*_step_sigs, WorkFlowMethods.link_task_s(**sig_options)))
+            steps_sig_list.append(chord(_step_sigs, WorkFlowMethods.link_task_s(**sig_options)))
         if not steps_sig_list:
             return None
         sig = chain(*steps_sig_list)
