@@ -57,8 +57,10 @@ class StatisticLogConfig(LogConfig):
                 "debug_file_handler": {
                     "level": "DEBUG",
                     "formatter": "def_fmt",
-                    "class": "logging.FileHandler",
+                    "class": "yyxx_game_pkg.xlogging.handlers.MultiProcessTimedRotatingFileHandler",
                     "filename": cls.DEBUG_LOG_FILE,
+                    "when": "MIDNIGHT",
+                    "backupCount": 3,
                 },
                 "console_handler": {
                     "level": "DEBUG",
