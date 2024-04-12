@@ -118,11 +118,11 @@ def new_user_actual(source_df: pd.DataFrame) -> pd.DataFrame:
 
     # 新增用户留存
     data_df["new_cnt"] = data_df.iloc[0]["user_cnt"]  # 新增用户 = cnt_day 为 1 的活跃用户数
-    data_df["user_lt"] = xdataframe.div_round(data_df, "user_cnt", "new_cnt")
+    data_df["user_lt"] = xdataframe.div_round(data_df, "user_cnt", "new_cnt", precision=4)
     data_df["user_lt_show"] = data_df["user_lt"].apply(lambda x: f"{x:.2%}")
 
     # 用户付费率
-    data_df["pay_rate"] = xdataframe.div_round(data_df, "recharge_user_cnt", "user_cnt")
+    data_df["pay_rate"] = xdataframe.div_round(data_df, "recharge_user_cnt", "user_cnt", precision=4)
     data_df["pay_rate_show"] = data_df["pay_rate"].apply(lambda x: f"{x:.2%}")
 
     # arppu
