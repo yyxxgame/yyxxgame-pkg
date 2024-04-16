@@ -14,7 +14,7 @@ __api_addr = "http://localhost:8080"
 
 
 # region 内部方法
-def _to_protocol_by_schedule(schedule):
+def to_protocol_by_schedule(schedule):
     instance_name = schedule.SCHEDULE_DISPATCH_RULE_INSTANCE_NAME
     queue_name = schedule.SCHEDULE_QUEUE_NAME
     proto_dict = {
@@ -86,7 +86,7 @@ def process_schedule(schedule_name: str):
     schedule = _get_schedule(schedule_name)
     if not schedule:
         return None
-    proto_dict = _to_protocol_by_schedule(schedule)
+    proto_dict = to_protocol_by_schedule(schedule)
     return proto_dict
 
 

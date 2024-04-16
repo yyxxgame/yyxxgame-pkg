@@ -12,18 +12,31 @@ from ..core.manager import rule_register
 from .rule_base import ProtoSchedule, RuleBase
 
 
-@rule_register(inst_name_list=["query_task_instance", "query_collect_instance"])
-class DispatchRuleQuery(RuleBase):
+class DispatchRuleQueryLogic(RuleBase):
     """
     query rule
     """
 
     def build(self, schedule: ProtoSchedule):
+        """
+        构建分发任务标签
+        :return: [group, chord, chain, signature]
+        """
+        sig = self.build_sig_logic(schedule)
+        return sig
+
+    def build_sig_logic(self, schedule: ProtoSchedule):
         param = {"schedule_name": schedule.schedule_name}
-        param.update(schedule.schedule_content[0])
+        if isinstance(schedule.schedule_content, dict):
+            param.update(schedule.schedule_content)
+        else:
+            param.update(schedule.schedule_content[0])
         sql_md5 = param.get("sql_md5")
         if not sql_md5:
             return None
+        inst_name = schedule.schedule_dispatch_rule_instance_name
+        if not inst_name:
+            inst_name = self.inst_name
 
         # 根据md5获取查询参数
         query_param = self.__get_sql_data(sql_md5)
@@ -46,7 +59,7 @@ class DispatchRuleQuery(RuleBase):
         # 构建signature
         sig = self.make_signature_group(
             app.conf.get("CUSTOM_TASK_REGISTER_PATH"),
-            self.inst_name,
+            inst_name,
             queue_name,
             schedule.priority,
             kwargs_list=param_list,
@@ -107,3 +120,10 @@ class DispatchRuleQuery(RuleBase):
         return param_list
 
     # endregion
+
+
+@rule_register(inst_name_list=["query_task_instance", "query_collect_instance"])
+class DispatchRuleQuery(DispatchRuleQueryLogic):
+    """
+    DispatchRuleQuery
+    """
