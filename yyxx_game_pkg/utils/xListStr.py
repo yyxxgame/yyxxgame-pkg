@@ -9,7 +9,7 @@ import pandas as pd
 import ujson as json
 
 
-def lst2str(lst: typing.Union[str, pd.Series], isdigit=True, symbol=",", warp="'") -> str:
+def lst2str(lst, isdigit=True, symbol=",", warp="'") -> str:
     """
     list转字符串
     lst2str(['a', 'b', 'c]) -> "'a', 'b', 'c'"
