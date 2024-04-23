@@ -286,8 +286,8 @@ def create_mongo_spec(spec_dict):
 
     spec_parse_results.update(select_results)
     spec_parse_results.update(where_results)
-    spec_parse_results.update(limit_results)
     spec_parse_results.update(order_results)
+    spec_parse_results.update(limit_results)
     return spec_parse_results
 
 
