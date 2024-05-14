@@ -29,11 +29,12 @@ class DispatchRuleWorkFlowLogic(DispatchRuleStatisticTaskLogic):
     # endregion
 
     @staticmethod
-    def traversal_build(schedule, sub_sig_build_fn):
+    def traversal_build(schedule, sub_sig_build_fn, ignore_result=False):
         """
         循环构建子任务
         :param schedule:
         :param sub_sig_build_fn:
+        :param ignore_result:  不需要上一步的结果
         :return:
         """
         steps_contents = {}
@@ -57,7 +58,10 @@ class DispatchRuleWorkFlowLogic(DispatchRuleStatisticTaskLogic):
                 _step_sigs.append(sub_sig)
             if not _step_sigs:
                 continue
-            steps_sig_list.append(chord(_step_sigs, WorkFlowMethods.link_task_s(**sig_options)))
+            if ignore_result:
+                steps_sig_list.append(chain(*_step_sigs))
+            else:
+                steps_sig_list.append(chord(_step_sigs, WorkFlowMethods.link_task_s(**sig_options)))
         if not steps_sig_list:
             return None
         sig = chain(*steps_sig_list)

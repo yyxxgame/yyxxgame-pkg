@@ -32,7 +32,7 @@ class DispatchRuleMultipleWorkFlowLogic(DispatchRuleWorkFlowLogic):
         """
         content_dict = schedule.schedule_content
         assert isinstance(content_dict, dict)
-        sig = self.traversal_build(schedule, self.build_workflow_sig_logic)
+        sig = self.traversal_build(schedule, self.build_workflow_sig_logic, ignore_result=True)
         return sig
 
 
