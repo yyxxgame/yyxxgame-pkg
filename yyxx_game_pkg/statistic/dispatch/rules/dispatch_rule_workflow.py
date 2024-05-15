@@ -40,7 +40,10 @@ class DispatchRuleWorkFlowLogic(DispatchRuleStatisticTaskLogic):
         steps_contents = {}
         for _, _content in schedule.schedule_content.items():
             for step, content_list in _content.items():
-                steps_contents[int(step)] = content_list
+                if not steps_contents.get(int(step)):
+                    steps_contents[int(step)] = content_list
+                else:
+                    steps_contents[int(step)].extend(content_list)
         step_keys = list(steps_contents.keys())
         step_keys = sorted(step_keys)
         steps_sig_list = []
