@@ -1,85 +1,32 @@
 # -*- coding: utf-8 -*-
-# @Author   : KaiShin
-# @Time     : 2022/8/1
 """
-das_api python 调用
+@File: async_das_client.py
+@Author: ltw
+@Time: 2023/6/14
+
+das_api python 协程异步调用
 """
 
-import re
-import requests
+import httpx
 import numpy as np
 import pandas as pd
 import ujson as json
-
 from yyxx_game_pkg.utils.dtypes import trans_unsupported_types
 
 
-class DasApiException(Exception):
-    pass
-
-
-class DasApiChQueryException(DasApiException):
-    pass
-
-
-class DasApiChExecuteException(DasApiException):
-    pass
-
-
-class DasApiMongoQueryException(DasApiException):
-    pass
-
-
-class DasApiEsQueryException(DasApiException):
-    pass
-
-
-class DasApiEsInsertException(DasApiException):
-    pass
-
-
-class DasApi:
+class AsyncDasClient:
     """
-    DasApi py
+    AioDasClient py
     """
 
-    @staticmethod
-    def _post(das_url, post_type, post_data):
+    async def _post(self, das_url, post_type, post_data):
         url = f"{das_url}/{post_type}"
         post_data = trans_unsupported_types(post_data)
-        res = requests.post(json=post_data, url=url, timeout=600)
-        return res.ok, res.content
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=post_data, timeout=600)
+            return response.is_success, response.content
 
-    @staticmethod
-    def mongo_query(das_url, post_data):
-        """
-        sql语句 查询 mongo 库
-        :param das_url: das_http_url
-        :param post_data: {
-            'sql': sql,             # sql语句 支持sql 和 js_sql
-            'server': mongo_url     # mongo链接
-        }
-        :return:
-        """
-        b_ok, res = DasApi._post(das_url, "das/mgo/query", post_data=post_data)
-        if not b_ok:
-            raise DasApiMongoQueryException(res)
-        res = re.sub(
-            r'{\\"\$numberLong\\": \\"\d+\\"}',
-            lambda m: re.search(r"\d+", m.group()).group(),
-            res.decode("utf-8"),
-        )
-        data = json.loads(res)
-        data_list = data["data"]
-        res_list = []
-        if data_list:
-            for data in data_list:
-                res_list.append(json.loads(data))
-        res_df = pd.DataFrame(res_list)
-        return res_df
-
-    @staticmethod
-    def es_query(das_url, post_data):
+    async def es_query(self, das_url, post_data):
         """
         sql语句 查询 elasticsearch 库
         :param das_url: das_http_url
@@ -91,9 +38,9 @@ class DasApi:
         }
         :return:
         """
-        b_ok, res = DasApi._post(das_url, "das/es/queryx", post_data=post_data)
+        b_ok, res = await self._post(das_url, "das/es/queryx", post_data=post_data)
         if not b_ok:
-            raise DasApiEsQueryException(res)
+            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
         engine = post_data.get("engine", 0)
         use_search = post_data.get("search_from", -1) >= 0
         data = json.loads(res)
@@ -119,8 +66,7 @@ class DasApi:
         res_df = pd.DataFrame(np.array(data_rows), columns=df_cols)
         return res_df
 
-    @staticmethod
-    def es_insert(das_url, post_data):
+    async def es_insert(self, das_url, post_data):
         """
         elasticsearch 数据插入
         :param das_url: das_http_url
@@ -131,13 +77,12 @@ class DasApi:
         }
         :return:
         """
-        b_ok, res = DasApi._post(das_url, "das/es/insert", post_data=post_data)
+        b_ok, res = await self._post(das_url, "das/es/insert", post_data=post_data)
         if not b_ok:
-            raise DasApiEsInsertException(res)
+            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
         return res
 
-    @staticmethod
-    def ch_query(das_url, post_data):
+    async def ch_query(self, das_url, post_data):
         """
         sql语句 查询 clickhouse 库
         :param das_url: das_http_url
@@ -146,16 +91,15 @@ class DasApi:
         }
         :return:
         """
-        b_ok, res = DasApi._post(das_url, "/das/ch/queryx", post_data=post_data)
+        b_ok, res = await self._post(das_url, "/das/ch/queryx", post_data=post_data)
         if not b_ok:
-            raise DasApiChQueryException(res)
+            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
         data = json.loads(res)
 
         res_df = pd.DataFrame(data["datarows"], columns=data["columns"])
         return res_df
 
-    @staticmethod
-    def ch_execute(das_url, post_data):
+    async def ch_execute(self, das_url, post_data):
         """
         clickhouse 执行 sql (数据插入)
         :param das_url: das_http_url
@@ -164,9 +108,9 @@ class DasApi:
         }
         :return:
         """
-        b_ok, res = DasApi._post(das_url, "/das/ch/exec", post_data=post_data)
+        b_ok, res = await self._post(das_url, "/das/ch/exec", post_data=post_data)
         if not b_ok:
-            raise DasApiChExecuteException(res)
+            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
         return b_ok
 
 
