@@ -58,9 +58,10 @@ pymongo = "3.13.0"
 pyparsing = "^3.1.0"
 scipy = {version = "^1.12.0", optional = true}
 requests = {version = "^2.32.3", optional = true}
+elasticsearch = {version = "8.14.0", optional = true}
 
 [tool.poetry.extras]
-stat = ["fastapi", "scipy", "requests"]
+stat = ["fastapi", "scipy", "requests", "elasticsearch"]
 server_center = ["django", "pillow", "filetype"]
 center_api = ["flask", "cookiecutter"]
 
