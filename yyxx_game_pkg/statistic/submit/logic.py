@@ -4,6 +4,7 @@
 @Author: ltw
 @Time: 2024/1/2
 """
+
 import copy
 import importlib
 
@@ -17,26 +18,29 @@ __api_addr = "http://localhost:8080"
 def to_protocol_by_schedule(schedule):
     instance_name = schedule.SCHEDULE_DISPATCH_RULE_INSTANCE_NAME
     queue_name = schedule.SCHEDULE_QUEUE_NAME
-    proto_dict = {
-        "SCHEDULE_NAME": schedule.SCHEDULE_NAME,
-        "SCHEDULE_DISPATCH_RULE_INSTANCE_NAME": instance_name,
-        "SCHEDULE_QUEUE_NAME": queue_name,
-    }
     content_list = copy.deepcopy(schedule.SCHEDULE_CONTENT)
     schedule_content = {}
     for content in content_list:
-        sub_schedule_name = content.get("schedule", "")
-        # ************************** 没有子schedule 判断为单任务 start **************************
-        if not sub_schedule_name:
-            schedule_content = content
-            break
-        # ************************** 没有子schedule 判断为单任务  end  **************************
         group = content.get("group", 1)
         step = content.get("step", 1)
+        group = str(group)
+        step = str(step)
         if group not in schedule_content:
             schedule_content[group] = {}
         if step not in schedule_content[group]:
             schedule_content[group][step] = []
+        sub_schedule_name = content.get("schedule", "")
+        # ************************** 没有子schedule 判断为单任务 start **************************
+        if not sub_schedule_name:
+            content_dict = {
+                "SCHEDULE_NAME": schedule.SCHEDULE_NAME,
+                "SCHEDULE_DISPATCH_RULE_INSTANCE_NAME": instance_name,
+                "SCHEDULE_QUEUE_NAME": queue_name,
+                "SCHEDULE_CONTENT": content,
+            }
+            schedule_content[group][step].append(content_dict)
+            break
+        # ************************** 没有子schedule 判断为单任务  end  **************************
         sub_custom_content = content.get("custom_content", "")
         if not sub_custom_content:
             # 无 custom_content, 根据 schedule name 尝试解析
@@ -53,16 +57,21 @@ def to_protocol_by_schedule(schedule):
             "SCHEDULE_CONTENT": sub_custom_content,
         }
         schedule_content[group][step].append(sub_proto_dict)
-    proto_dict["SCHEDULE_CONTENT"] = schedule_content
+    proto_dict = {
+        "SCHEDULE_NAME": schedule.SCHEDULE_NAME,
+        "SCHEDULE_DISPATCH_RULE_INSTANCE_NAME": instance_name,
+        "SCHEDULE_QUEUE_NAME": queue_name,
+        "SCHEDULE_CONTENT": schedule_content,
+    }
     return proto_dict
 
 
-def _get_schedule(schedule_name: str):
+def _get_schedule(schedule_name: str, schedule_path=None):
     schedule_dir = "schedule"
     if schedule_name.find("@") > -1:
         schedule_name, schedule_dir = schedule_name.split("@")
-
-    module = f"{__schedule_file_path}.{schedule_dir}.{schedule_name}"
+    _schedule_file_path = schedule_path if schedule_path else __schedule_file_path
+    module = f"{_schedule_file_path}.{schedule_dir}.{schedule_name}"
     schedule = importlib.import_module(module)
     return schedule
 
@@ -77,15 +86,16 @@ def set_config(path: str, api_addr: str):
     __api_addr = api_addr
 
 
-def process_schedule(schedule_name: str):
+def process_schedule(schedule_name: str, schedule_path=None) -> dict:
     """
     schedule 文件解析为 proto_dict
     :param schedule_name:
+    :param schedule_path:
     :return:
     """
-    schedule = _get_schedule(schedule_name)
+    schedule = _get_schedule(schedule_name, schedule_path)
     if not schedule:
-        return None
+        return {}
     proto_dict = to_protocol_by_schedule(schedule)
     return proto_dict
 

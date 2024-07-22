@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-dispatch_rule_query
+@File: rule_query_task
 """
 import copy
 
@@ -12,9 +12,9 @@ from ..core.manager import rule_register
 from .rule_base import ProtoSchedule, RuleBase
 
 
-class DispatchRuleQueryLogic(RuleBase):
+class RuleQueryTaskLogic(RuleBase):
     """
-    query rule
+    RuleQueryTaskLogic
     """
 
     def build(self, schedule: ProtoSchedule):
@@ -123,7 +123,7 @@ class DispatchRuleQueryLogic(RuleBase):
 
 
 @rule_register(inst_name_list=["query_task_instance", "query_collect_instance"])
-class DispatchRuleQuery(DispatchRuleQueryLogic):
+class RuleQueryTask(RuleQueryTaskLogic):
     """
-    DispatchRuleQuery
+    RuleQueryTask
     """

@@ -4,13 +4,13 @@ Author:       Winslen
 Date:         2024/04/16
 """
 from ..core.manager import rule_register
-from .dispatch_rule_workflow import DispatchRuleWorkFlowLogic
-from .dispatch_rule_query import DispatchRuleQueryLogic
+from .rule_statistic_flow import RuleStatisticFlowLogic
+from .rule_query_task import RuleQueryTaskLogic
 
 
-class DispatchRuleWorkFlowQueryLogic(DispatchRuleQueryLogic, DispatchRuleWorkFlowLogic):
+class RuleQueryFlowLogic(RuleQueryTaskLogic, RuleStatisticFlowLogic):
     """
-    DispatchRuleWorkFlowQueryLogic
+    RuleQueryFlowLogic
     """
 
     def build(self, schedule):
@@ -37,9 +37,10 @@ class DispatchRuleWorkFlowQueryLogic(DispatchRuleQueryLogic, DispatchRuleWorkFlo
 @rule_register(
     inst_name_list=[
         "query_work_flow_instance",
+        "query_flow_instance",
     ]
 )
-class DispatchRuleWorkFlowQuery(DispatchRuleWorkFlowQueryLogic):
+class RuleQueryFlow(RuleQueryFlowLogic):
     """
-    DispatchRuleWorkFlowQuery
+    RuleQueryFlow
     """

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@File: dispatch_rule_statistic_task
+@File: rule_statistic_task
 @Author: ltw
 @Time: 2023/12/28
 """
@@ -21,9 +21,9 @@ from ..core.manager import rule_register
 from .rule_base import ProtoSchedule, RuleBase
 
 
-class DispatchRuleStatisticTaskLogic(RuleBase):
+class RuleStatisticTaskLogic(RuleBase):
     """
-    DispatchRuleStatisticTaskLogic
+    RuleStatisticTaskLogic
     """
 
     def build(self, schedule: ProtoSchedule):
@@ -31,6 +31,10 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
         :param schedule:
         :return:
         """
+        # 默认 group 1 step 1
+        group, step = '1', '1'
+        schedule_content = schedule.schedule_content[group][step].pop()
+        schedule = ProtoSchedule(schedule_content)
         sig = self.build_sig_logic(schedule)
         return sig
 
@@ -307,8 +311,8 @@ class DispatchRuleStatisticTaskLogic(RuleBase):
         "statistic_collect_instance",
     ]
 )
-class DispatchRuleStatisticTask(DispatchRuleStatisticTaskLogic):
+class RuleStatisticTask(RuleStatisticTaskLogic):
     """
-    DispatchRuleStatisticTask
-    若直接将@rule_register装饰在DispatchRuleStatisticTaskLogic上会导致继承问题，所以单独继承注册处理
+    RuleStatisticTask
+    若直接将@rule_register装饰在 RuleStatisticTaskLogic 上会导致继承问题，所以单独继承注册处理
     """

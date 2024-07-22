@@ -47,13 +47,17 @@ def parse_task(schedule):
 
     # 校验队列名
     if schedule.schedule_queue_name is None:
-        logging.info("<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule: %s", schedule)
+        logging.info(
+            "<parse_command_data> SCHEDULE_QUEUE_NAME is None, schedule: %s", schedule
+        )
         return task_sig_list
 
     # 获取对应计划解析规则
     rule = RuleManager().rules.get(instance_name)
     if not rule:
-        logging.info("<parse_command_data> rule is None, instance_name: %s", instance_name)
+        logging.info(
+            "<parse_command_data> rule is None, instance_name: %s", instance_name
+        )
         return task_sig_list
 
     # 构建signature列表
@@ -91,10 +95,10 @@ def _dispatch_one_task(task_sig):
     return res.id, task_id_list
 
 
-def dispatch_tasks(task_sig_list):
+def dispatch_tasks(task_sig_list) -> list:
     """
     :param task_sig_list:
-    :return:
+    :return: [task_id, task_id...]
     """
     task_id_list = []  # task id列表
     task_type_list = []  # task类型列表（日志显示用）

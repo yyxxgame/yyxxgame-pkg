@@ -16,12 +16,6 @@ REDIS_CONFIG = {
     "overdue_seconds": 60 * 60 * 24,
 }
 
-# 发行标识符
-PUBLISH_FLAG = "yyxx_test"
-
-# celery* 队列配置处理
-EXCHANGE_TO_QUEUE = {"celery": f"celery#{PUBLISH_FLAG}"}
-
 # jaeger上报配置
 JAEGER = {}
 # ############################# 自定义配置 end #############################

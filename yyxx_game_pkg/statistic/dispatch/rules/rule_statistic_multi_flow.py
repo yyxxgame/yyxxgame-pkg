@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-@File: dispatch_rule_multi_workflow
+@File: rule_statistic_multi_flow
 @Author: ltw
 @Time: 2024/1/3
 """
 from ..core.manager import rule_register
-from .dispatch_rule_workflow import DispatchRuleWorkFlowLogic
+from .rule_statistic_flow import RuleStatisticFlowLogic
 
 
-class DispatchRuleMultipleWorkFlowLogic(DispatchRuleWorkFlowLogic):
+class RuleStatisticMultiFlowLogic(RuleStatisticFlowLogic):
     """
-    RuleMultiWorkFlow
+    RuleStatisticMultiFlowLogic
     """
 
     # region 继承方法
@@ -39,9 +39,10 @@ class DispatchRuleMultipleWorkFlowLogic(DispatchRuleWorkFlowLogic):
 @rule_register(
     inst_name_list=[
         "multiple_workflow_instance",
+        "statistic_multi_flow_instance",
     ]
 )
-class DispatchRuleMultipleWorkFlow(DispatchRuleMultipleWorkFlowLogic):
+class RuleStatisticMultiFlow(RuleStatisticMultiFlowLogic):
     """
-    DispatchRuleMultiWorkFlow
+    RuleStatisticMultiFlow
     """
