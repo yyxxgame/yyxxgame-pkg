@@ -57,8 +57,8 @@ class RuleStatisticTaskLogic(RuleBase):
             return None
 
         # 切割任务内容
-        param_list = self.__split_content_info(content_info)
-        if not param_list:
+        task_kwargs_list = self.__split_content_info(content_info)
+        if not task_kwargs_list:
             return None
 
         logging.info(
@@ -68,8 +68,8 @@ class RuleStatisticTaskLogic(RuleBase):
             auth_info,
             queue_name,
             content_info["statistic_ids"],
-            len(param_list),
-            param_list[0],
+            len(task_kwargs_list),
+            task_kwargs_list[0],
         )
 
         # 构建signature
@@ -78,7 +78,7 @@ class RuleStatisticTaskLogic(RuleBase):
             inst_name,
             schedule.queue,
             schedule.priority,
-            kwargs_list=param_list,
+            task_kwargs_list,
         )
         if not sig:
             return None

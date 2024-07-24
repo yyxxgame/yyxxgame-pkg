@@ -121,7 +121,7 @@ def split_list_ex(target_list, res_len):
     target_list_len = len(target_list)
     if res_len >= target_list_len:
         return [target_list]
-    split_parts_len = target_list_len / res_len + (1 if target_list_len % res_len > 0 else 0)
+    split_parts_len = int(target_list_len / res_len + (1 if target_list_len % res_len > 0 else 0))
 
     res_list = []
     for x in range(split_parts_len):

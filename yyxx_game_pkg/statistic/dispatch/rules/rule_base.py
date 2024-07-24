@@ -36,7 +36,7 @@ class RuleBase:
         """
 
     def make_signature_group(
-        self, task_path, business_inst_name, queue, priority, kwargs_list=None
+        self, task_path, business_inst_name, queue, priority, task_kwargs_list=None
     ):
         """
         构建单任务组
@@ -44,13 +44,13 @@ class RuleBase:
         :param business_inst_name:
         :param queue:
         :param priority:
-        :param kwargs_list:
+        :param task_kwargs_list:
         :return:
         """
         sig_list = []
-        if not kwargs_list:
+        if not task_kwargs_list:
             return None
-        for kwargs in kwargs_list:
+        for kwargs in task_kwargs_list:
             _sig = self._make_signature(task_path, business_inst_name, **kwargs)
             _sig.options["queue"] = queue
             _sig.options["priority"] = priority
