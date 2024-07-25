@@ -5,17 +5,11 @@
 @Time: 2022/9/20
 """
 from abc import abstractmethod
-
 import pandas as pd
 from pymongo import MongoClient
-
 from yyxx_game_pkg.dbops.base import DatabaseOperation
 from yyxx_game_pkg.dbops.mongo_op.sql2mongo import sql_to_mongo_spec
-from yyxx_game_pkg.utils.decorator import (
-    except_monitor,
-    log_execute_time_monitor,
-    singleton_unique,
-)
+from yyxx_game_pkg.utils.decorator import singleton_unique
 
 
 @singleton_unique
@@ -107,8 +101,6 @@ class MongoOperation(DatabaseOperation):
         mgo_client = PyMongoClient(mongo_url, game_db)
         return mgo_client
 
-    @except_monitor
-    @log_execute_time_monitor()
     def get_one_df(self, sql, *args, **kwargs):
         """
         :param sql:
@@ -120,8 +112,6 @@ class MongoOperation(DatabaseOperation):
         res_df = self.new_client(mongo_url, game_db).query(sql)
         return res_df.iloc[0] if not res_df.empty else res_df
 
-    @except_monitor
-    @log_execute_time_monitor()
     def get_all_df(self, sql, *args, **kwargs):
         """
         :param sql:
