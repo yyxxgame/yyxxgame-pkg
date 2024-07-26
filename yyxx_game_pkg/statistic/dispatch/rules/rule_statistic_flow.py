@@ -47,7 +47,7 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
             for step in step_keys:
                 if step not in group_sigs:
                     group_sigs[step] = {"sigs": [], "chord": False}
-                _step_contents = _group_contents[str(step)]
+                _step_contents = _group_contents[step]
                 _step_sigs = []
                 for _schedule in _step_contents:
                     _proto = ProtoSchedule(_schedule)

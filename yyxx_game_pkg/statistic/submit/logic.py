@@ -21,10 +21,8 @@ def to_protocol_by_schedule(schedule):
     content_list = copy.deepcopy(schedule.SCHEDULE_CONTENT)
     schedule_content = {}
     for content in content_list:
-        group = content.get("group", 1)
-        step = content.get("step", 1)
-        group = str(group)
-        step = str(step)
+        group = int(content.get("group", 1))
+        step = int(content.get("step", 1))
         if group not in schedule_content:
             schedule_content[group] = {}
         if step not in schedule_content[group]:

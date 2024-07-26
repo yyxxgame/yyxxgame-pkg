@@ -32,7 +32,7 @@ class RuleStatisticTaskLogic(RuleBase):
         :return:
         """
         # 默认 group 1 step 1
-        group, step = '1', '1'
+        group, step = 1, 1
         schedule_content = schedule.schedule_content[group][step].pop()
         schedule = ProtoSchedule(schedule_content)
         sig = self.build_sig_logic(schedule)
