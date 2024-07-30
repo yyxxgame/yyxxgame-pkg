@@ -42,7 +42,7 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
         # 汇总所有group和step
         groups_sigs = {}
         for group, _group_contents in schedule.schedule_content.items():
-            step_keys = sorted(list(map(int, _group_contents.keys())))
+            step_keys = sorted(list(_group_contents.keys()))
             group_sigs = {}
             for step in step_keys:
                 if step not in group_sigs:
