@@ -16,7 +16,7 @@ SCHEDULE_DISPATCH_RULE_INSTANCE_NAME = "statistic_flow_instance"
 # 计划内容
 SCHEDULE_CONTENT = [
     {
-        "step": 1,
+        "step": '1',
         "schedule": "tests_task_1",  # 规则名 [仅做标识用, 无其他含义 2024.01.03]
         # 解析工作流子任务规则入口名 [必需 2023.01.03新增]
 
@@ -37,7 +37,7 @@ SCHEDULE_CONTENT = [
     },
     {
         # 跨服合服信息统计
-        "step": 2,
+        "step": '2',
         "schedule": "tests_task_2",
         "rule_instance": "statistic_task_instance",
         "custom_content": {

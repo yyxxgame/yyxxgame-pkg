@@ -31,17 +31,18 @@ class RuleStatisticTaskLogic(RuleBase):
         :param schedule:
         :return:
         """
-        # 默认 group 1 step 1
-
-        try:
-            group, step = 1, 1
-            schedule_content = schedule.schedule_content[group][step].pop()
-        except KeyError:
-            group, step = "1", "1"
-            schedule_content = schedule.schedule_content[group][step].pop()
-        schedule = ProtoSchedule(schedule_content)
-        sig = self.build_sig_logic(schedule)
-        return sig
+        # 默认单任务构建 group 1 step 1
+        step1_contents = None
+        for _, g_contents in schedule.schedule_content.items():
+            for _, step_contents in g_contents.items():
+                step1_contents = step_contents
+                break
+        if not step1_contents:
+            return None
+        for step_content in step1_contents:
+            schedule = ProtoSchedule(step_content)
+            sig = self.build_sig_logic(schedule)
+            return sig
 
     def build_sig_logic(self, schedule):
         """

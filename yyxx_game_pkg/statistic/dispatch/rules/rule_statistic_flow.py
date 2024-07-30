@@ -42,13 +42,19 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
         # 汇总所有group和step
         groups_sigs = {}
         for group, _group_contents in schedule.schedule_content.items():
-            step_keys = sorted(list(_group_contents.keys()))
+            if not _group_contents.keys():
+                continue
+            step_keys = sorted(list(map(int, _group_contents.keys())))
             group_sigs = {}
             for step in step_keys:
                 if step not in group_sigs:
                     group_sigs[step] = {"sigs": [], "chord": False}
-                _step_contents = _group_contents[step]
-                _step_sigs = []
+                if step in _group_contents:
+                    _step_contents = _group_contents[step]
+                elif str(step) in _group_contents:
+                    _step_contents = _group_contents[str(step)]
+                else:
+                    continue
                 for _schedule in _step_contents:
                     _proto = ProtoSchedule(_schedule)
                     _sig = sub_sig_build_fn(_proto)
@@ -72,7 +78,7 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
         steps_sig_list = []
 
         for group, _group_sigs in groups_sigs.items():
-            for step in sorted(list(map(int, _group_sigs.keys()))):
+            for step in sorted(list(_group_sigs.keys())):
                 _step_sigs = _group_sigs[step]["sigs"]
                 # 有依赖任务 该步骤用chord
                 if _group_sigs[step]["chord"]:
