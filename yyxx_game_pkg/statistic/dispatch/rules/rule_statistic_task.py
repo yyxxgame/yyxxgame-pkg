@@ -32,17 +32,14 @@ class RuleStatisticTaskLogic(RuleBase):
         :return:
         """
         # 默认单任务构建 group 1 step 1
-        step1_contents = None
-        for _, g_contents in schedule.schedule_content.items():
-            for _, step_contents in g_contents.items():
-                step1_contents = step_contents
-                break
-        if not step1_contents:
-            return None
-        for step_content in step1_contents:
-            schedule = ProtoSchedule(step_content)
-            sig = self.build_sig_logic(schedule)
-            return sig
+        for _, group_contents in schedule.schedule_content.items():
+            for _, step_contents in group_contents.items():
+                if not step_contents:
+                    raise ValueError("step_contents is Empty")
+                content_dict = step_contents.pop()
+                schedule = ProtoSchedule(content_dict)
+                sig = self.build_sig_logic(schedule)
+                return sig
 
     def build_sig_logic(self, schedule):
         """

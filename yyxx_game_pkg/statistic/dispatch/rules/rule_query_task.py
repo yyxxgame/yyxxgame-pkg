@@ -13,31 +13,21 @@ from yyxx_game_pkg.helpers.redis_helper import get_redis
 from yyxx_game_pkg.utils.xListStr import split_list_ex
 
 from ..core.manager import rule_register
-from .rule_base import ProtoSchedule, RuleBase
+from .rule_base import ProtoSchedule
+from .rule_statistic_task import RuleStatisticTaskLogic
 
 
-class RuleQueryTaskLogic(RuleBase):
+class RuleQueryTaskLogic(RuleStatisticTaskLogic):
     """
     RuleQueryTaskLogic
     """
 
-    def build(self, schedule: ProtoSchedule):
-        """
-        构建分发任务标签
-        :return: [group, chord, chain, signature]
-        """
-        sig = self.build_sig_logic(schedule)
-        return sig
-
     def build_sig_logic(self, schedule: ProtoSchedule):
         schedule_info = {"schedule_name": schedule.schedule_name}
-        if isinstance(schedule.schedule_content, list):
-            schedule_info.update(schedule.schedule_content[0])
-        else:
-            schedule_info.update(schedule.schedule_content)
+        schedule_info.update(schedule.schedule_content)
         sql_md5 = schedule_info.get("sql_md5")
         if not sql_md5:
-            return None
+            raise ValueError("sql_md5 is Empty")
         inst_name = schedule.schedule_dispatch_rule_instance_name
         if not inst_name:
             inst_name = self.inst_name
@@ -47,9 +37,7 @@ class RuleQueryTaskLogic(RuleBase):
 
         # center 传过来可能是空字符串 '' 此处做转换
         _d_params = query_params.get("dispatch_params")
-        query_params["dispatch_params"] = (
-            _d_params if isinstance(_d_params, dict) else {}
-        )
+        query_params["dispatch_params"] = _d_params if isinstance(_d_params, dict) else {}
 
         # 参数赋值
         schedule_info.update(query_params)
@@ -90,17 +78,15 @@ class RuleQueryTaskLogic(RuleBase):
         if instance_name.find("collect") > -1:
             return [schedule_info]
 
-        # split_by_date 1_month, 3_day, 2_hour, 10_minute
+        # split_by_date 1*month, 3*day, 2*hour, 10*minute
         # 仅支持单条件
         date_split_by = dispatch_params.get("date_split_by")
         split_date_list = RuleQueryTaskLogic.split_by_date(schedule_info, date_split_by)
 
-        # cond_split_by 10_server_ids, 2_op_gcids
+        # cond_split_by 10*server_ids, 2*op_gcids
         # 仅支持单条件 (多条件下任务数量指数增长，不好控制，限制单条件)
         list_cond_split_by = dispatch_params.get("list_cond_split_by")
-        split_list_cond_list = RuleQueryTaskLogic.split_by_list_cond(
-            schedule_info, list_cond_split_by
-        )
+        split_list_cond_list = RuleQueryTaskLogic.split_by_list_cond(schedule_info, list_cond_split_by)
 
         info_dict_list = []
         for sdate, edate in split_date_list:
@@ -132,7 +118,7 @@ class RuleQueryTaskLogic(RuleBase):
         if not (sdate_str and edate_str):
             return []
         res_list = []
-        size, time_unit = split_by.lower().split("_")
+        size, time_unit = split_by.lower().split("*")
         size = int(size)
         if time_unit == "day":
             interval = datetime.timedelta(days=size)
@@ -141,9 +127,7 @@ class RuleQueryTaskLogic(RuleBase):
         elif time_unit == "minute":
             interval = datetime.timedelta(minutes=size)
         else:
-            raise ValueError(
-                """<RuleQueryTaskLogic.split_by_date>不支持的切分单位("1:day", "3:hour", "10:minute")"""
-            )
+            raise ValueError("""<RuleQueryTaskLogic.split_by_date>不支持的切分单位("1:day", "3:hour", "10:minute")""")
         # 按时间切分
         start_dt = datetime.datetime.strptime(sdate_str, "%Y-%m-%d %H:%M:%S")
         edate_str = edate_str.replace("00:00:00", "23:59:59")
@@ -165,7 +149,7 @@ class RuleQueryTaskLogic(RuleBase):
     def split_by_list_cond(schedule_info, cond_split_by) -> Dict[str, List]:
         if not cond_split_by:
             return {}
-        size, cond_key = cond_split_by.strip().split(":")
+        size, cond_key = cond_split_by.strip().split("*")
         key_cond_list = schedule_info.get(cond_key)
         if not key_cond_list:
             return {}
