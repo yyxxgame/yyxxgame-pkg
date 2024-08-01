@@ -271,6 +271,16 @@ def div_round(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Ser
     return data_df[top_key].div(data_df[bottom_key], axis=0).round(precision)
 
 
+def mul_round(data_df: pd.DataFrame, top_key, bottom_key, precision=2) -> pd.Series:
+    """
+    dataframe mul函数 top_key * bottom_key
+    example:
+        data_df["pay_rate"] = mul_round(data_df, "pid_cnt", "act_player_cnt")
+    :return:
+    """
+    return data_df[top_key].mul(data_df[bottom_key], axis=0).round(precision)
+
+
 def concat_cols(data_df: pd.DataFrame, cols: list, concat_by="|") -> pd.Series:
     """
     合将列，汇总后的列为：recharge_cnt|recharge_type_id

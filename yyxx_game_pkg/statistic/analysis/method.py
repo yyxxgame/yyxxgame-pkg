@@ -144,7 +144,7 @@ def new_user_actual(source_df: pd.DataFrame) -> pd.DataFrame:
     # RTLV
     # 首日数值 = ARPPU，次日后等于首日数值 * 对应天数ltv倍数
     data_df["day1_rtlv"] = data_df.iloc[0]["arppu"]
-    data_df["rtlv"] = xdataframe.div_round(data_df, "day1_rtlv", "ltv_mult")
+    data_df["rtlv"] = xdataframe.mul_round(data_df, "day1_rtlv", "ltv_mult")
 
     res_df = data_df[
         [
