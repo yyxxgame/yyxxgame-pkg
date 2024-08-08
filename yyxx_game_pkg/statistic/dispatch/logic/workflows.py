@@ -42,7 +42,8 @@ class WorkFlowMethods:
         from celery import current_app as app
 
         task_path = app.conf.get("CUSTOM_TASK_REGISTER_PATH")
-        sig = signature(f"{task_path}.link_task")
+        immut = options.get("immutable", False)
+        sig = signature(f"{task_path}.link_task", immutable=immut)
         sig.options.update(options)
         return sig
 

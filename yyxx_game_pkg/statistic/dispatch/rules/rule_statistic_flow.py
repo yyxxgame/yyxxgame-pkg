@@ -41,7 +41,7 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
         sig_options = {"queue": schedule.queue, "priority": schedule.priority}
         # 汇总所有group和step
         groups_sigs = {}
-        for group, _group_contents in schedule.schedule_content.items():
+        for _group, _group_contents in schedule.schedule_content.items():
             if not _group_contents.keys():
                 continue
             step_keys = sorted(list(map(int, _group_contents.keys())))
@@ -62,31 +62,27 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
                         continue
                     # todo 配置项
                     # 暂时用 collect 判断是否依赖结果
-                    use_chord = (
-                        _proto.schedule_dispatch_rule_instance_name.find("collect") >= 0
-                    )
-                    use_chord = (
-                        (not ignore_result) if ignore_result is not None else use_chord
-                    )
+                    use_chord = _proto.schedule_dispatch_rule_instance_name.find("collect") >= 0
+                    use_chord = (not ignore_result) if ignore_result is not None else use_chord
                     # 所有group第一步不使用chord
                     if step_keys.index(step) == 0:
                         use_chord = False
                     group_sigs[step]["chord"] = use_chord
                     group_sigs[step]["sigs"].append(_sig)
-            groups_sigs[group] = group_sigs
+            groups_sigs[_group] = group_sigs
 
         steps_sig_list = []
 
-        for group, _group_sigs in groups_sigs.items():
+        for _group, _group_sigs in groups_sigs.items():
             for step in sorted(list(_group_sigs.keys())):
                 _step_sigs = _group_sigs[step]["sigs"]
-                # 有依赖任务 该步骤用chord
+
                 if _group_sigs[step]["chord"]:
-                    steps_sig_list.append(
-                        chord(_step_sigs, Flow.link_task_s(**sig_options))
-                    )
+                    # 有依赖任务
+                    steps_sig_list.append(chord(_step_sigs, Flow.link_task_s(**sig_options)))
                 else:
-                    steps_sig_list.append(chain(*_step_sigs))
+                    # 无依赖任务 忽略结果
+                    steps_sig_list.append(chord(_step_sigs, Flow.link_task_s(**sig_options, immutable=True)))
 
         if not steps_sig_list:
             return None
