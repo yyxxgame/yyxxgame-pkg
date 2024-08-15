@@ -75,6 +75,11 @@ class StatisticLogConfig(LogConfig):
                     "level": "DEBUG",
                     "propagate": True,
                 },
+                "elastic_transport.transport": {
+                    "handlers": ["debug_file_handler", "console_handler"],
+                    "level": "DEBUG",
+                    "propagate": False,
+                },
             },
         }
         return log_config
