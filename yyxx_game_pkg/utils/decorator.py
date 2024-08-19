@@ -85,8 +85,8 @@ def except_monitor(func):
                 kwargs[k] = fix_str(_v, 100)
             logging.error(
                 "<except_monitor>"
-                f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
-                f"exc: {traceback.format_exc()} {e}"
+                f"exc: {traceback.format_exc()} {e}, "
+                f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}"
             )
         return res
 
@@ -115,8 +115,8 @@ def except_return(default=None, echo_raise=True):
                         kwargs[k] = fix_str(_v, 100)
                     logging.error(
                         "<except_return>"
-                        f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}, "
-                        f"exc: {traceback.format_exc()} {e}"
+                        f"exc: {traceback.format_exc()} {e}, "
+                        f"func:{func.__module__}.{func.__name__}, args:{str(_args)}, kwargs:{str(kwargs)}"
                     )
 
                 return (
