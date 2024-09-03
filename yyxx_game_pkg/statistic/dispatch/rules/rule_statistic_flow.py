@@ -60,14 +60,14 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
                     _sig = sub_sig_build_fn(_proto)
                     if not _sig:
                         continue
-                    # todo 配置项
-                    # 暂时用 collect 判断是否依赖结果
-                    use_chord = _proto.schedule_dispatch_rule_instance_name.find("collect") >= 0
-                    use_chord = (not ignore_result) if ignore_result is not None else use_chord
-                    # 所有group第一步不使用chord
-                    if step_keys.index(step) == 0:
-                        use_chord = False
-                    group_sigs[step]["chord"] = use_chord
+                    # 当前step是否需要结果由(step + 1)任务处理
+                    group_sigs[step]["chord"] = False
+
+                    # todo 配置项 暂时用 collect 判断是否依赖上一步(step-1)结果
+                    need_result = _proto.schedule_dispatch_rule_instance_name.find("collect") >= 0
+                    use_chord = (not ignore_result) if ignore_result is not None else need_result
+                    if use_chord and ((step - 1) in group_sigs):
+                        group_sigs[step - 1]["chord"] = True
                     group_sigs[step]["sigs"].append(_sig)
             groups_sigs[_group] = group_sigs
 
