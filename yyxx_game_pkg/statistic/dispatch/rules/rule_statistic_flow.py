@@ -65,9 +65,11 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
 
                     # todo 配置项 暂时用 collect 判断是否依赖上一步(step-1)结果
                     need_result = _proto.schedule_dispatch_rule_instance_name.find("collect") >= 0
-                    use_chord = (not ignore_result) if ignore_result is not None else need_result
-                    if use_chord and ((step - 1) in group_sigs):
+                    last_chord = (not ignore_result) if ignore_result is not None else need_result
+                    if last_chord and ((step - 1) in group_sigs):
                         group_sigs[step - 1]["chord"] = True
+
+                    group_sigs[step]["chord"] = need_result
                     group_sigs[step]["sigs"].append(_sig)
             groups_sigs[_group] = group_sigs
 
