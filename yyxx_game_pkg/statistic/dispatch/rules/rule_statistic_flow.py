@@ -5,7 +5,7 @@
 @Time: 2023/12/28
 """
 
-from celery import chain, chord
+from celery import chain, chord, group
 
 from ..core.manager import rule_register
 from ..logic.workflows import WorkFlowMethods as Flow
@@ -63,9 +63,19 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
                     # 当前step是否需要结果由(step + 1)任务处理
                     group_sigs[step]["chord"] = False
 
-                    # todo 配置项 暂时用 collect 判断是否依赖上一步(step-1)结果
-                    need_result = _proto.schedule_dispatch_rule_instance_name.find("collect") >= 0
-                    last_chord = (not ignore_result) if ignore_result is not None else need_result
+                    need_result = (
+                        _proto.schedule_dispatch_rule_instance_name.find("collect") >= 0
+                    )
+
+                    immut = _proto.schedule_content.get("immutable", 0)
+                    if immut:
+                        need_result = False
+
+                    last_chord = (
+                        (not ignore_result)
+                        if ignore_result is not None
+                        else need_result
+                    )
                     if last_chord and ((step - 1) in group_sigs):
                         group_sigs[step - 1]["chord"] = True
 
@@ -81,10 +91,16 @@ class RuleStatisticFlowLogic(RuleStatisticTaskLogic):
 
                 if _group_sigs[step]["chord"]:
                     # 有依赖任务
-                    steps_sig_list.append(chord(_step_sigs, Flow.link_task_s(**sig_options)))
+                    steps_sig_list.append(
+                        chord(_step_sigs, Flow.link_task_s(**sig_options))
+                    )
                 else:
                     # 无依赖任务 忽略结果
-                    steps_sig_list.append(chord(_step_sigs, Flow.link_task_s(**sig_options, immutable=True)))
+                    steps_sig_list.append(
+                        group(
+                            *_step_sigs
+                        )
+                    )
 
         if not steps_sig_list:
             return None
