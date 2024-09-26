@@ -50,22 +50,23 @@ class WorkFlowMethods:
     @staticmethod
     def fill_res_task_id_list(res, task_id_list):
         if not res:
-            return False
+            return None
+
+        if isinstance(res, AsyncResult):
+            # AsyncResult
+            task_id_list.append(res.task_id)
 
         if isinstance(res, GroupResult):
             # GroupResult
             for res_ in res.results:
-                task_id_list.append(res_.task_id)
-        elif isinstance(res, AsyncResult):
-            # AsyncResult
-            task_id_list.append(res.task_id)
+                WorkFlowMethods.fill_res_task_id_list(res_, task_id_list)
         else:
-            return False
+            return None
 
         if res.parent is not None:
             WorkFlowMethods.fill_res_task_id_list(res.parent, task_id_list)
 
-        return True
+        return None
 
     # region Signature Statistic
     max_sig_cnt = 0
