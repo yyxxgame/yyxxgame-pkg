@@ -14,6 +14,8 @@ from yyxx_game_pkg.utils.decorator import (
     log_execute_time_monitor,
     singleton_unique_obj_args,
 )
+from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 
 
 # ####################################################
@@ -92,3 +94,48 @@ def get_dbpool(config: dict) -> MysqlDbPool:
         CURSOR = config.get("cursor", Cursor)
 
     return MysqlDbPool(Config())
+
+
+@singleton_unique_obj_args
+class MysqlDbEnginePool(object):
+    @property
+    def engine(self):
+        return self.DB_POOL
+
+    def __init__(self, config: dict):
+        self.DB_POOL = create_engine(
+            url=config["url"],
+            pool_size=config["POOL_SIZE"],
+            max_overflow=config["MAX_OVERFLOW"],
+            pool_pre_ping=True,
+            connect_args=config["CONNECT_ARGS"],
+            pool_timeout=60,
+        )
+        logging.debug("<MysqlDbEnginePool> init, info:%s", config)
+
+    @except_monitor
+    @log_execute_time_monitor()
+    def get_connection(self):
+        return self.DB_POOL.connect()
+
+    def close_connection(self):
+        self.DB_POOL.dispose()
+
+
+def get_db_engine_pool(config: dict, drivername="mysql+pymysql") -> MysqlDbEnginePool:
+    conf = dict(
+        url=URL.create(
+            drivername=drivername,
+            username=config["user"],
+            password=config["password"],
+            host=config["host"],
+            port=config["port"],
+            database=config["db"],
+        ),
+        USE_UNICODE=config.get("use_unicode", True),
+        POOL_SIZE=config.get("mincached", 5),
+        MAX_OVERFLOW=config.get("maxconnections", 25) - config.get("mincached", 5),
+        CURSOR=config.get("cursor", Cursor),
+        CONNECT_ARGS={"charset": config.get("charset", "utf8")},
+    )
+    return MysqlDbEnginePool(conf)
