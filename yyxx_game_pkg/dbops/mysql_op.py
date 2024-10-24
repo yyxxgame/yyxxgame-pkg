@@ -168,7 +168,7 @@ class MysqlOperation(DatabaseOperation):
                             continue
                         if not insert_sql:
                             field_str = get_field_str(result)
-                            column_value = get_table_desc(save_table, result, conn)
+                            column_value = get_table_desc(save_table, result, cursor)
                             insert_sql = insert_sql_template.format(
                                 save_table=save_table, column_value=column_value, data_value=field_str
                             )
