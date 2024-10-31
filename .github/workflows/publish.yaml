@@ -44,12 +44,12 @@ jobs:
 #          poetry config repositories.testpypi https://test.pypi.org/legacy/
 #          poetry publish -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }} -r testpypi
 
-      - name: Publish a Python distribution to PyPI
-        run: poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
-
       - name: Publish to yyxxgame GitLab
         run: |
           poetry config repositories.yyxx-gitlab ${{secrets.YYXX_GITLAB}}
           poetry config http-basic.yyxx-gitlab __token__ ${{secrets.YYXX_GITLAB_PUBLISH_TOKEN}}
           poetry publish --repository yyxx-gitlab
+          
+      - name: Publish a Python distribution to PyPI
+        run: poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
 
