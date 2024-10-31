@@ -4,16 +4,41 @@
 @Author: ltw
 @Time: 2023/4/4
 """
+import re
 import pandas as pd
 from yyxx_game_pkg.dbops.base import DatabaseOperation
 from yyxx_game_pkg.utils import xListStr
 from sqlalchemy.engine import Connection as AlchemyConnection
+from yyxx_game_pkg.statistic.log import debug_log
 
 
 class MysqlOperation(DatabaseOperation):
     """
     Mysql数据库操作
     """
+
+    @staticmethod
+    def check_sql(sql, conn=None, params=None):
+        """
+        检查sql表述是否正确
+        :param sql:
+        :param conn:
+        :param params:
+        :return:
+        """
+        if sql and isinstance(sql, str):
+            if "%" in sql and not params:
+                before_sql = sql
+                if isinstance(conn, AlchemyConnection):
+                    # 将单个%替换成%%
+                    sql = re.sub(r"(?<!%)(%)(?!%)", r"%\1", sql)
+                else:
+                    # 将%%替换成%
+                    sql = re.sub(r"(?<!%)(%%)(?!%)", r"%", sql)
+                if sql != before_sql:
+                    debug_log(f"[MysqlOperation][check_sql] 前=>{before_sql}")
+                    debug_log(f"[MysqlOperation][check_sql] 后=>{sql}")
+        return sql
 
     def execute(self, sql, conn, params=None):
         """
@@ -23,7 +48,7 @@ class MysqlOperation(DatabaseOperation):
         :param params:
         :return:
         """
-        sql = self.check_sql(sql)
+        sql = self.check_sql(sql, conn, params)
         with conn:
             if isinstance(conn, AlchemyConnection):
                 if params is None:
@@ -46,7 +71,7 @@ class MysqlOperation(DatabaseOperation):
         :param params:
         :return:
         """
-        sql = self.check_sql(sql)
+        sql = self.check_sql(sql, conn, params)
         with conn:
             if isinstance(conn, AlchemyConnection):
                 if params is None:
@@ -69,7 +94,7 @@ class MysqlOperation(DatabaseOperation):
         :param params:
         :return:
         """
-        sql = self.check_sql(sql)
+        sql = self.check_sql(sql, conn, params)
         with conn:
             if isinstance(conn, AlchemyConnection):
                 if params is None:
@@ -99,9 +124,10 @@ class MysqlOperation(DatabaseOperation):
         :param connection:
         :return:
         """
+        sql = self.check_sql(sql, connection)
         return pd.read_sql(sql, connection)
 
-    def insert(self, conn, save_table='', results=(), insert_sql=''):
+    def insert(self, conn, save_table="", results=(), insert_sql=""):
         """
         :param conn:
         :param save_table:
@@ -148,7 +174,6 @@ class MysqlOperation(DatabaseOperation):
 
         insert_sql_template = "INSERT INTO {save_table} ({column_value}) VALUES({data_value})"
         results = xListStr.split_list(results)
-
         with conn:
             if isinstance(conn, AlchemyConnection):
                 for result in results:

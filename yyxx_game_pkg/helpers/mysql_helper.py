@@ -106,10 +106,12 @@ class MysqlDbEnginePool(object):
         self.DB_POOL = create_engine(
             url=config["url"],
             pool_size=config["POOL_SIZE"],
+            # 允许进入的连接数 连接池 “overflow”
             max_overflow=config["MAX_OVERFLOW"],
             pool_pre_ping=True,
             connect_args=config["CONNECT_ARGS"],
             pool_timeout=60,
+            **config['EXTRA_KWARGS']
         )
         logging.debug("<MysqlDbEnginePool> init, info:%s", config)
 
@@ -134,8 +136,12 @@ def get_db_engine_pool(config: dict, drivername="mysql+pymysql") -> MysqlDbEngin
         ),
         USE_UNICODE=config.get("use_unicode", True),
         POOL_SIZE=config.get("mincached", 5),
-        MAX_OVERFLOW=config.get("maxconnections", 25) - config.get("mincached", 5),
-        CURSOR=config.get("cursor", Cursor),
-        CONNECT_ARGS={"charset": config.get("charset", "utf8")},
+        MAX_OVERFLOW=config.get("maxconnections", 50) - config.get("mincached", 5),
+        CONNECT_ARGS={
+            "charset": config.get("charset", "utf8"),
+            "cursorclass": config.get("cursor", Cursor),
+            "use_unicode": config.get("use_unicode", True),
+        },
+        EXTRA_KWARGS={**config.get("extra_kwargs", {})}
     )
     return MysqlDbEnginePool(conf)
