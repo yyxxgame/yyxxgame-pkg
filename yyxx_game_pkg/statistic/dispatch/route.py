@@ -28,3 +28,8 @@ async def submit(request: Request, msg: Message):
     add_span_events("results", {"task_id_list": str(task_id_list)})
 
     return {"task_id_list": task_id_list, "trace_id": trace_id}
+
+
+@router.api_route("/ping", methods=["GET", "POST"])
+def ping(request: Request):
+    return {"msg":"PING连通性正常!"}
