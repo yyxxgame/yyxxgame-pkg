@@ -7,6 +7,7 @@ Date:         2023/11/8
 import pandas as pd
 
 from .base import AsyncDatabaseOperation
+from yyxx_game_pkg.dbops.base import DatabaseOperationProxy
 
 
 class AsyncDasCHOperation(AsyncDatabaseOperation):
@@ -49,3 +50,36 @@ class AsyncDasCHOperation(AsyncDatabaseOperation):
         sql = sql.replace("[ch_db]", self.db_name)
         b_ok = await self.async_das_client.ch_execute(self.das_url, {"sql": sql})
         return b_ok
+
+
+class AsyncDasCHOperationProxy(DatabaseOperationProxy):
+    """
+    Async Das Clickhouse操作代理
+
+    接入Tips:
+    DBOperationProxy(AsyncDasCHOperationProxy)
+    """
+
+    __async_op_ch_key__ = "async_op_ch"
+
+    @property
+    def _async_op_ch_(self) -> AsyncDasCHOperation:
+        return getattr(self, self.__async_op_ch_key__)
+
+    async def async_get_ch_df(self, sql):
+        """
+        查询clickhouse库数据
+
+        :param sql: sql语句
+        :return: dataframe
+        """
+        return await self._async_op_ch_.get_all_df(sql)
+
+    async def async_get_ch_one(self, sql):
+        """
+        查询clickhouse库(单条数据)
+
+        :param sql: sql语句
+        :return: series
+        """
+        return await self._async_op_ch_.get_one_df(sql)

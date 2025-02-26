@@ -38,6 +38,10 @@ class DasApiEsInsertException(DasApiException):
     pass
 
 
+class DasApiDorisQueryException(DasApiException):
+    pass
+
+
 class DasApi:
     """
     DasApi py
@@ -168,6 +172,23 @@ class DasApi:
         if not b_ok:
             raise DasApiChExecuteException(res)
         return b_ok
+
+    @staticmethod
+    def doris_query(das_url, post_data):
+        """
+        sql语句 查询 doris 库
+        :param das_url: das_http_url
+        :param post_data: {
+            "sql": sql,                     # sql语句
+        }
+        :return:
+        """
+        b_ok, res = DasApi._post(das_url, "/das/mysql/query", post_data=post_data)
+        if not b_ok:
+            raise DasApiDorisQueryException(res)
+        data = json.loads(res)
+        res_df = pd.DataFrame(data["datarows"], columns=data["columns"])
+        return res_df
 
 
 # if __name__ == '__main__':

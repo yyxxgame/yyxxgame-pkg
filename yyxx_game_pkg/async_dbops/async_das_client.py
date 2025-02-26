@@ -12,6 +12,8 @@ import numpy as np
 import pandas as pd
 import ujson as json
 from yyxx_game_pkg.utils.dtypes import trans_unsupported_types
+from yyxx_game_pkg.dbops.das_api import DasApiChQueryException, DasApiChExecuteException, DasApiEsQueryException, \
+    DasApiEsInsertException, DasApiDorisQueryException
 
 
 class AsyncDasClient:
@@ -40,7 +42,7 @@ class AsyncDasClient:
         """
         b_ok, res = await self._post(das_url, "das/es/queryx", post_data=post_data)
         if not b_ok:
-            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
+            raise DasApiEsQueryException(res)
         engine = post_data.get("engine", 0)
         use_search = post_data.get("search_from", -1) >= 0
         data = json.loads(res)
@@ -79,7 +81,7 @@ class AsyncDasClient:
         """
         b_ok, res = await self._post(das_url, "das/es/insert", post_data=post_data)
         if not b_ok:
-            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
+            raise DasApiEsInsertException(res)
         return res
 
     async def ch_query(self, das_url, post_data):
@@ -93,7 +95,7 @@ class AsyncDasClient:
         """
         b_ok, res = await self._post(das_url, "/das/ch/queryx", post_data=post_data)
         if not b_ok:
-            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
+            raise DasApiChQueryException(res)
         data = json.loads(res)
 
         res_df = pd.DataFrame(data["datarows"], columns=data["columns"])
@@ -110,26 +112,22 @@ class AsyncDasClient:
         """
         b_ok, res = await self._post(das_url, "/das/ch/exec", post_data=post_data)
         if not b_ok:
-            raise RuntimeError(f"res:{res} \n post_data:{post_data}")
+            raise DasApiChExecuteException(res)
         return b_ok
 
+    async def doris_query(self, das_url, post_data):
+        """
+        sql语句 查询 doris 库
+        :param das_url: das_http_url
+        :param post_data: {
+            "sql": sql,                     # sql语句
+        }
+        :return:
+        """
+        b_ok, res = await self._post(das_url, "/das/mysql/query", post_data=post_data)
+        if not b_ok:
+            raise DasApiDorisQueryException(res)
+        data = json.loads(res)
 
-# if __name__ == '__main__':
-# post_type = "das/mgo/query"
-# post_data_ = dict()
-# post_data_['js_sql'] = 'db.getSiblingDB("fumo_test").getCollection("player").find({})'
-# post_data_['server'] = 'test'
-#
-# # DasApi.post(post_type=post_type, post_data=post_data)
-# res_ = DasApi.mongo_query(post_data_)
-#
-# post_data_ = dict()
-# post_data_['sql'] = 'SELECT * FROM log_money LIMIT 1'
-# post_data_['engine'] = 1
-# res_ = DasApi.es_query(post_data_)
-
-# post_data = dict()
-# post_data['sql'] = 'select * from main_test.log_player_op limit 10;'
-# res_ = DasApi.ch_query(post_data)
-#
-# print (res_)
+        res_df = pd.DataFrame(data["datarows"], columns=data["columns"])
+        return res_df

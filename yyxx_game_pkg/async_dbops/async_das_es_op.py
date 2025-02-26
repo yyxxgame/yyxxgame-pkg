@@ -6,6 +6,7 @@
 """
 import pandas as pd
 from .base import AsyncDatabaseOperation
+from yyxx_game_pkg.dbops.base import DatabaseOperationProxy
 
 
 class AsyncDasESOperation(AsyncDatabaseOperation):
@@ -56,3 +57,31 @@ class AsyncDasESOperation(AsyncDatabaseOperation):
             },
         )
         return res_df
+
+
+class AsyncDasESOperationProxy(DatabaseOperationProxy):
+    """
+    ElasticSearch操作代理
+
+    接入Tips:
+    DBOperationProxy(AsyncDasESOperationProxy)
+    """
+
+    __async_op_es_key__ = "async_op_es"
+
+    @property
+    def _async_op_es_(self) -> AsyncDasESOperation:
+        return getattr(self, self.__async_op_es_key__)
+
+    async def async_get_es_df(self, sql, search_from=-1, fetch_size=50000):
+        """
+        查询elasticsearch库数据
+
+        :param sql: sql语句
+        :param search_from:
+        :param fetch_size:
+        :return: dataframe
+        """
+        sql = sql.replace(" server_id between", " server_id::INT between")
+        sql = sql.replace("(server_id between", "(server_id::INT between")
+        return await self._async_op_es_.get_all_df(sql, search_from, fetch_size)
