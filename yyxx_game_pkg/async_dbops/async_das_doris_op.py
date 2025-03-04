@@ -25,7 +25,8 @@ class AsyncDasDorisOperation(AsyncDatabaseOperation):
 
     def replace_sql(self, sql):
         sql = re.sub(r"(\[)(ch_db|db|doris_db|game_db)(])", self.db_name, sql)
-        sql = re.sub(r"(\[)(game_conf)(])", self.db_name, sql)
+        sql = re.sub(r"(\[)(game_conf)(])", self.conf_db_name, sql)
+        # TODO临时兼容clickhouse的sql查询(代号X)
         sql = re.sub(r"\b global \b", " ", sql, flags=re.IGNORECASE)
         return sql
 
@@ -49,6 +50,16 @@ class AsyncDasDorisOperation(AsyncDatabaseOperation):
         sql = self.replace_sql(sql)
         res_df = await self.async_das_client.doris_query(self.das_url, {"sql": sql})
         return res_df
+
+    async def execute(self, sql):
+        """
+        执行sql
+        :param sql:
+        :return:
+        """
+        sql = self.replace_sql(sql)
+        b_ok = await self.async_das_client.doris_execute(self.das_url, {"sql": sql})
+        return b_ok
 
 
 class AsyncDasDorisOperationProxy(DatabaseOperationProxy):
@@ -82,3 +93,12 @@ class AsyncDasDorisOperationProxy(DatabaseOperationProxy):
         :return: series
         """
         return await self._async_op_doris_.get_one_df(sql)
+
+    async def doris_execute(self, sql):
+        """
+        doris库其他sql操作[insert, update...]
+
+        :param sql: sql语句
+        :return: bool
+        """
+        return await self._async_op_doris_.execute(sql)

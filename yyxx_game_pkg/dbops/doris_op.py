@@ -26,7 +26,7 @@ class DorisOperation(DatabaseOperation):
 
     def replace_sql(self, sql):
         sql = re.sub(r"(\[)(ch_db|db|doris_db|game_db)(])", self.db_name, sql)
-        sql = re.sub(r"(\[)(game_conf)(])", self.db_name, sql)
+        sql = re.sub(r"(\[)(game_conf)(])", self.conf_db_name, sql)
         return sql
 
     def get_one_df(self, sql):
@@ -49,6 +49,28 @@ class DorisOperation(DatabaseOperation):
         sql = self.replace_sql(sql)
         res_df = self.das_api.doris_query(self.das_url, {"sql": sql})
         return res_df
+
+    def execute(self, sql):
+        """
+        执行sql
+        :param sql:
+        :return:
+        """
+        sql = self.replace_sql(sql)
+        b_ok = self.das_api.doris_execute(self.das_url, {"sql": sql})
+        return b_ok
+
+    def insert(self, sql, data_rows):
+        """
+        执行sql
+        :param sql:
+        :param data_rows:
+        :return:
+        """
+        sql = self.replace_sql(sql)
+        post_data = {"sql": sql, "rows": data_rows}
+        b_ok = self.das_api.doris_insert(self.das_url, post_data)
+        return b_ok
 
 
 class DorisDBOperationProxy(DatabaseOperationProxy):
@@ -82,3 +104,15 @@ class DorisDBOperationProxy(DatabaseOperationProxy):
         :return: series
         """
         return self._doris_op_.get_one_df(sql)
+
+    def doris_execute(self, sql):
+        """
+        doris库其他sql操作[insert, update...]
+
+        :param sql: sql语句
+        :return: bool
+        """
+        return self._doris_op_.execute(sql)
+
+    def doris_insert(self, *args, **kwargs):
+        raise Exception("暂未支持")

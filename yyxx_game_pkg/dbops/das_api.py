@@ -42,6 +42,14 @@ class DasApiDorisQueryException(DasApiException):
     pass
 
 
+class DasApiDorisExecuteException(DasApiException):
+    pass
+
+
+class DasApiDorisInsertException(DasApiException):
+    pass
+
+
 class DasApi:
     """
     DasApi py
@@ -190,6 +198,39 @@ class DasApi:
         res_df = pd.DataFrame(data["datarows"], columns=data["columns"])
         return res_df
 
+    @staticmethod
+    def doris_execute(das_url, post_data):
+        """
+        doris 执行 sql (数据插入)
+        :param das_url: das_http_url
+        :param post_data: {
+            "sql": sql,                     # sql语句
+        }
+        :return:
+        """
+        b_ok, res = DasApi._post(das_url, "/das/mysql/execute", post_data=post_data)
+        if not b_ok:
+            raise DasApiDorisExecuteException(res)
+        return b_ok
+
+    @staticmethod
+    def doris_insert(das_url, post_data):
+        """
+        doris 执行 sql (数据插入)
+        :param das_url: das_http_url
+        :param post_data: {
+            "sql": "insert into test.example_tbl_duplicate(timestamp, type, error_code, error_msg, op_id, op_time) values(?,?,?,?,?,?)",
+            "rows": [
+                ["2024-12-30 10:46:14", "1", "1000", "测试测试测试", "1", "2024-12-30 10:46:31"],
+                ["2024-12-30 10:22:14", "2", "2000", "测试测试测试2", "2", "2024-12-22 10:22:31"]
+            ]
+        }
+        :return:
+        """
+        b_ok, res = DasApi._post(das_url, "/das/mysql/insert", post_data=post_data)
+        if not b_ok:
+            raise DasApiDorisInsertException(res)
+        return b_ok
 
 # if __name__ == '__main__':
 # post_type = "das/mgo/query"

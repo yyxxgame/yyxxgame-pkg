@@ -13,7 +13,7 @@ import pandas as pd
 import ujson as json
 from yyxx_game_pkg.utils.dtypes import trans_unsupported_types
 from yyxx_game_pkg.dbops.das_api import DasApiChQueryException, DasApiChExecuteException, DasApiEsQueryException, \
-    DasApiEsInsertException, DasApiDorisQueryException
+    DasApiEsInsertException, DasApiDorisQueryException, DasApiDorisExecuteException
 
 
 class AsyncDasClient:
@@ -131,3 +131,18 @@ class AsyncDasClient:
 
         res_df = pd.DataFrame(data["datarows"], columns=data["columns"])
         return res_df
+
+
+    async def doris_execute(self, das_url, post_data):
+        """
+        doris 执行 sql (数据插入)
+        :param das_url: das_http_url
+        :param post_data: {
+            "sql": sql,                     # sql语句
+        }
+        :return:
+        """
+        b_ok, res = await self._post(das_url, "/das/mysql/execute", post_data=post_data)
+        if not b_ok:
+            raise DasApiDorisExecuteException(res)
+        return b_ok
